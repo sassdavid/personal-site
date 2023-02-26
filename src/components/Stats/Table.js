@@ -1,19 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import TableRow from './TableRow';
 
 const Table = ({ data }) => (
   <table>
     <tbody>
       {data.map((pair) => (
-        <TableRow
-          format={pair.format}
-          key={pair.label}
-          label={pair.label}
-          link={pair.link}
-          value={pair.value}
-        />
+        <TableRow format={pair.format}
+                  key={pair.label}
+                  label={pair.label}
+                  link={pair.link}
+                  value={pair.value} />
       ))}
     </tbody>
   </table>
@@ -21,9 +18,9 @@ const Table = ({ data }) => (
 
 Table.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
-    format: PropTypes.func,
+    format: PropTypes.oneOfType([PropTypes.func, PropTypes.any]),
     label: PropTypes.string.isRequired,
-    link: PropTypes.string,
+    link: PropTypes.oneOfType([PropTypes.string, PropTypes.any]),
     value: PropTypes.oneOfType([
       PropTypes.element,
       PropTypes.number,

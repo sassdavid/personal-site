@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
-// Validates the first half of an email address.
 const validateText = (text) => {
-  // NOTE: Passes RFC 5322 but not tested on google's standard.
-  // eslint-disable-next-line no-useless-escape
-  const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))$/;
+  const re = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))$/;
   return re.test(text) || text.length === 0;
 };
 
@@ -41,18 +38,19 @@ const useInterval = (callback, delay) => {
       }, delay);
       return () => clearInterval(id);
     }
-    return () => {}; // pass linter
+    return () => {
+    }; // pass linter
   }, [delay]);
 };
 
 const EmailLink = ({ loopMessage }) => {
-  const hold = 50; // ticks to wait after message is complete before rendering next message
-  const delay = 50; // tick length in mS
+  const hold = 50;
+  const delay = 50;
 
-  const [idx, updateIter] = useState(0); // points to current message
+  const [idx, updateIter] = useState(0);
   const [message, updateMessage] = useState(messages[idx]);
-  const [char, updateChar] = useState(0); // points to current char
-  const [isActive, setIsActive] = useState(true); // disable when all messages are printed
+  const [char, updateChar] = useState(0);
+  const [isActive, setIsActive] = useState(true);
 
   useInterval(() => {
     let newIdx = idx;
@@ -76,15 +74,13 @@ const EmailLink = ({ loopMessage }) => {
   }, isActive ? delay : null);
 
   return (
-    <div
-      className="inline-container"
-      style={validateText(message) ? {} : { color: 'red' }}
-      onMouseEnter={() => setIsActive(false)}
-      onMouseLeave={() => (idx < messages.length) && setIsActive(true)}
-    >
-      <a href={validateText(message) ? `mailto:${message}@mldangelo.com` : ''}>
+    <div className="inline-container"
+         style={validateText(message) ? {} : { color: 'red' }}
+         onMouseEnter={() => setIsActive(false)}
+         onMouseLeave={() => (idx < messages.length) && setIsActive(true)}>
+      <a href={validateText(message) ? 'mailto:david.sass14@gmail.com' : ''}>
         <span>{message}</span>
-        <span>@mldangelo.com</span>
+        <span>@gmail.com</span>
       </a>
     </div>
   );

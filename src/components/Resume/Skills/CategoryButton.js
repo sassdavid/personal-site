@@ -2,11 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const CategoryButton = ({ handleClick, active, label }) => (
-  <button
-    className={`skillbutton ${active[label] ? 'skillbutton-active' : ''}`}
-    type="button"
-    onClick={() => handleClick(label)}
-  >
+  <button className={`skillbutton ${active[label] ? 'skillbutton-active' : ''}`}
+          type="button"
+          onClick={() => handleClick(label)}>
     {label}
   </button>
 );

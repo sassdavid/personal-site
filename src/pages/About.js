@@ -1,25 +1,25 @@
+/* eslint-disable react/prop-types,react/no-children-prop */
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import raw from 'raw.macro';
-
 import Main from '../layouts/Main';
 
-// uses babel to load contents of file
 const markdown = raw('../data/about.md');
 
 const count = markdown.split(/\s+/)
   .map((s) => s.replace(/\W/g, ''))
   .filter((s) => s.length).length;
 
-// Make all hrefs react router links
-const LinkRenderer = ({ ...children }) => <Link {...children} />;
+const LinkRenderer = (props) => (
+  <a href={props.href} target="_blank" rel="noreferrer">
+    {props.children}
+  </a>
+);
 
 const About = () => (
-  <Main
-    title="About"
-    description="Learn about Michael D'Angelo"
-  >
+  <Main title="About"
+        description="Learn about David Sass">
     <article className="post markdown" id="about">
       <header>
         <div className="title">
@@ -27,13 +27,10 @@ const About = () => (
           <p>(in about {count} words)</p>
         </div>
       </header>
-      <ReactMarkdown
-        source={markdown}
-        renderers={{
-          Link: LinkRenderer,
-        }}
-        escapeHtml={false}
-      />
+      <ReactMarkdown children={markdown}
+                     components={{
+                       a: LinkRenderer,
+                     }} />
     </article>
   </Main>
 );

@@ -1,0 +1,70 @@
+$themes: (
+        bgThemeColor1: (
+                darkTheme: #242424,
+                lightTheme: #ffffff,
+        ),
+        bgThemeColor1Swapped: (
+                darkTheme: #ffffff,
+                lightTheme: #242424,
+        ),
+        bgThemeColor1Hover: (
+                darkTheme: #2f2f2f,
+                lightTheme: #eaeaf0,
+        ),
+        bgThemeColor2: (
+                darkTheme: #2f2f2f,
+                lightTheme: #eaeaf0,
+        ),
+        bgThemeColorHover2: (
+                darkTheme: rgba(45, 45, 45, 0.545),
+                lightTheme: rgba(227, 227, 227, 0.3),
+        ),
+        textThemeColor1: (
+                darkTheme: #d0d0d0,
+                lightTheme: #120a0a,
+        ),
+        textThemeColor1Swapped: (
+                darkTheme: #120a0a,
+                lightTheme: #d0d0d0,
+        ),
+        textThemeColor1Same: (
+                darkTheme: #d0d0d0,
+                lightTheme: #fff
+        ),
+        textThemeColor2: (
+                darkTheme: #dbdbdb,
+                lightTheme: #1e1e1e,
+        ),
+        textThemeColor3: (
+                darkTheme: #c9c9c9,
+                lightTheme: #000000,
+        ),
+        textThemeColorHover3: (
+                darkTheme: #4670fac8,
+                lightTheme: #1c3792d6,
+        ),
+        displayInDark: (
+                lightTheme: none,
+        ),
+        displayInLight: (
+                darkTheme: none,
+        ),
+);
+
+@mixin styles($mode) {
+  @each $key, $map in $themes {
+    @each $prop, $color in $map {
+      @if $prop == $mode {
+        --#{$key}: #{$color};
+      }
+    }
+  }
+}
+
+.dark-mode {
+  @include styles("darkTheme");
+}
+
+.light-mode {
+  @include styles("lightTheme");
+}

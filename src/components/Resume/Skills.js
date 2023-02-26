@@ -35,22 +35,18 @@ class Skills extends Component {
       return ret;
     }).filter((skill) => (actCat === 'All' || skill.category.includes(actCat)))
       .map((skill) => (
-        <SkillBar
-          categories={this.props.categories}
-          data={skill}
-          key={skill.title}
-        />
+        <SkillBar categories={this.props.categories}
+                  data={skill}
+                  key={skill.title} />
       ));
   }
 
   getButtons() {
     return Object.keys(this.state.buttons).map((key) => (
-      <CategoryButton
-        label={key}
-        key={key}
-        active={this.state.buttons}
-        handleClick={this.handleChildClick}
-      />
+      <CategoryButton label={key}
+                      key={key}
+                      active={this.state.buttons}
+                      handleClick={this.handleChildClick} />
     ));
   }
 
@@ -65,7 +61,7 @@ class Skills extends Component {
       buttons.All = !Object.keys(prevState.buttons).some((key) => buttons[key]);
       return { buttons };
     });
-  }
+  };
 
   render() {
     return (
