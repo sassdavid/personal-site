@@ -16,7 +16,6 @@
     "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "lint": "eslint $(git ls-files '*.js') src --fix",
-    "test": "react-scripts test --watchAll=false",
     "analyze": "npm run build && source-map-explorer build/static/js/*.chunk.js"
   },
   "dependencies": {
