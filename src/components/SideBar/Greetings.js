@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
 const messages = [
@@ -63,9 +63,7 @@ const Greetings = ({ loopMessage }) => {
     }
   }, isActive ? delay : null);
 
-  return (
-    <span>{message} I am glad you&apos;re here!<br /></span>
-  );
+  return (message);
 };
 
 Greetings.defaultProps = {

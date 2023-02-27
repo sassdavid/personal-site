@@ -27,7 +27,8 @@ const SideBar = () => (
 
     <section className="blurb">
       <h2>About</h2>
-      <p><Greetings loopMessage /> I like building things.
+      {/* eslint-disable-next-line react/jsx-curly-brace-presence */}
+      <p><Greetings loopMessage /> I am glad you&apos;re here!{<br />} I like building things.
         I have a degree in computer engineering, and I&apos;m currently working at
         <a href="https://www.loxon.eu/" target="_blank" rel="noreferrer"> Loxon Solutions</a>.
       </p>
