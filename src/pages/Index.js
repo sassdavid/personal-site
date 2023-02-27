@@ -8,9 +8,13 @@ const Index = () => (
       <header>
         <div className="title">
           <h2 data-testid="heading"><Link to="/">Hi! I&apos;m David</Link></h2>
-          <p> Welcome to my website. Please feel free to read more <Link to="/about">about me</Link>,
-            or you can check out my {' '}
-            <Link to="/resume">resume</Link>, {' '} view <Link to="/stats">site statistics</Link>, {' '} or <Link to="/contact">contact</Link> me.
+          <p>
+            Welcome to my website! I&apos;m thrilled to have you here.
+            Feel free to take a look around and explore the various pages,
+            including <Link to="/resume">my resume</Link> and <Link to="/about">about me</Link> section. You&apos;ll also find
+            some interesting <Link to="/stats">statistics</Link> about me and my website.
+            If you have any questions or would like to get in touch,
+            please don&apos;t hesitate to use the <Link to="/contact">contact</Link> page. Thank you for visiting!
           </p>
         </div>
       </header>

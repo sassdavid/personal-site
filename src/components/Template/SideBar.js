@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ThemeBtn from './ThemeButton';
 import ContactIcons from '../Contact/ContactIcons';
-import Greetings from '../SideBar/Greetings';
 import '../../static/css/main.scss';
 
 const { PUBLIC_URL } = process.env;
@@ -27,10 +26,15 @@ const SideBar = () => (
 
     <section className="blurb">
       <h2>About</h2>
-      {/* eslint-disable-next-line react/jsx-curly-brace-presence */}
-      <p><Greetings loopMessage /> I am glad you&apos;re here!{<br />} I like building things.
-        I have a degree in computer engineering, and I&apos;m currently working at
-        <a href="https://www.loxon.eu/" target="_blank" rel="noreferrer"> Loxon Solutions</a>.
+      <p>
+        As a highly skilled and experienced Staff Software Engineer
+        with a degree in Computer Engineering, I am passionate about utilizing my technical
+        expertise to develop innovative solutions and drive impactful outcomes. Currently,
+        I am thriving in my role at <a href="https://www.loxon.eu/" target="_blank" rel="noreferrer">Loxon Solutions</a>, where I have the opportunity to tackle
+        complex challenges and contribute to cutting-edge software development projects.
+        My commitment to excellence and dedication to staying up-to-date with the latest
+        industry advancements has enabled me to achieve significant success in my career,
+        and I am excited to continue building on this momentum in future endeavors.
       </p>
       <ul className="actions">
         <li>

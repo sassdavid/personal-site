@@ -19,7 +19,10 @@ const Tools = ({ data }) => (
   <div className="tools">
     <div className="link-to" id="tools" />
     <div className="title">
-      <h3>Tools I&apos;ve used</h3>
+      <h3>
+        Throughout my career,
+        I have leveraged a wide range of tools and technologies to help me succeed in my work.
+      </h3>
     </div>
     <ul className="tool-list">
       {getRows(data)}
