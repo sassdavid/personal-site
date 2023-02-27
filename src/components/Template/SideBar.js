@@ -1,15 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import dynamic from 'next/dynamic';
+import ThemeBtn from './ThemeButton';
 import ContactIcons from '../Contact/ContactIcons';
 import Greetings from '../SideBar/Greetings';
 import '../../static/css/main.scss';
-
-const ThemeBtn = dynamic(
-  (() => import('./ThemeButton').then(({ ThemeButton }) => ThemeButton)),
-  { ssr: false },
-);
 
 const { PUBLIC_URL } = process.env;
 
