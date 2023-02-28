@@ -14,7 +14,7 @@ const data = [
   {
     label: 'Number of forks',
     key: 'forks',
-    link: 'https://github.com/sassdavid/personal-site/network',
+    link: 'https://github.com/sassdavid/personal-site/forks',
   },
   {
     label: 'Open GitHub issues',
