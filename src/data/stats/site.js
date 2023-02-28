@@ -2,6 +2,26 @@ import dayjs from 'dayjs';
 
 const data = [
   {
+    label: 'Stars this repository has on GitHub',
+    key: 'stargazers_count',
+    link: 'https://github.com/sassdavid/personal-site/stargazers',
+  },
+  {
+    label: 'Number of people watching this repository',
+    key: 'subscribers_count',
+    link: 'https://github.com/sassdavid/personal-site/watchers',
+  },
+  {
+    label: 'Number of forks',
+    key: 'forks',
+    link: 'https://github.com/sassdavid/personal-site/network',
+  },
+  {
+    label: 'Open GitHub issues',
+    key: 'open_issues_count',
+    link: 'https://github.com/sassdavid/personal-site/issues',
+  },
+  {
     label: 'Last updated at',
     key: 'pushed_at',
     link: 'https://github.com/sassdavid/personal-site/commits',
@@ -12,7 +32,7 @@ const data = [
     /* find . | grep ".js" | grep -vE ".min.js|node_modules|.git|.json" |
     xargs -I file cat file | wc -l */
     label: 'Lines of Javascript powering this website',
-    value: '1667',
+    value: '1797',
     link: 'https://github.com/sassdavid/personal-site',
   },
 ];

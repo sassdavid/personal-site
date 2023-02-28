@@ -25,7 +25,7 @@ const Resume = () => (
     <article className="post" id="resume">
       <header>
         <div className="title">
-          <h2 data-testid="heading"><Link to="resume">Resume</Link></h2>
+          <h2 data-testid="heading"><Link to="/resume">Resume</Link></h2>
           <div className="link-container">
             {sections.map((sec) => (
               <h4 key={sec}>
@@ -34,8 +34,8 @@ const Resume = () => (
           </div>
         </div>
       </header>
-      <Education data={degrees} />
       <Experience data={positions} />
+      <Education data={degrees} />
       <Skills skills={skills} categories={categories} />
       <Tools data={tools} />
       <References />

@@ -4,10 +4,14 @@ As a Staff Software Engineer at [Loxon](https://www.loxon.eu/), I play a crucial
 manage and collect their unpaid portfolios. With my expertise in software engineering and my passion for building innovative and efficient solutions,
 I have contributed significantly to the success of our team and projects.
 
+##
+
 Throughout my career, I have honed my skills in various programming languages, technologies, and tools, such as
 [Java](https://www.oracle.com/uk/java/), [Spring Boot](https://spring.io/), [Kafka](https://kafka.apache.org/),
 [Python](https://www.python.org/), [Angular](https://angular.io/), and [AWS](https://aws.amazon.com/). I am
 constantly learning and exploring new technologies to stay ahead of the curve and bring the latest and greatest to my work.
+
+##
 
 I am always excited to meet new people, collaborate on interesting projects, and share my knowledge and expertise. If you are interested in learning
 more about me, my work, or have a project that you think I could help with, please do not hesitate to reach out. I look forward to hearing from you!
@@ -18,13 +22,19 @@ During my time at Loxon Solutions as a Staff Software Engineer, I have had the o
 contributed to my professional growth. One of the most important skills I've acquired is the ability to shape the culture of a team and foster a
 positive work environment, which has resulted in higher productivity, increased collaboration, and better results.
 
+##
+
 Another crucial aspect of my work at Loxon has been developing strong relationships with clients. Through regular communication and a customer-centric
 approach, I have been able to understand their needs and requirements, and ensure that our software products and solutions meet or exceed their
 expectations.
 
+##
+
 Furthermore, my experience at Loxon has allowed me to gain hands-on experience in implementing enterprise-grade products, working with cutting-edge
 technologies, and using agile methodologies to deliver software solutions that meet complex business needs. These experiences have helped me to
 develop a well-rounded skillset and the ability to work effectively in dynamic and challenging environments.
+
+##
 
 Overall, my time at Loxon has been instrumental in shaping my professional development and has given me a solid foundation for the next steps in my
 career. If you have any questions or would like to discuss potential collaboration, please do not hesitate to reach out.
