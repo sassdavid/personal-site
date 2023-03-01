@@ -1,4 +1,4 @@
-# My Portfolio
+# My Personal Website
 
 MIT licensed. If you're interested in adapting my site for your own, you can find detailed
 instructions [here](https://github.com/mldangelo/personal-site#readme). If you need support on any of my changes or additions, please reach out
