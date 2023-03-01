@@ -20,6 +20,7 @@ jobs:
       - name: Build and Deploy
         env:
           NODE_ENV: production
+          REACT_APP_ENVIRONMENT: production
           REACT_APP_GA_MEASUREMENT_ID: G-P3P3E4MCWM
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

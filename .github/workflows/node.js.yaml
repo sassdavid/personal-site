@@ -22,5 +22,4 @@ jobs:
       - name: Build and Statically Render
         run: npm run predeploy
         env:
-          NODE_ENV: production
-          REACT_APP_GA_MEASUREMENT_ID: G-P3P3E4MCWM
+          REACT_APP_ENVIRONMENT: development
