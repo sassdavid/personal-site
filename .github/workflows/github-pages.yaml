@@ -20,9 +20,7 @@ jobs:
       - name: Build and Deploy
         env:
           NODE_ENV: production
-          # Remove this line if you would like to skip using google analytics
           REACT_APP_GA_MEASUREMENT_ID: G-P3P3E4MCWM
-          # This is set automatically by github
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "Automated"
