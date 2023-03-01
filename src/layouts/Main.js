@@ -5,9 +5,11 @@ import { Helmet, HelmetProvider } from 'react-helmet-async';
 import Navigation from '../components/Template/Navigation';
 import SideBar from '../components/Template/SideBar';
 import ScrollToTop from '../components/Template/ScrollToTop';
+import Analytics from '../components/Template/Analytics';
 
 const Main = (props) => (
   <HelmetProvider>
+    <Analytics />
     <ScrollToTop />
     <Helmet titleTemplate="%s | David Sass" defaultTitle="David Sass" defer={false}>
       {props.title && <title>{props.title}</title>}
