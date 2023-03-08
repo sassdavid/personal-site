@@ -8,7 +8,7 @@ const PageNotFound = () => (
       <Helmet title="404 Not Found">
         <meta name="description" content="The content you are looking for cannot be found." />
       </Helmet>
-      <h1 data-testid="heading">David Not Found</h1>
+      <h1>David Not Found</h1>
       <p>:) Go back and find me<Link to="/">here</Link>.</p>
     </div>
   </HelmetProvider>

@@ -17,12 +17,12 @@ const App = () => (
     <script src="../noflash.js" />
     <Suspense fallback={<Main />}>
       <Routes>
-        <Route exact path="/" element={<Index />} />
+        <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/resume" element={<Resume />} />
-        <Route element={<NotFound />} status={404} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
   </BrowserRouter>
