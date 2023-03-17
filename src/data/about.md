@@ -18,25 +18,25 @@ more about me, my work, or have a project that you think I could help with, plea
 
 # Currently
 
-During my time at Loxon Solutions as a Staff Software Engineer, I have had the opportunity to learn and develop a wide range of skills that have
+During my time at [Loxon](https://www.loxon.eu/) Solutions as a Staff Software Engineer, I have had the opportunity to learn and develop a wide range of skills that have
 contributed to my professional growth. One of the most important skills I've acquired is the ability to shape the culture of a team and foster a
 positive work environment, which has resulted in higher productivity, increased collaboration, and better results.
 
 <br>
 
-Another crucial aspect of my work at Loxon has been developing strong relationships with clients. Through regular communication and a customer-centric
+Another crucial aspect of my work at [Loxon](https://www.loxon.eu/) has been developing strong relationships with clients. Through regular communication and a customer-centric
 approach, I have been able to understand their needs and requirements, and ensure that our software products and solutions meet or exceed their
 expectations.
 
 <br>
 
-Furthermore, my experience at Loxon has allowed me to gain hands-on experience in implementing enterprise-grade products, working with cutting-edge
+Furthermore, my experience at [Loxon](https://www.loxon.eu/) has allowed me to gain hands-on experience in implementing enterprise-grade products, working with cutting-edge
 technologies, and using agile methodologies to deliver software solutions that meet complex business needs. These experiences have helped me to
 develop a well-rounded skillset and the ability to work effectively in dynamic and challenging environments.
 
 <br>
 
-Overall, my time at Loxon has been instrumental in shaping my professional development and has given me a solid foundation for the next steps in my
+Overall, my time at [Loxon](https://www.loxon.eu/) has been instrumental in shaping my professional development and has given me a solid foundation for the next steps in my
 career. If you have any questions or would like to discuss potential collaboration, please do not hesitate to reach out.
 
 # I like
@@ -51,7 +51,7 @@ career. If you have any questions or would like to discuss potential collaborati
 # Travel / Geography
 
 - I am originally from Eger, Hungary, and have since lived in Győr and Budapest.
-- I have visited approximately 10 countries, some of which I have forgotten, and many of which I would like to revisit.
+- I have visited approximately 8 countries, some of which I have forgotten, and many of which I would like to revisit.
 - In 2016, I visited: Austria.
 - In 2018, I traveled to Poland and Sardinia, Italy.
 - In 2019, I visited Mallorca, Spain and Rome, Italy.

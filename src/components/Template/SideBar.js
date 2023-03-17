@@ -30,7 +30,7 @@ const SideBar = () => (
         As a highly skilled and experienced Staff Software Engineer
         with a degree in Computer Engineering, I am passionate about utilizing my technical
         expertise to develop innovative solutions and drive impactful outcomes. Currently,
-        I am thriving in my role at <a href="https://www.loxon.eu/" target="_blank" rel="noreferrer">Loxon Solutions</a>, where I have the opportunity to tackle
+        I am thriving in my role at <a href="https://www.loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon Solutions</a>, where I have the opportunity to tackle
         complex challenges and contribute to cutting-edge software development projects.
         My commitment to excellence and dedication to staying up-to-date with the latest
         industry advancements has enabled me to achieve significant success in my career,

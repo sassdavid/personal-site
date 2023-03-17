@@ -8,7 +8,7 @@ const ContactIcons = () => (
   <ul className="icons">
     {data.map((s) => (
       <li key={s.label}>
-        <a href={s.link} target="_blank" rel="noreferrer">
+        <a href={s.link} target="_blank" rel="nofollow noopener noreferrer">
           <FontAwesomeIcon icon={s.icon} />
         </a>
       </li>

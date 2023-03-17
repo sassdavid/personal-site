@@ -6,7 +6,7 @@ const TableRow = ({
 }) => (
   <tr>
     <td width="70%">{label}</td>
-    <td>{link ? <a href={link} target="_blank" rel="noreferrer">{format(value)}</a> : format(value)}</td>
+    <td>{link ? <a href={link} target="_blank" rel="nofollow noopener noreferrer">{format(value)}</a> : format(value)}</td>
   </tr>
 );
 

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 const Tool = ({ data, last }) => (
   <li className="tool-container">
     {(data.link
-        && <a href={data.link} target="_blank" rel="noreferrer">
+        && <a href={data.link} target="_blank" rel="nofollow noopener noreferrer">
              <p className="tool-name">{data.toolName}</p>
            </a>)
       || (!data.link

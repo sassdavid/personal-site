@@ -4,6 +4,11 @@ import Markdown from 'markdown-to-jsx';
 
 import Main from '../layouts/Main';
 
+const LinkRenderer = ({ ...props }) => (
+  /* eslint-disable react/prop-types */
+  <Link {...props} to={props.href} target="_blank" rel="nofollow noopener noreferrer" />
+);
+
 const About = () => {
   const [markdown, setMarkdown] = useState('');
 
@@ -30,7 +35,13 @@ const About = () => {
             <p>(in about {count} words)</p>
           </div>
         </header>
-        <Markdown>
+        <Markdown options={{
+          overrides: {
+            a: {
+              component: LinkRenderer,
+            },
+          },
+        }}>
           {markdown}
         </Markdown>
       </article>

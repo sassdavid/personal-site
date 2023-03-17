@@ -10,13 +10,8 @@ const skills = [
     category: ['Languages'],
   },
   {
-    title: 'Java1.8',
+    title: 'Java',
     competency: 9,
-    category: ['Languages', 'JDK'],
-  },
-  {
-    title: 'Java17',
-    competency: 8,
     category: ['Languages', 'JDK'],
   },
   {

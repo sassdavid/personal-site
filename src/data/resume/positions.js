@@ -20,7 +20,7 @@ const positions = [
     company: 'Loxon Solutions Zrt.',
     position: 'Senior Software Engineer',
     link: 'https://www.loxon.eu/',
-    daterange: 'August 2020 - July 2022',
+    daterange: 'August 2021 - July 2022',
     points: [
       'Demonstrated proficiency in developing REST APIs for various projects.',
       'Skilled in utilizing Talend ETL tool to efficiently and effectively transfer large volumes of data between the bank\'s and our databases.',
@@ -35,7 +35,7 @@ const positions = [
     company: 'Loxon Solutions Zrt.',
     position: 'Software Engineer',
     link: 'https://www.loxon.eu/',
-    daterange: 'April 2018 - July 2020',
+    daterange: 'April 2019 - July 2021',
     points: [
       'Expanded my expertise in Oracle database and contributed to database design with hundreds of millions of rows of tables.',
       'Developed native SQL statements for application queries, stored procedures, functions, etc.',
@@ -49,7 +49,7 @@ const positions = [
     company: 'Loxon Solutions Zrt.',
     position: 'Software Developer',
     link: 'https://www.loxon.eu/',
-    daterange: 'June 2017 - March 2018',
+    daterange: 'June 2017 - March 2019',
     points: [
       'Secured my first job that allowed me to apply my university education in practice',
       'Contributed to implementation projects, where I helped deliver on-prem Collection Systems to multiple banks.',
