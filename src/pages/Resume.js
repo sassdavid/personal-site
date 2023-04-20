@@ -3,21 +3,21 @@ import { Link } from 'react-router-dom';
 import Main from '../layouts/Main';
 import Education from '../components/Resume/Education';
 import Experience from '../components/Resume/Experience';
-import Tools from '../components/Resume/Tools';
+import Skills from '../components/Resume/Skills';
 import References from '../components/Resume/References';
+import Tools from '../components/Resume/Tools';
 import tools from '../data/resume/tools';
 import degrees from '../data/resume/degrees';
-import positions from '../data/resume/positions';
+import work from '../data/resume/work';
 import { categories, skills } from '../data/resume/skills';
-import Skills from '../components/Resume/Skills';
 
-const sections = [
-  'Experience',
-  'Education',
-  'Skills',
-  'Tools',
-  'References',
-];
+const sections = {
+  Experience: () => <Experience data={work} />,
+  Education: () => <Education data={degrees} />,
+  Skills: () => <Skills skills={skills} categories={categories} />,
+  Tools: () => <Tools data={tools} />,
+  References: () => <References />,
+};
 
 const Resume = () => (
   <Main title="Resume"
@@ -27,18 +27,16 @@ const Resume = () => (
         <div className="title">
           <h2><Link to="/resume">Resume</Link></h2>
           <div className="link-container">
-            {sections.map((sec) => (
+            {Object.keys(sections).map((sec) => (
               <h4 key={sec}>
                 <a href={`#${sec.toLowerCase()}`}>{sec}</a>
               </h4>))}
           </div>
         </div>
       </header>
-      <Experience data={positions} />
-      <Education data={degrees} />
-      <Skills skills={skills} categories={categories} />
-      <Tools data={tools} />
-      <References />
+      {Object.entries(sections).map(([name, Section]) => (
+        <Section key={name} />
+      ))}
     </article>
   </Main>
 );

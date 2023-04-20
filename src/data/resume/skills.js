@@ -100,6 +100,11 @@ const skills = [
     category: ['AWS', 'Tools'],
   },
   {
+    title: 'Terragrunt',
+    competency: 5,
+    category: ['AWS', 'Tools'],
+  },
+  {
     title: 'CloudFormation',
     competency: 5,
     category: ['AWS', 'Tools'],
@@ -137,12 +142,10 @@ const colors = [
 ];
 
 const categories = [
-  ...new Set(skills.reduce((acc, { category }) => acc.concat(category), [])),
-]
-  .sort()
-  .map((category, index) => ({
-    name: category,
-    color: colors[index],
-  }));
+  ...new Set(skills.flatMap(({ category }) => category)),
+].sort().map((category, index) => ({
+  name: category,
+  color: colors[index],
+}));
 
 export { categories, skills };

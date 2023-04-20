@@ -10,7 +10,7 @@ const degrees = [
     school: 'Wigner Jenő Műszaki, Informatikai Technikum, Szakképző Iskola, Gimnázium és Kollégium',
     degree: 'High-school graduation',
     link: 'https://wignerkozepiskola.hu/',
-    year: 2008,
+    year: 2012,
   },
 ];
 

@@ -1,10 +1,23 @@
-const positions = [
+/**
+ * @typedef {Object} Position
+ * Conforms to https://jsonresume.org/schema/
+ *
+ * @property {string} name - Name of the company
+ * @property {string} position - Position title
+ * @property {string} url - Company website
+ * @property {string} startDate - Start date of the position in YYYY-MM-DD format
+ * @property {string|undefined} endDate - End date of the position in YYYY-MM-DD format.
+ * If undefined, the position is still active.
+ * @property {string|undefined} summary - html/markdown summary of the position
+ * @property {string[]} highlights - plain text highlights of the position (bulleted list)
+ */
+const work = [
   {
-    company: 'Loxon Solutions Zrt.',
+    name: 'Loxon Solutions Zrt.',
     position: 'Staff Software Engineer',
-    link: 'https://www.loxon.eu/',
-    daterange: 'August 2022 - Present',
-    points: [
+    url: 'https://www.loxon.eu/',
+    startDate: '2022-08-01',
+    highlights: [
       'Contributed to the design of the AWS architecture for our system.',
       'Utilized various AWS services such as VPC, EC2, EKS, S3, Lambda, IAM, EFS, RDS, MSK, Redshift, DynamoDB, QuickSight, Route 53, Secret/System Manager, Kinesis, and EventBridge.',
       'Worked extensively with NoSQL databases.',
@@ -17,11 +30,12 @@ const positions = [
     ],
   },
   {
-    company: 'Loxon Solutions Zrt.',
+    name: 'Loxon Solutions Zrt.',
     position: 'Senior Software Engineer',
-    link: 'https://www.loxon.eu/',
-    daterange: 'August 2021 - July 2022',
-    points: [
+    url: 'https://www.loxon.eu/',
+    startDate: '2021-08-01',
+    endDate: '2022-07-31',
+    highlights: [
       'Demonstrated proficiency in developing REST APIs for various projects.',
       'Skilled in utilizing Talend ETL tool to efficiently and effectively transfer large volumes of data between the bank\'s and our databases.',
       'Played a key role in the technical development of the initial project for ING Spain as a developer.',
@@ -32,11 +46,12 @@ const positions = [
     ],
   },
   {
-    company: 'Loxon Solutions Zrt.',
+    name: 'Loxon Solutions Zrt.',
     position: 'Software Engineer',
-    link: 'https://www.loxon.eu/',
-    daterange: 'April 2019 - July 2021',
-    points: [
+    url: 'https://www.loxon.eu/',
+    startDate: '2019-04-01',
+    endDate: '2021-07-31',
+    highlights: [
       'Expanded my expertise in Oracle database and contributed to database design with hundreds of millions of rows of tables.',
       'Developed native SQL statements for application queries, stored procedures, functions, etc.',
       'Applied advanced indexing and various database optimization techniques.',
@@ -46,11 +61,12 @@ const positions = [
     ],
   },
   {
-    company: 'Loxon Solutions Zrt.',
+    name: 'Loxon Solutions Zrt.',
     position: 'Software Developer',
-    link: 'https://www.loxon.eu/',
-    daterange: 'June 2017 - March 2019',
-    points: [
+    url: 'https://www.loxon.eu/',
+    startDate: '2017-06-01',
+    endDate: '2019-03-31',
+    highlights: [
       'Secured my first job that allowed me to apply my university education in practice',
       'Contributed to implementation projects, where I helped deliver on-prem Collection Systems to multiple banks.',
       'Worked with Java EE technology for both frontend (using PrimeFaces) and backend development.',
@@ -60,11 +76,12 @@ const positions = [
     ],
   },
   {
-    company: 'MELECS EWS GmbH',
+    name: 'MELECS EWS GmbH',
     position: 'Intern',
-    link: 'https://melecs.com/about-us/',
-    daterange: 'May 2016 – September 2016',
-    points: [
+    url: 'https://melecs.com/about-us/',
+    startDate: '2016-05-01',
+    endDate: '2016-08-31',
+    highlights: [
       'Developed a monitoring software for a production line that assembles SMT components',
       'Extracted data from a special database and integrated it into the monitoring application',
       'Wrote the application in C#.',
@@ -73,4 +90,4 @@ const positions = [
   },
 ];
 
-export default positions;
+export default work;
