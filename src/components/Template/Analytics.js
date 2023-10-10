@@ -5,7 +5,9 @@ import ReactGA from 'react-ga4';
 const { REACT_APP_ENVIRONMENT, REACT_APP_GA_MEASUREMENT_ID } = process.env;
 
 if (REACT_APP_ENVIRONMENT === 'production') {
-  ReactGA.initialize(REACT_APP_GA_MEASUREMENT_ID);
+  ReactGA.initialize([
+    { trackingId: REACT_APP_GA_MEASUREMENT_ID },
+  ]);
 }
 
 const Analytics = () => {

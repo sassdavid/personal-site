@@ -44,7 +44,7 @@ jobs:
         env:
           NODE_ENV: production
           REACT_APP_ENVIRONMENT: production
-          REACT_APP_GA_MEASUREMENT_ID: G-P3P3E4MCWM
+          REACT_APP_GA_MEASUREMENT_ID: G-EN7CQM063Y
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
