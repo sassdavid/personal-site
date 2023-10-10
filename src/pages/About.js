@@ -26,8 +26,10 @@ const About = () => {
     .filter((s) => s.length).length;
 
   return (
-    <Main title="About"
-          description="Learn about David Sass">
+    <Main
+      title="About"
+      description="Learn about David Sass"
+    >
       <article className="post markdown" id="about">
         <header>
           <div className="title">
@@ -41,7 +43,8 @@ const About = () => {
               component: LinkRenderer,
             },
           },
-        }}>
+        }}
+        >
           {markdown}
         </Markdown>
       </article>

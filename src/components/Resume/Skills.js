@@ -39,17 +39,21 @@ const Skills = ({ skills, categories }) => {
 
     return skills.sort(comparator).filter((skill) => (actCat === 'All' || skill.category.includes(actCat)))
       .map((skill) => (
-        <SkillBar categories={categories}
-                  data={skill}
-                  key={skill.title} />
+        <SkillBar
+          categories={categories}
+          data={skill}
+          key={skill.title}
+        />
       ));
   };
 
   const getButtons = () => Object.keys(buttons).map((key) => (
-    <CategoryButton label={key}
-                    key={key}
-                    active={buttons}
-                    handleClick={handleChildClick} />
+    <CategoryButton
+      label={key}
+      key={key}
+      active={buttons}
+      handleClick={handleChildClick}
+    />
   ));
 
   return (

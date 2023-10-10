@@ -10,9 +10,11 @@ const getRows = (tools) => tools.sort((a, b) => {
   else if (a.link < b.link) ret = -1;
   return ret;
 }).map((tool, idx) => (
-  <Tool data={tool}
-        key={tool.toolName}
-        last={idx === tools.length - 1} />
+  <Tool
+    data={tool}
+    key={tool.toolName}
+    last={idx === tools.length - 1}
+  />
 ));
 
 const Tools = ({ data }) => (

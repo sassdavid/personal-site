@@ -22,7 +22,8 @@ const Job = ({
             },
           },
         },
-      }}>
+      }}
+      >
         {summary}
       </Markdown>
     ) : null}

@@ -5,8 +5,10 @@ import Personal from '../components/Stats/Personal';
 import Site from '../components/Stats/Site';
 
 const Stats = () => (
-  <Main title="Stats"
-        description="Some statistics about David Sass and davidsass.eu">
+  <Main
+    title="Stats"
+    description="Some statistics about David Sass and davidsass.eu"
+  >
     <article className="post" id="stats">
       <header>
         <div className="title">

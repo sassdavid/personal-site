@@ -5,8 +5,10 @@ import Main from '../layouts/Main';
 import ContactIcons from '../components/Contact/ContactIcons';
 
 const Contact = () => (
-  <Main title="Contact"
-        description="Contact David Sass via email @ david.sass14@gmail.com">
+  <Main
+    title="Contact"
+    description="Contact David Sass via email @ david.sass14@gmail.com"
+  >
     <article className="post" id="contact">
       <header>
         <div className="title">

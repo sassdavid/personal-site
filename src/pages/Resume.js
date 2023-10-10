@@ -20,8 +20,10 @@ const sections = {
 };
 
 const Resume = () => (
-  <Main title="Resume"
-        description="David Sass's Resume. Currently at Loxon.">
+  <Main
+    title="Resume"
+    description="David Sass's Resume. Currently at Loxon."
+  >
     <article className="post" id="resume">
       <header>
         <div className="title">

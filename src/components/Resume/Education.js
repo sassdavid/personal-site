@@ -10,8 +10,10 @@ const Education = ({ data }) => (
       <h3>Education</h3>
     </div>
     {data.map((degree) => (
-      <Degree data={degree}
-              key={degree.school} />
+      <Degree
+        data={degree}
+        key={degree.school}
+      />
     ))}
   </div>
 );
