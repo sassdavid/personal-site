@@ -31,13 +31,13 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [16, 18, 20]
         os: [ubuntu-20.04, macos-latest]
         exclude:
           - os: macos-latest
-            node-version: 16.x
+            node-version: 16
           - os: macos-latest
-            node-version: 18.x
+            node-version: 18
     steps:
       - name: Checkout from GitHub repository
         uses: actions/checkout@v4
