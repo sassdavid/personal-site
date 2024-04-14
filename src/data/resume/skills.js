@@ -21,7 +21,7 @@ const skills = [
   },
   {
     title: 'Bash',
-    competency: 6,
+    competency: 7,
     category: ['Languages'],
   },
   {
@@ -61,7 +61,7 @@ const skills = [
   },
   {
     title: 'Spring Boot',
-    competency: 8,
+    competency: 7,
     category: ['Framework', 'Spring'],
   },
   {
@@ -81,27 +81,27 @@ const skills = [
   },
   {
     title: 'Redshift',
-    competency: 7,
+    competency: 6,
     category: ['Databases', 'SQL', 'AWS'],
   },
   {
     title: 'MongoDB',
-    competency: 5,
+    competency: 7,
     category: ['Databases', 'NoSQL'],
   },
   {
     title: 'Amazon Web Services',
-    competency: 7,
+    competency: 8,
     category: ['AWS', 'Tools'],
   },
   {
     title: 'Terraform',
-    competency: 7,
+    competency: 8,
     category: ['AWS', 'Tools'],
   },
   {
     title: 'Terragrunt',
-    competency: 5,
+    competency: 7,
     category: ['AWS', 'Tools'],
   },
   {
@@ -116,12 +116,12 @@ const skills = [
   },
   {
     title: 'Kubernetes',
-    competency: 7,
+    competency: 8,
     category: ['Tools'],
   },
   {
     title: 'Helm',
-    competency: 6,
+    competency: 8,
     category: ['Tools'],
   },
 ].map((skill) => ({ ...skill, category: skill.category.sort() }));
