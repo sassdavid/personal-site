@@ -18,25 +18,29 @@ more about me, my work, or have a project that you think I could help with, plea
 
 # Currently
 
-During my time at [Loxon](https://www.loxon.eu/) Solutions as a Staff Software Engineer, I have had the opportunity to learn and develop a wide range of skills that have
+During my time at [Loxon](https://www.loxon.eu/) Solutions as a Staff Software Engineer, I have had the opportunity to learn and develop a wide range
+of skills that have
 contributed to my professional growth. One of the most important skills I've acquired is the ability to shape the culture of a team and foster a
 positive work environment, which has resulted in higher productivity, increased collaboration, and better results.
 
 <br>
 
-Another crucial aspect of my work at [Loxon](https://www.loxon.eu/) has been developing strong relationships with clients. Through regular communication and a customer-centric
+Another crucial aspect of my work at [Loxon](https://www.loxon.eu/) has been developing strong relationships with clients. Through regular
+communication and a customer-centric
 approach, I have been able to understand their needs and requirements, and ensure that our software products and solutions meet or exceed their
 expectations.
 
 <br>
 
-Furthermore, my experience at [Loxon](https://www.loxon.eu/) has allowed me to gain hands-on experience in implementing enterprise-grade products, working with cutting-edge
+Furthermore, my experience at [Loxon](https://www.loxon.eu/) has allowed me to gain hands-on experience in implementing enterprise-grade products,
+working with cutting-edge
 technologies, and using agile methodologies to deliver software solutions that meet complex business needs. These experiences have helped me to
 develop a well-rounded skillset and the ability to work effectively in dynamic and challenging environments.
 
 <br>
 
-Overall, my time at [Loxon](https://www.loxon.eu/) has been instrumental in shaping my professional development and has given me a solid foundation for the next steps in my
+Overall, my time at [Loxon](https://www.loxon.eu/) has been instrumental in shaping my professional development and has given me a solid foundation
+for the next steps in my
 career. If you have any questions or would like to discuss potential collaboration, please do not hesitate to reach out.
 
 # I like
@@ -58,7 +62,8 @@ career. If you have any questions or would like to discuss potential collaborati
 - In 2020, I traveled to Milan, Italy.
 - In 2021, I visited Lefkada, Greece and Croatia.
 - In 2022, I traveled to Scotland, UK, Tunisia, and Croatia.
-- In 2023, I am hoping to travel again.
+- In 2023, I traveled to Pisa, Italy, High Tatras, Stuttgart, Germany and Strasbourg, France.
+- In 2024, I am hoping to travel again.
 
 # Fun facts
 
