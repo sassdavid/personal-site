@@ -37,6 +37,16 @@ jobs:
         run: npm ci
       - name: Build With Next.js
         run: npx --no-install next build
+      - name: Upload Static Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: static_artifacts
+          path: |
+            ./out
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 9
+          overwrite: true
   deploy:
     environment:
       name: github-pages
@@ -45,6 +55,10 @@ jobs:
     timeout-minutes: 10
     needs: build
     steps:
+      - name: Download Static Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: static_artifacts
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload GitHub Pages Artifact
