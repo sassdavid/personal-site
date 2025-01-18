@@ -1,0 +1,20 @@
+@use '../libs/functions' as functions;
+
+section,
+article {
+  &.special {
+    text-align: center;
+  }
+}
+
+header {
+  p {
+    font-family: functions.font(family-heading);
+    font-size: 0.7em;
+    font-weight: functions.font(weight-heading);
+    letter-spacing: functions.font(kerning-heading);
+    line-height: 2.5;
+    margin-top: -1em;
+    text-transform: uppercase;
+  }
+}

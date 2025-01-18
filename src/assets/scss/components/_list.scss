@@ -1,0 +1,276 @@
+@use '../libs/mixins' as mixins;
+@use '../libs/skel' as skel;
+@use '../libs/functions' as functions;
+
+ol {
+  list-style: decimal;
+  margin: 0 0 functions.size(element-margin) 0;
+  padding-left: 1.25em;
+
+  li {
+    padding-left: 0.25em;
+  }
+}
+
+ul {
+  list-style: disc;
+  margin: 0 0 functions.size(element-margin) 0;
+  padding-left: 1em;
+
+  li {
+    padding-left: 0.5em;
+  }
+
+  &.alt {
+    list-style: none;
+    padding-left: 0;
+
+    li {
+      border-top: solid 1px functions.palette(border);
+      padding: 0.5em 0;
+
+      &:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+    }
+  }
+
+  &.icons {
+    cursor: default;
+    list-style: none;
+    padding-left: 0;
+
+    li {
+      display: inline-block;
+      padding: 0 1em 0 0;
+
+      &:last-child {
+        padding-right: 0;
+      }
+
+      > * {
+        @include mixins.icon;
+        border: 0;
+
+        .label {
+          display: none;
+        }
+      }
+    }
+  }
+
+  &.actions {
+    cursor: default;
+    list-style: none;
+    padding-left: 0;
+
+    li {
+      display: inline-block;
+      padding: 0 (functions.size(element-margin) * 0.75) 0 0;
+      vertical-align: middle;
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+
+    &.pagination {
+      .next {
+        @include mixins.icon('', after);
+
+        &:after {
+          content: '\f054';
+        }
+      }
+
+      .previous {
+        @include mixins.icon('', before);
+
+        &:before {
+          content: '\f053';
+        }
+      }
+
+      @include skel.breakpoint(large) {
+        text-align: center;
+
+        .next,
+        .previous {
+          min-width: 20em;
+        }
+      }
+
+      @include skel.breakpoint(small) {
+        .next,
+        .previous {
+          min-width: 18em;
+        }
+      }
+    }
+
+    &.small {
+      li {
+        padding: 0 (functions.size(element-margin) * 0.5) 0 0;
+      }
+    }
+
+    &.vertical {
+      li {
+        display: block;
+        padding: (functions.size(element-margin) * 0.75) 0 0 0;
+
+        &:first-child {
+          padding-top: 0;
+        }
+
+        > * {
+          margin-bottom: 0;
+        }
+      }
+
+      &.small {
+        li {
+          padding: (functions.size(element-margin) * 0.5) 0 0 0;
+
+          &:first-child {
+            padding-top: 0;
+          }
+        }
+      }
+    }
+
+    &.fit {
+      display: table;
+      margin-left: (functions.size(element-margin) * -0.5);
+      padding: 0;
+      table-layout: fixed;
+      width: calc(100% + #{(functions.size(element-margin) * 0.5)});
+
+      li {
+        display: table-cell;
+        padding: 0 0 0 (functions.size(element-margin) * 0.5);
+
+        > * {
+          margin-bottom: 0;
+        }
+      }
+
+      &.small {
+        margin-left: (functions.size(element-margin) * -0.25);
+        width: calc(100% + #{(functions.size(element-margin) * 0.25)});
+
+        li {
+          padding: 0 0 0 (functions.size(element-margin) * 0.25);
+        }
+      }
+    }
+
+    @include skel.breakpoint(xsmall) {
+      margin: 0 0 functions.size(element-margin) 0;
+
+      li {
+        padding: (functions.size(element-margin) * 0.5) 0 0 0;
+        display: block;
+        text-align: center;
+        width: 100%;
+
+        &:first-child {
+          padding-top: 0;
+        }
+
+        > * {
+          width: 100%;
+          margin: 0 !important;
+
+          &.icon {
+            &:before {
+            }
+          }
+        }
+      }
+
+      &.small {
+        li {
+          padding: (functions.size(element-margin) * 0.25) 0 0 0;
+
+          &:first-child {
+            padding-top: 0;
+          }
+        }
+      }
+    }
+  }
+
+  &.posts {
+    list-style: none;
+    padding: 0;
+
+    li {
+      border-top: dotted 1px functions.palette(border);
+      margin: (functions.size(element-margin) * 0.75) 0 0 0;
+      padding: (functions.size(element-margin) * 0.75) 0 0 0;
+
+      &:first-child {
+        border-top: 0;
+        margin-top: 0;
+        padding-top: 0;
+      }
+    }
+
+    article {
+      @include skel.vendor('display', 'flex');
+      @include skel.vendor('align-items', 'flex-start');
+      @include skel.vendor('flex-direction', 'row-reverse');
+
+      .image {
+        display: block;
+        margin-right: 1.5em;
+        min-width: 4em;
+        width: 4em;
+
+        img {
+          width: 100%;
+        }
+      }
+
+      header {
+        @include skel.vendor('flex-grow', '1');
+        -ms-flex: 1;
+
+        h3 {
+          font-size: 0.7em;
+          margin-top: 0.125em;
+        }
+
+        .published {
+          display: block;
+          font-family: functions.font(family-heading);
+          font-size: 0.6em;
+          font-weight: functions.font(weight-heading);
+          letter-spacing: functions.font(kerning-heading);
+          margin: -0.625em 0 (functions.size(element-margin) * 0.85) 0;
+          text-transform: uppercase;
+        }
+
+        > :last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+dl {
+  margin: 0 0 functions.size(element-margin) 0;
+
+  dt {
+    display: block;
+    font-weight: functions.font(weight-bold);
+    margin: 0 0 (functions.size(element-margin) * 0.5) 0;
+  }
+
+  dd {
+    margin-left: functions.size(element-margin);
+  }
+}

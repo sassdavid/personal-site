@@ -1,0 +1,67 @@
+@use '../libs/skel' as skel;
+@use '../libs/functions' as functions;
+
+#intro {
+  .logo {
+    border-bottom: 0;
+    display: inline-block;
+    margin: 0 0 (functions.size(element-margin) * 0.5) 0;
+    overflow: hidden;
+    position: relative;
+
+    img {
+      width: 10em;
+      border-radius: 50%;
+      display: block;
+    }
+  }
+
+  header {
+    h2 {
+      font-size: 1.5em;
+      font-weight: functions.font(weight-heading-extrabold);
+    }
+
+    p {
+      font-size: 0.8em;
+    }
+  }
+
+  @include skel.breakpoint(large) {
+    margin: 0 0 functions.size(section-spacing) 0;
+    text-align: center;
+
+    header {
+      h2 {
+        font-size: 2em;
+      }
+
+      p {
+        font-size: 0.7em;
+      }
+    }
+  }
+
+  @include skel.breakpoint(small) {
+    margin: 0 0 functions.size(section-spacing-small) 0;
+    padding: 1.25em 0;
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+
+    .logo {
+      margin: 0 0 (functions.size(element-margin) * 0.25) 0;
+    }
+
+    header {
+      h2 {
+        font-size: 1.25em;
+      }
+
+      > :last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

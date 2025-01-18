@@ -1,0 +1,35 @@
+@use '../libs/skel' as skel;
+@use '../libs/functions' as functions;
+
+.author {
+  @include skel.vendor('display', 'flex');
+  @include skel.vendor('flex-direction', 'row');
+  @include skel.vendor('align-items', 'center');
+  @include skel.vendor('justify-content', 'flex-end');
+  border-bottom: 0;
+  font-family: functions.font(family-heading);
+  font-size: 0.6em;
+  font-weight: functions.font(weight-heading);
+  letter-spacing: functions.font(kerning-heading);
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  .name {
+    @include skel.vendor('transition', 'border-bottom-color #{functions.duration(transition)} ease');
+    border-bottom: dotted 1px functions.palette(border-alt);
+    display: block;
+    margin: 0 1.5em 0 0;
+  }
+
+  img {
+    border-radius: 100%;
+    display: block;
+    width: 4em;
+  }
+
+  &:hover {
+    .name {
+      border-bottom-color: transparent;
+    }
+  }
+}

@@ -1,0 +1,9 @@
+@use 'themes' as themes;
+
+.dark {
+  @include themes.styles('darkTheme');
+}
+
+.light {
+  @include themes.styles('lightTheme');
+}

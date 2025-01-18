@@ -1,0 +1,20 @@
+@use '../libs/functions' as functions;
+
+#footer {
+  .icons {
+    color: functions.palette(fg-light);
+  }
+
+  .copyright {
+    color: functions.palette(fg-light);
+    font-family: functions.font(family-heading);
+    font-size: 0.5em;
+    font-weight: functions.font(weight-heading);
+    letter-spacing: functions.font(kerning-heading);
+    text-transform: uppercase;
+  }
+
+  body.single & {
+    text-align: center;
+  }
+}

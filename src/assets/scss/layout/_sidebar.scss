@@ -1,0 +1,28 @@
+@use '../libs/skel' as skel;
+@use '../libs/functions' as functions;
+
+#sidebar {
+  margin-right: functions.size(section-spacing);
+  min-width: 22em;
+  width: 22em;
+
+  > * {
+    border-top: solid 1px functions.palette(border);
+    margin: functions.size(section-spacing) 0 0 0;
+    padding: functions.size(section-spacing) 0 0 0;
+  }
+
+  > :first-child {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  @include skel.breakpoint(large) {
+    border-top: solid 1px functions.palette(border);
+    margin: functions.size(section-spacing) 0 0 0;
+    min-width: 0;
+    padding: functions.size(section-spacing) 0 0 0;
+    width: 100%;
+  }
+}

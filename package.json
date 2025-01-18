@@ -1,75 +1,38 @@
 {
   "name": "personal-site",
+  "private": true,
+  "description": "David Sass's personal website.",
   "version": "1.0.0",
-  "homepage": "https://davidsass.eu/",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/sassdavid/personal-site.git"
-  },
-  "engines": {
-    "node": ">=16.x"
-  },
+  "author": "David Sass <david.sass14@gmail.com>",
   "scripts": {
-    "analyze": "npm run build && source-map-explorer build/static/js/*.chunk.js",
-    "build": "rimraf ./build && react-scripts build",
-    "lint": "eslint \"**/*.js\"",
-    "predeploy": "npm run build && react-snap",
-    "start": "react-scripts start",
-    "test": "npx jest"
+    "build": "next build",
+    "dev": "next dev",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
+    "start": "next start"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.5.2",
-    "@fortawesome/free-brands-svg-icons": "^6.5.2",
-    "@fortawesome/free-regular-svg-icons": "^6.5.2",
-    "@fortawesome/react-fontawesome": "0.2.0",
-    "dayjs": "^1.11.10",
-    "markdown-to-jsx": "^7.4.7",
-    "prop-types": "^15.8.1",
-    "react": "^18.2.0",
-    "react-burger-menu": "^3.0.9",
-    "react-dom": "^18.2.0",
-    "react-ga4": "^2.1.0",
-    "react-helmet-async": "^2.0.4",
-    "react-router-dom": "^6.22.3",
-    "react-scripts": "^5.0.1",
-    "styled-components": "^6.1.8",
-    "use-dark-mode": "^2.3.1"
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@mdx-js/loader": "^3.1.0",
+    "@mdx-js/react": "^3.1.0",
+    "@next/mdx": "^15.1.5",
+    "@types/mdx": "^2.0.13",
+    "dayjs": "^1.11.13",
+    "next": "^15.1.5",
+    "next-themes": "^0.4.4",
+    "react": "^19.0.0",
+    "react-burger-menu": "^3.1.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.24.1",
-    "@babel/preset-env": "^7.24.4",
-    "@babel/preset-react": "^7.24.1",
-    "@testing-library/jest-dom": "^6.4.2",
-    "@testing-library/react": "^15.0.2",
-    "@testing-library/user-event": "^14.5.2",
-    "babel-jest": "^29.7.0",
-    "eslint": "^8.57.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsx-a11y": "6.8.0",
-    "eslint-plugin-react": "^7.34.1",
-    "jest-environment-jsdom": "^29.7.0",
-    "react-snap": "^1.23.0",
-    "rimraf": "^5.0.5",
-    "sass": "^1.75.0",
-    "source-map-explorer": "^2.5.3"
-  },
-  "overrides": {
-    "use-dark-mode": {
-      "react": "^17.0.0 || ^18.0.0"
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-burger-menu": "^2.8.7",
+    "@types/react-dom": "^19.0.3",
+    "prettier": "^3.4.2",
+    "sass": "^1.83.4",
+    "typescript": "^5.7.3"
   }
 }

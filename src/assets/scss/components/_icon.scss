@@ -1,0 +1,20 @@
+@use '../libs/mixins' as mixins;
+
+.icon {
+  @include mixins.icon;
+  border-bottom: none;
+  position: relative;
+
+  > .label {
+    display: none;
+  }
+
+  &.prefix {
+  }
+
+  &.suffix {
+    &:before {
+      float: right;
+    }
+  }
+}

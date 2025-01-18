@@ -1,0 +1,183 @@
+@use '../libs/skel' as skel;
+@use '../libs/functions' as functions;
+
+body,
+input,
+select,
+textarea {
+  color: functions.palette(fg);
+  font-family: functions.font(family);
+  font-size: 14pt;
+  font-weight: functions.font(weight);
+  line-height: 1.75;
+
+  @include skel.breakpoint(xlarge) {
+    font-size: 12pt;
+  }
+
+  @include skel.breakpoint(large) {
+    font-size: 12pt;
+  }
+
+  @include skel.breakpoint(medium) {
+    font-size: 12pt;
+  }
+
+  @include skel.breakpoint(small) {
+    font-size: 12pt;
+  }
+
+  @include skel.breakpoint(xsmall) {
+    font-size: 12pt;
+  }
+}
+
+a {
+  @include skel.vendor('transition', ('color #{functions.duration(transition)} ease', 'border-bottom-color #{functions.duration(transition)} ease'));
+  border-bottom: dotted 1px functions.palette(border-alt);
+  color: inherit;
+  text-decoration: none;
+
+  &:before {
+    @include skel.vendor('transition', ('color #{functions.duration(transition)} ease'));
+  }
+
+  &:hover {
+    border-bottom-color: transparent;
+    color: functions.palette(accent) !important;
+
+    &:before {
+      color: functions.palette(accent) !important;
+    }
+  }
+}
+
+strong,
+b {
+  color: functions.palette(fg-bold);
+  font-weight: functions.font(weight-bold);
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+p {
+  margin: 0 0 functions.size(element-margin) 0;
+
+  &.secret {
+    font-size: 0.7em;
+    font-style: italic;
+    display: var(--displayInDark);
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: functions.font(family-heading);
+  font-weight: functions.font(weight-heading-bold);
+  letter-spacing: functions.font(kerning-heading);
+  line-height: 1.65;
+  margin: 0 0 (functions.size(element-margin) * 0.5) 0;
+  text-transform: uppercase;
+
+  a {
+    color: inherit;
+    border-bottom: 0;
+  }
+}
+
+h2 {
+  font-size: 1.1em;
+}
+
+h3 {
+  font-size: 0.9em;
+
+  &.icon {
+    display: inline-flex;
+    margin: 0;
+    margin-top: 0.1em;
+  }
+}
+
+h4 {
+  font-size: 0.7em;
+}
+
+h5 {
+  font-size: 0.7em;
+}
+
+h6 {
+  font-size: 0.7em;
+}
+
+sub {
+  font-size: 0.8em;
+  position: relative;
+  top: 0.5em;
+}
+
+sup {
+  font-size: 0.8em;
+  position: relative;
+  top: -0.5em;
+}
+
+blockquote {
+  border-left: solid 4px functions.palette(border);
+  font-style: italic;
+  margin: 0 0 #{functions.size(element-margin)} 0;
+  padding: calc(#{functions.size(element-margin)} / 4) 0 calc(#{functions.size(element-margin)} / 4) #{functions.size(element-margin)};
+}
+
+code {
+  background: functions.palette(border-bg);
+  border: solid 1px functions.palette(border);
+  font-family: functions.font(family-fixed);
+  font-size: 0.9em;
+  margin: 0 0.25em;
+  padding: 0.25em 0.65em;
+}
+
+pre {
+  -webkit-overflow-scrolling: touch;
+  font-family: functions.font(family-fixed);
+  font-size: 0.9em;
+  margin: 0 0 functions.size(element-margin) 0;
+
+  code {
+    display: block;
+    line-height: 1.75em;
+    padding: 1em 1.5em;
+    overflow-x: auto;
+  }
+}
+
+hr {
+  border: 0;
+  border-bottom: solid 1px functions.palette(border);
+  margin: functions.size(element-margin) 0;
+
+  &.major {
+    margin: (functions.size(element-margin) * 1.5) 0;
+  }
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-right {
+  text-align: right;
+}

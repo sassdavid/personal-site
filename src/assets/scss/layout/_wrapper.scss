@@ -1,0 +1,33 @@
+@use '../libs/skel' as skel;
+@use '../libs/functions' as functions;
+
+#wrapper {
+  @include skel.vendor('display', 'flex');
+  @include skel.vendor('flex-direction', 'row-reverse');
+  @include skel.vendor('transition', 'opacity #{functions.duration(menu)} ease');
+  margin: 0 auto;
+  max-width: 100%;
+  opacity: 1;
+  padding: (functions.size(section-spacing) * 1.5);
+  width: 90em;
+
+  body.is-menu-visible & {
+    opacity: 0.15;
+  }
+
+  @include skel.breakpoint(xlarge) {
+    padding: functions.size(section-spacing);
+  }
+
+  @include skel.breakpoint(large) {
+    display: block;
+  }
+
+  @include skel.breakpoint(small) {
+    padding: functions.size(section-spacing-small);
+  }
+
+  body.single & {
+    display: block;
+  }
+}
