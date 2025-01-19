@@ -25,10 +25,6 @@ jobs:
         uses: jdx/mise-action@v2
         with:
           experimental: true
-      - run: mise --version
-      - run: mise set SD_GH_TEST="123SDTEST"
-      - run: echo $SD_GH_TEST
-      - run: mise set
       - name: Restore Cache
         uses: actions/cache@v4
         with:
@@ -37,10 +33,8 @@ jobs:
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      - name: Install Dependencies
-        run: npm ci
-      - name: Build With Next.js
-        run: npx --no-install next build
+      - name: Build Project With mise Task
+        run: mise r b
       - name: Upload Static Artifacts
         uses: actions/upload-artifact@v4
         with:
