@@ -25,6 +25,10 @@ jobs:
         uses: jdx/mise-action@v2
         with:
           experimental: true
+      - run: mise --version
+      - run: mise set SD_GH_TEST="123SDTEST"
+      - run: echo $SD_GH_TEST
+      - run: mise set
       - name: Restore Cache
         uses: actions/cache@v4
         with:
