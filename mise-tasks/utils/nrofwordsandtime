@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#MISE description="Gets the number of words and read time in all MDX files in the project"
+
+set -euxo pipefail
+
+fd -Iitf -e mdx -E node_modules | while read -r file; do
+  word_count=$(wc -w < "$file")
+  minutes=$(((word_count + 199) / 200))
+  base_name=$(basename "$file" .mdx)
+  var_name="MDX_DETAILS_${base_name^^}"
+  value="${word_count} words (${minutes} min read)"
+  mise set "$var_name=$value"
+  printf "%s=%s\n" "$var_name" "$value"
+done

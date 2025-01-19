@@ -18,6 +18,7 @@
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.1.5",
+    "@next/third-parties": "^15.1.5",
     "@types/mdx": "^2.0.13",
     "dayjs": "^1.11.13",
     "next": "^15.1.5",

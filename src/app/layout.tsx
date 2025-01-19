@@ -1,7 +1,9 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { ThemeProvider } from 'next-themes';
 import { siteConfig } from '@/app/page';
+import { config } from '@/lib/config';
 import '@/assets/scss/main.scss';
 
 export const metadata: Metadata = {
@@ -46,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </ThemeProvider>
       </body>
+      {config.gaId && <GoogleAnalytics gaId={config.gaId} />}
     </html>
   );
 }

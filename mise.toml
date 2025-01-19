@@ -2,18 +2,24 @@
 fd = "latest"
 node = "22"
 
-[tasks.nroflines]
-description = 'Gets the number of lines of TypeScript code in the project'
-run = "fd -Iitf -e ts -e tsx -E node_modules -x cat | wc -l"
+[env]
+NEXT_PUBLIC_GOOGLE_ANALYTICS = ""
+NROFLINES = "1462"
+MDX_DETAILS_ABOUT = "781 words (4 min read)"
 
-[tasks.nrofwords]
-description = 'Gets the number of words in all MDX files in the project'
-run = "fd -Iitf -e mdx -E node_modules -x wc -w"
+[tasks.install]
+alias = "i"
+description = "Install npm dependencies"
+depends = ["utils:nroflines", "utils:nrofwordsandtime"]
+run = "npm ci"
 
-[tasks.nrofwordsandtime]
-description = 'Gets the number of words and read time in all MDX files in the project'
-run = """
-#!/usr/bin/env bash
+[tasks.build]
+alias = "b"
+description = "Build the project"
+depends = ["install"]
+run = "npm run build"
 
-fd -Iitf -e mdx -E node_modules -x wc -w | awk '{minutes = ($1 + 199) / 200; printf "%d words (%d minutes) - %s\\n", $1, int(minutes), $2}'
-"""
+[tasks.format]
+alias = "f"
+description = "Format project files"
+run = "npm run format"

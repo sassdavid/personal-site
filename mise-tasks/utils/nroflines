@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#MISE description="Gets the number of lines of TypeScript code in the project"
+
+set -euxo pipefail
+
+nroflines=$(fd -Iitf -e ts -e tsx -E node_modules -x cat | wc -l)
+
+mise set NROFLINES="${nroflines}"
