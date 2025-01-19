@@ -27,6 +27,8 @@ jobs:
           experimental: true
       - name: Set Environment Variable with mise for Google Analytics
         run: mise set NEXT_PUBLIC_GOOGLE_ANALYTICS=${{ secrets.NEXT_PUBLIC_GOOGLE_ANALYTICS }}
+      - name: Install Dependencies With mise Task
+        run: mise r i
       - name: Build Project With mise Task
         run: mise r b
       - name: Upload Static Artifacts

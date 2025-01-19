@@ -16,8 +16,7 @@ run = "npm ci"
 [tasks.build]
 alias = "b"
 description = "Build the project"
-depends = ["install"]
-run = ["mise set", "npm run build"]
+run = ["npm run build"]
 
 [tasks.format]
 alias = "f"
