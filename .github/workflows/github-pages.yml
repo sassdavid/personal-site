@@ -33,6 +33,9 @@ jobs:
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Set Environment Variable with mise for Google Analytics
+        run: mise set NEXT_PUBLIC_GOOGLE_ANALYTICS=${{ secrets.NEXT_PUBLIC_GOOGLE_ANALYTICS }}
+      - run: mise set
       - name: Build Project With mise Task
         run: mise r b
       - name: Upload Static Artifacts
