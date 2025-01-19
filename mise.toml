@@ -1,2 +1,19 @@
 [tools]
+fd = "latest"
 node = "22"
+
+[tasks.nroflines]
+description = 'Gets the number of lines of TypeScript code in the project'
+run = "fd -Iitf -e ts -e tsx -E node_modules -x cat | wc -l"
+
+[tasks.nrofwords]
+description = 'Gets the number of words in all MDX files in the project'
+run = "fd -Iitf -e mdx -E node_modules -x wc -w"
+
+[tasks.nrofwordsandtime]
+description = 'Gets the number of words and read time in all MDX files in the project'
+run = """
+#!/usr/bin/env bash
+
+fd -Iitf -e mdx -E node_modules -x wc -w | awk '{minutes = ($1 + 199) / 200; printf "%d words (%d minutes) - %s\\n", $1, int(minutes), $2}'
+"""

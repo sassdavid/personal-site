@@ -21,9 +21,6 @@ const overrideComponents = {
   a: CustomLink,
 };
 
-// fd -Iitf -e mdx -E node_modules -x wc -w
-// fd -Iitf -e mdx -E node_modules -x sh -c \
-// 'wc -w {} | awk "{minutes = (\$1 + 199) / 200; printf \"%d words (%d minutes) - %s\n\", "\$1", int(minutes), "\$2"}"'
 const About = () => {
   return (
     <Main>

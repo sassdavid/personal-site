@@ -34,11 +34,9 @@ const gitHubStats: TableRowProps[] = [
     format: (x: any) => dayjs(x).format('MMMM DD HH:mm:ss, YYYY'),
   },
   {
-    // TODO update this with a pre-commit hook
-    // fd -Iitf -e ts -e tsx -E node_modules -x cat | wc -l
     tableKey: 'lines_of_code',
     label: 'Lines of Javascript powering this website',
-    value: '1452',
+    value: '1448',
     link: 'https://github.com/sassdavid/personal-site',
   },
 ];
