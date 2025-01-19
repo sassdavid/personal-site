@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Main from '@/components/main';
+import { config } from '@/lib/config';
 import AboutMardown from '@/data/about/about.mdx';
 
 export const metadata: Metadata = {
@@ -30,7 +31,7 @@ const About = () => {
             <h2>
               <Link href="/about">About Me</Link>
             </h2>
-            <p>(in about 781 words, 4 min read)</p>
+            {config.mdxDetailsAbout ? <p>(in about {config.mdxDetailsAbout})</p> : <p>(No data available)</p>}
           </div>
         </header>
         <AboutMardown components={overrideComponents} />

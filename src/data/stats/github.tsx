@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { TableRowProps } from '@/lib/types';
+import { config } from '@/lib/config';
 
 const gitHubStats: TableRowProps[] = [
   {
@@ -35,8 +36,8 @@ const gitHubStats: TableRowProps[] = [
   },
   {
     tableKey: 'lines_of_code',
-    label: 'Lines of Javascript powering this website',
-    value: '1448',
+    label: 'Lines of TypeScript powering this website',
+    value: config.nrOfLines,
     link: 'https://github.com/sassdavid/personal-site',
   },
 ];
