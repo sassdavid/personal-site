@@ -17,7 +17,9 @@ const Index = () => (
             <Link href="/">Hi! I&apos;m David</Link>
           </h2>
           <p>
-            As a developer, I&apos;m constantly tinkering with new tools and technologies to find better, more efficient ways to build great software.
+            I&apos;m constantly exploring innovative approaches and emerging technologies to improve system reliability, streamline processes, and
+            deliver scalable solutions. My focus is on creating efficient, automated workflows that drive both technical excellence and operational
+            success.
           </p>
         </div>
       </header>

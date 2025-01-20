@@ -33,14 +33,15 @@ const SideBar = () => {
       <section className="blurb">
         <h2>About</h2>
         <p>
-          As a highly skilled and experienced Staff Software Engineer with a degree in Computer Engineering, I am passionate about utilizing my
-          technical expertise to develop innovative solutions and drive impactful outcomes. Currently, I am thriving in my role at{' '}
+          As a highly skilled and experienced DevOps Engineer with a degree in Computer Engineering, I am passionate about leveraging my technical
+          expertise to design, optimize, and maintain robust infrastructure solutions that drive impactful outcomes. Currently, I am thriving in my
+          role at{' '}
           <a href="https://www.loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">
             Loxon
           </a>
-          , where I have the opportunity to tackle complex challenges and contribute to cutting-edge software development projects. My commitment to
-          excellence and dedication to staying up-to-date with the latest industry advancements has enabled me to achieve significant success in my
-          career, and I am excited to continue building on this momentum in future endeavors.
+          , where I tackle complex challenges and contribute to cutting-edge infrastructure and deployment projects. My commitment to excellence and
+          dedication to staying up-to-date with the latest industry advancements have enabled me to achieve significant success in my career, and I am
+          excited to continue building on this momentum in future endeavors.
         </p>
         <ul className="actions">
           <li>
