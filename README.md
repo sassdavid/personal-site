@@ -1,16 +1,72 @@
 # My Personal Website
 
-MIT licensed. If you're interested in adapting my site for your own, you can find detailed
-instructions [here](https://github.com/mldangelo/personal-site#readme). If you need support on any of my changes or additions, please reach out
-david.sass14@gmail.com.
+This repository was originally forked from [Michael D'Angelo's personal site](https://github.com/mldangelo/personal-site). Since then, I have made
+several updates and enhancements. I replaced the [create-react-app](https://github.com/facebook/create-react-app) setup
+with [Next.js](https://nextjs.org/), leveraging its features for server-side rendering and routing.
+
+I have aimed to maintain clean and simple code while taking full advantage of Next.js capabilities.
+
+For dark theme support, I integrated [next-themes](https://github.com/pacocoursey/next-themes).
+
+To standardize type handling, I consolidated redundant type definitions from various files, particularly in the resume section, into a
+single [src/lib/types.tsx](https://github.com/sassdavid/personal-site/blob/main/src/lib/types.tsx). This file serves as a centralized location for
+reusable type definitions throughout the project.
+
+Regarding SCSS sources, I adopted best practices for [Sass](https://sass-lang.com/). I resolved all deprecation warnings, which had accumulated over
+the years, ensuring the codebase is free from major issues. While the SCSS setup may not be fully cutting-edge, it is now clean and reliable. The
+migration process was handled using the official Sass [migrator](https://sass-lang.com/documentation/cli/migrator/).
+
+For managing the [Node.js](https://nodejs.org/en) version and other tools, I utilized [mise](https://mise.jdx.dev/), an efficient tool for managing
+multiple CLI tool versions. Finally, I used [mise-tasks](https://mise.jdx.dev/tasks/) to define and manage tasks and their dependencies.
+
+## Mise Tasks
+
+### TOML Tasks
+
+The following TOML tasks are defined in [mise.toml](https://github.com/sassdavid/personal-site/blob/main/mise.toml):
+
+- `install` (`mise r i`): Installs npm dependencies.
+- `build` (`mise r b`): Builds the project.
+- `format` (`mise r f`): Formats project files.
+- `ci` (`mise r ci`): Installs npm dependencies using `npm ci`.
+
+### File Tasks
+
+These file tasks, located in the [mise-tasks](https://github.com/sassdavid/personal-site/tree/main/mise-tasks) directory, help ensure code cleanliness
+and dynamically gather project data during build time:
+
+- [mise-tasks/utils/nroflines](https://github.com/sassdavid/personal-site/blob/main/mise-tasks/utils/nroflines): Counts the number of lines of
+  TypeScript powering the website.
+- [mise-tasks/utils/nrofwordsandtime](https://github.com/sassdavid/personal-site/blob/main/mise-tasks/utils/nrofwordsandtime): Calculates the number
+  of words and estimated reading time for `.mdx` files in the project.
+
+## Environment Variables
+
+Three environment variables are used during the build process. Their values are managed through `mise` and defined in `mise.toml`:
+
+- `NEXT_PUBLIC_GOOGLE_ANALYTICS`: Used for Google Analytics integration.
+- `NEXT_PUBLIC_NUMBER_OF_LINES`: Reflects the number of TypeScript lines, calculated at build time.
+- `NEXT_PUBLIC_MDX_DETAILS_ABOUT`: Provides details about `.mdx` files, including word count and reading time.
+
+These variables are substituted at build time, with their management implemented
+in [src/lib/config.tsx](https://github.com/sassdavid/personal-site/blob/main/src/lib/config.tsx).
+
+## GitHub Action
+
+The GitHub Action workflow is defined
+in [.github/workflows/github-pages.yml](https://github.com/sassdavid/personal-site/blob/main/.github/workflows/github-pages.yml).
+
+This workflow builds and deploys the project to [GitHub Pages](https://pages.github.com/). For more details, refer to the workflow file.
+
+To deploy a Next.js application to GitHub Pages, I drew inspiration from [this guide](https://github.com/gregrickaby/nextjs-github-pages).
 
 ## Acknowledgements
 
-- Originally Forked from [Michael D'Angelo](https://github.com/mldangelo/personal-site) who did amazing work creating a simple, easily modifiable,
-  statically-exportable React, Jamstack application built using modern javascript, based on create-react-app with React-Router, SCSS, github actions,
-  and many other useful technologies.
-- Template based on [Future Imperfect](https://html5up.net/future-imperfect) by [@ajlkn](https://github.com/ajlkn)
+- This project was originally forked from [Michael D'Angelo's personal site](https://github.com/mldangelo/personal-site), a fantastic, easily
+  modifiable, statically-exportable [React](https://react.dev/) and [Jamstack](https://jamstack.org/) application.
+- The original version was built
+  using [create-react-app](https://github.com/facebook/create-react-app), [React-Router](https://reactrouter.com/), [Sass](https://sass-lang.com/), [GitHub Actions](https://github.com/features/actions),
+  and many other modern technologies.
+- The template is based on [Future Imperfect](https://html5up.net/future-imperfect) by [@ajlkn](https://github.com/ajlkn)
   for [HTML5 UP](https://html5up.net/).
-- Dark Mode was implemented based on the implementation of [Paige Johnson](https://github.com/Paigej/portfolio-site) by
-  using [Donavon's](https://github.com/donavon) custom [React Hook](https://reactjs.org/docs/hooks-overview.html) which
-  has [fabulous documentation](https://github.com/donavon/use-dark-mode).
+- The dark mode implementation was inspired by [Paige Johnson](https://github.com/Paigej/portfolio-site).
