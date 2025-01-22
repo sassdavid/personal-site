@@ -60,6 +60,17 @@ This workflow builds and deploys the project to [GitHub Pages](https://pages.git
 
 To deploy a Next.js application to GitHub Pages, I drew inspiration from [this guide](https://github.com/gregrickaby/nextjs-github-pages).
 
+Since I have my own domain, [davidsass.eu](https://davidsass.eu), I configured the repository to support a custom domain.
+
+To set this up, I took the following steps:
+
+1. Created a [public/CNAME](https://github.com/sassdavid/personal-site/blob/main/public/CNAME).
+2. Removed the `basePath` configuration from [next.config.js](https://github.com/gregrickaby/nextjs-github-pages/blob/main/next.config.ts), as it was
+   not needed for my setup.
+3. Adjusted the code to omit the base path, particularly for imported images, as
+   explained [here](https://github.com/gregrickaby/nextjs-github-pages?tab=readme-ov-file#add-base-path-to-pagetsx). This step is unnecessary when
+   using a custom domain.
+
 ## Acknowledgements
 
 - This project was originally forked from [Michael D'Angelo's personal site](https://github.com/mldangelo/personal-site), a fantastic, easily
