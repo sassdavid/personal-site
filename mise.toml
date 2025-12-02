@@ -1,6 +1,6 @@
 [tools]
 fd = "latest"
-node = "22"
+node = "24"
 
 [env]
 NEXT_PUBLIC_GOOGLE_ANALYTICS = ""
@@ -27,3 +27,8 @@ run = ["npm run build"]
 alias = "f"
 description = "Format project files"
 run = "npm run format"
+
+[tasks.test]
+alias = "t"
+description = "Run tests"
+run = "npm test"
