@@ -8,8 +8,15 @@ const Education = ({ data = [] }: { data: DegreeProps[] }) => (
     <div className="title">
       <h3>Education</h3>
     </div>
-    {data.map(degree => (
-      <Degree key={degree.school} degree={degree.degree} school={degree.school} year={degree.year} link={degree.link} thesis={degree.thesis} />
+    {data.map((degree) => (
+      <Degree
+        key={degree.school}
+        degree={degree.degree}
+        school={degree.school}
+        year={degree.year}
+        link={degree.link}
+        thesis={degree.thesis}
+      />
     ))}
   </div>
 );

@@ -13,7 +13,10 @@ type ButtonAction = {
   label: string;
 };
 
-const buttonReducer = (state: ButtonState, action: ButtonAction): ButtonState => {
+const buttonReducer = (
+  state: ButtonState,
+  action: ButtonAction,
+): ButtonState => {
   switch (action.type) {
     case 'TOGGLE_CATEGORY': {
       // Toggle button that was clicked. Turn all other buttons off.
@@ -33,8 +36,16 @@ const buttonReducer = (state: ButtonState, action: ButtonAction): ButtonState =>
   }
 };
 
-const Skills = ({ skills = [], categories = [] }: { skills: SkillProps[]; categories: CategoryProps[] }) => {
-  const initialButtons = Object.fromEntries([['All', false]].concat(categories.map(({ name }) => [name, false])));
+const Skills = ({
+  skills = [],
+  categories = [],
+}: {
+  skills: SkillProps[];
+  categories: CategoryProps[];
+}) => {
+  const initialButtons = Object.fromEntries(
+    [['All', false]].concat(categories.map(({ name }) => [name, false])),
+  );
 
   const [buttons, dispatch] = useReducer(buttonReducer, initialButtons);
 
@@ -43,7 +54,10 @@ const Skills = ({ skills = [], categories = [] }: { skills: SkillProps[]; catego
   };
 
   const getRows = () => {
-    const actCat = Object.keys(buttons).reduce((cat, key) => (buttons[key] ? key : cat), 'All');
+    const actCat = Object.keys(buttons).reduce(
+      (cat, key) => (buttons[key] ? key : cat),
+      'All',
+    );
 
     const comparator = (a: SkillProps, b: SkillProps) => {
       let ret = 0;
@@ -58,11 +72,21 @@ const Skills = ({ skills = [], categories = [] }: { skills: SkillProps[]; catego
 
     return skills
       .sort(comparator)
-      .filter(skill => actCat === 'All' || skill.category.includes(actCat))
-      .map(skill => <SkillBar key={skill.title} categories={categories} skill={skill} />);
+      .filter((skill) => actCat === 'All' || skill.category.includes(actCat))
+      .map((skill) => (
+        <SkillBar key={skill.title} categories={categories} skill={skill} />
+      ));
   };
 
-  const getButtons = () => Object.keys(buttons).map(key => <CategoryButton key={key} label={key} active={buttons} handleClick={handleChildClick} />);
+  const getButtons = () =>
+    Object.keys(buttons).map((key) => (
+      <CategoryButton
+        key={key}
+        label={key}
+        active={buttons}
+        handleClick={handleChildClick}
+      />
+    ));
 
   return (
     <div className="skills">
@@ -70,7 +94,8 @@ const Skills = ({ skills = [], categories = [] }: { skills: SkillProps[]; catego
       <div className="title">
         <h3>Skills</h3>
         <p>
-          Note: While I don&apos;t find these sections particularly necessary, it seems like a common addition to resumes. Below is an overview of my
+          Note: While I don&apos;t find these sections particularly necessary,
+          it seems like a common addition to resumes. Below is an overview of my
           skills, with an attempt at honesty.
         </p>
       </div>

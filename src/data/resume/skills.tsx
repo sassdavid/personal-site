@@ -126,13 +126,30 @@ const skills: SkillProps[] = [
     competency: 8,
     category: ['Tools'],
   },
-].map(skill => ({ ...skill, category: skill.category.sort() }));
+].map((skill) => ({ ...skill, category: skill.category.sort() }));
 
-const colors = ['#16cdd2', '#37b1f5', '#2987b7', '#515dd4', '#5a6db9', '#43259d', '#27a7ce', '#3726cc', '#5643de', '#1b2494', '#1530e0', '#108ede'];
+const colors = [
+  '#16cdd2',
+  '#37b1f5',
+  '#2987b7',
+  '#515dd4',
+  '#5a6db9',
+  '#43259d',
+  '#27a7ce',
+  '#3726cc',
+  '#5643de',
+  '#1b2494',
+  '#1530e0',
+  '#108ede',
+];
 
-const categories: CategoryProps[] = [...new Set(skills.flatMap(({ category }) => category))].sort().map((category, index) => ({
-  name: category,
-  color: colors[index],
-}));
+const categories: CategoryProps[] = [
+  ...new Set(skills.flatMap(({ category }) => category)),
+]
+  .sort()
+  .map((category, index) => ({
+    name: category,
+    color: colors[index],
+  }));
 
 export { categories, skills };

@@ -8,7 +8,7 @@ const Experience = ({ data = [] }: { data: JobProps[] }) => (
     <div className="title">
       <h3>Experience</h3>
     </div>
-    {data.map(job => (
+    {data.map((job) => (
       <Job
         key={`${job.name}-${job.position}`}
         name={job.name}

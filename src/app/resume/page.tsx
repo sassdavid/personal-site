@@ -1,16 +1,16 @@
-import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
+import React from 'react';
 import Main from '@/components/main';
-import Experience from '@/components/resume/Experience';
 import Education from '@/components/resume/Education';
-import Skills from '@/components/resume/Skills';
+import Experience from '@/components/resume/Experience';
 import References from '@/components/resume/References';
+import Skills from '@/components/resume/Skills';
 import Tools from '@/components/resume/Tools';
-import tools from '@/data/resume/tools';
 import degrees from '@/data/resume/degrees';
-import work from '@/data/resume/work';
 import { categories, skills } from '@/data/resume/skills';
+import tools from '@/data/resume/tools';
+import work from '@/data/resume/work';
 
 export const metadata: Metadata = {
   title: 'Resume',
@@ -34,7 +34,7 @@ const Resume = () => (
             <Link href="/resume">Resume</Link>
           </h2>
           <div className="link-container">
-            {Object.keys(sections).map(sec => (
+            {Object.keys(sections).map((sec) => (
               <h4 key={sec}>
                 <a href={`#${sec.toLowerCase()}`}>{sec}</a>
               </h4>

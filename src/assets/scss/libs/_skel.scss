@@ -99,7 +99,8 @@ $vendor-values: ('filter', 'flex', 'linear-gradient', 'radial-gradient', 'transf
   $index: string.index($string, $search);
 
   @if $index {
-    @return string.slice($string, 1, $index - 1) + $replace + str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
+    @return string.slice($string, 1, $index - 1) + $replace +
+      str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
   }
 
   @return $string;
@@ -112,7 +113,11 @@ $vendor-values: ('filter', 'flex', 'linear-gradient', 'radial-gradient', 'transf
 /// @return {list} Updated list of strings.
 @function str-replace-all($strings, $search, $replace: '') {
   @each $string in $strings {
-    $strings: list.set-nth($strings, list.index($strings, $string), str-replace($string, $search, $replace));
+    $strings: list.set-nth(
+      $strings,
+      list.index($strings, $string),
+      str-replace($string, $search, $replace)
+    );
   }
 
   @return $strings;

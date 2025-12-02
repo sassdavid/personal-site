@@ -1,12 +1,17 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
 import data from '@/data/contact';
 
 const ContactIcons = () => (
   <ul className="icons">
-    {data.map(s => (
+    {data.map((s) => (
       <li key={s.label}>
-        <a href={s.link} aria-label={s.label} target="_blank" rel="nofollow noopener noreferrer">
+        <a
+          href={s.link}
+          aria-label={s.label}
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+        >
           <FontAwesomeIcon icon={s.icon} />
         </a>
       </li>

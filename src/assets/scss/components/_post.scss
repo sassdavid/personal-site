@@ -20,8 +20,8 @@
     .title {
       @include skel.vendor('flex-grow', '1');
       -ms-flex: 1;
-      padding: (functions.size(section-spacing) * 1.25) functions.size(section-spacing) (functions.size(section-spacing) * 1.1)
-        functions.size(section-spacing);
+      padding: (functions.size(section-spacing) * 1.25) functions.size(section-spacing)
+        (functions.size(section-spacing) * 1.1) functions.size(section-spacing);
 
       h2 {
         font-weight: functions.font(weight-heading-extrabold);
@@ -39,7 +39,10 @@
     }
 
     .meta {
-      @include mixins.padding(functions.size(section-spacing) * 1.25, functions.size(section-spacing));
+      @include mixins.padding(
+        functions.size(section-spacing) * 1.25,
+        functions.size(section-spacing)
+      );
       border-left: solid 1px functions.palette(border);
       min-width: 17em;
       text-align: right;
@@ -132,7 +135,11 @@
 
     > header {
       @include skel.vendor('flex-direction', 'column');
-      @include mixins.padding(functions.size(section-spacing) * 1.25, functions.size(section-spacing), (0, 0, -0.5em, 0));
+      @include mixins.padding(
+        functions.size(section-spacing) * 1.25,
+        functions.size(section-spacing),
+        (0, 0, -0.5em, 0)
+      );
       border-left: 0;
 
       .title {
@@ -193,13 +200,20 @@
   }
 
   @include skel.breakpoint(small) {
-    @include mixins.padding(functions.size(section-spacing-small), functions.size(section-spacing-small));
+    @include mixins.padding(
+      functions.size(section-spacing-small),
+      functions.size(section-spacing-small)
+    );
     left: functions.size(section-spacing-small) * -1;
     margin: 0 0 functions.size(element-margin) 0;
     width: calc(100% + (#{functions.size(section-spacing-small)} * 2));
 
     > header {
-      @include mixins.padding(functions.size(section-spacing-small) * 2, functions.size(section-spacing-small), (0, 0, -0.5em, 0));
+      @include mixins.padding(
+        functions.size(section-spacing-small) * 2,
+        functions.size(section-spacing-small),
+        (0, 0, -0.5em, 0)
+      );
       left: (functions.size(section-spacing-small) * -1);
       margin: (functions.size(section-spacing-small) * -1) 0 functions.size(section-spacing-small) 0;
       width: calc(100% + #{functions.size(section-spacing-small) * 2});

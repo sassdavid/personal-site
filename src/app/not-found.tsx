@@ -1,6 +1,6 @@
-import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: '404 Not Found',

@@ -15,7 +15,10 @@
   white-space: nowrap;
 
   .name {
-    @include skel.vendor('transition', 'border-bottom-color #{functions.duration(transition)} ease');
+    @include skel.vendor(
+      'transition',
+      'border-bottom-color #{functions.duration(transition)} ease'
+    );
     border-bottom: dotted 1px functions.palette(border-alt);
     display: block;
     margin: 0 1.5em 0 0;

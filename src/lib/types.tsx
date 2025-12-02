@@ -2,7 +2,7 @@ import React from 'react';
 
 export type ToolProps = {
   toolName: string;
-  link: string | any;
+  link: string;
   last?: boolean;
 };
 
@@ -21,7 +21,7 @@ export type DegreeProps = {
   degree: string;
   link: string;
   year: number;
-  thesis?: string | any;
+  thesis?: string;
 };
 
 export type SkillProps = {

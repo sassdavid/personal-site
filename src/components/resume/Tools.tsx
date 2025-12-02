@@ -12,13 +12,23 @@ const getRows = (tools: ToolProps[]) =>
       else if (a.link < b.link) ret = -1;
       return ret;
     })
-    .map((tool, idx) => <Tool key={tool.toolName} toolName={tool.toolName} link={tool.link} last={idx === tools.length - 1} />);
+    .map((tool, idx) => (
+      <Tool
+        key={tool.toolName}
+        toolName={tool.toolName}
+        link={tool.link}
+        last={idx === tools.length - 1}
+      />
+    ));
 
 const Tools = ({ data = [] }: { data: ToolProps[] }) => (
   <div className="tools">
     <div className="link-to" id="tools" />
     <div className="title">
-      <h3>Throughout my career, I have leveraged a wide range of tools and technologies to help me succeed in my work.</h3>
+      <h3>
+        Throughout my career, I have leveraged a wide range of tools and
+        technologies to help me succeed in my work.
+      </h3>
     </div>
     <ul className="tool-list">{getRows(data)}</ul>
   </div>

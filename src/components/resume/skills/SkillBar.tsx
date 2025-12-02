@@ -1,11 +1,19 @@
 import React from 'react';
 import { CategoryProps, SkillProps } from '@/lib/types';
 
-const SkillBar = ({ skill, categories }: { skill: SkillProps; categories: CategoryProps[] }) => {
+const SkillBar = ({
+  skill,
+  categories,
+}: {
+  skill: SkillProps;
+  categories: CategoryProps[];
+}) => {
   const { category, competency, title } = skill;
 
   const titleStyle = {
-    background: categories.filter(cat => category.includes(cat.name)).map(cat => cat.color)[0],
+    background: categories
+      .filter((cat) => category.includes(cat.name))
+      .map((cat) => cat.color)[0],
   };
 
   const barStyle = {

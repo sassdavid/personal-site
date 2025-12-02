@@ -3,7 +3,10 @@
 
 #menu {
   @include skel.vendor('transform', 'translateX(#{functions.size(menu)})');
-  @include skel.vendor('transition', ('transform #{functions.duration(menu)} ease', 'visibility #{functions.duration(menu)}'));
+  @include skel.vendor(
+    'transition',
+    ('transform #{functions.duration(menu)} ease', 'visibility #{functions.duration(menu)}')
+  );
   -webkit-overflow-scrolling: touch;
   background: functions.palette(bg);
   border-left: solid 1px functions.palette(border);

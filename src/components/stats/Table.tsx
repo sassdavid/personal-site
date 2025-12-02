@@ -5,7 +5,7 @@ import { TableRowProps } from '@/lib/types';
 const Table = ({ data }: { data: TableRowProps[] }) => (
   <table>
     <tbody>
-      {data.map(tableRowData => (
+      {data.map((tableRowData) => (
         <TableRow
           key={tableRowData.label}
           tableKey={tableRowData.tableKey}

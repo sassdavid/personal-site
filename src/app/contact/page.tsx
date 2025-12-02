@@ -1,6 +1,6 @@
-import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
+import React from 'react';
 import ContactIcons from '@/components/contact/ContactIcons';
 import Main from '@/components/main';
 

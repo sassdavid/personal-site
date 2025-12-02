@@ -31,7 +31,7 @@ describe('ContactIcons', () => {
     render(<ContactIcons />);
 
     const links = screen.getAllByRole('link');
-    links.forEach(link => {
+    links.forEach((link) => {
       expect(link).toHaveAttribute('target', '_blank');
       expect(link).toHaveAttribute('rel', 'nofollow noopener noreferrer');
     });

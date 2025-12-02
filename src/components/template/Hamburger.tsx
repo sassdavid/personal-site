@@ -1,7 +1,7 @@
 'use client';
 
-import React, { lazy, Suspense, useState } from 'react';
 import Link from 'next/link';
+import React, { lazy, Suspense, useState } from 'react';
 import routes from '@/data/routes';
 
 const Menu = lazy(() => import('react-burger-menu/lib/menus/slide.js'));
@@ -31,10 +31,12 @@ const Hamburger = () => {
       <Suspense fallback={<></>}>
         <Menu right isOpen={open}>
           <ul className="hamburger-ul">
-            {routes.map(l => (
+            {routes.map((l) => (
               <li key={l.label}>
                 <Link href={l.path} onClick={() => setOpen(!open)}>
-                  <h3 className={l.index ? 'index-li' : undefined}>{l.label}</h3>
+                  <h3 className={l.index ? 'index-li' : undefined}>
+                    {l.label}
+                  </h3>
                 </Link>
               </li>
             ))}

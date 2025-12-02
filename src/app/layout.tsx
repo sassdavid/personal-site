@@ -1,7 +1,7 @@
-import React from 'react';
-import { Metadata } from 'next';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
+import React from 'react';
 import { siteConfig } from '@/app/page';
 import { config } from '@/lib/config';
 import '@/assets/scss/main.scss';
@@ -40,11 +40,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange enableColorScheme enableSystem={false}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          disableTransitionOnChange
+          enableColorScheme
+          enableSystem={false}
+        >
           {children}
         </ThemeProvider>
       </body>

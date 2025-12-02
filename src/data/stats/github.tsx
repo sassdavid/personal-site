@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { TableRowProps } from '@/lib/types';
 import { config } from '@/lib/config';
+import { TableRowProps } from '@/lib/types';
 
 const gitHubStats: TableRowProps[] = [
   {
@@ -32,7 +32,8 @@ const gitHubStats: TableRowProps[] = [
     label: 'Last updated at',
     value: null,
     link: 'https://github.com/sassdavid/personal-site/commits',
-    format: (x: any) => dayjs(x).format('MMMM DD HH:mm:ss, YYYY'),
+    format: (x: string | number | React.ReactElement | null) =>
+      dayjs(x as string).format('MMMM DD HH:mm:ss, YYYY'),
   },
   {
     tableKey: 'lines_of_code',

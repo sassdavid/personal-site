@@ -1,8 +1,16 @@
-import React from 'react';
 import dayjs from 'dayjs';
+import React from 'react';
 import { JobProps } from '@/lib/types';
 
-const Job = ({ name, position, url, startDate, endDate, summary, highlights }: JobProps) => (
+const Job = ({
+  name,
+  position,
+  url,
+  startDate,
+  endDate,
+  summary,
+  highlights,
+}: JobProps) => (
   <article className="jobs-container">
     <header>
       <h4>
@@ -13,13 +21,14 @@ const Job = ({ name, position, url, startDate, endDate, summary, highlights }: J
       </h4>
       <p className="daterange">
         {' '}
-        {dayjs(startDate).format('MMMM YYYY')} - {endDate ? dayjs(endDate).format('MMMM YYYY') : 'PRESENT'}
+        {dayjs(startDate).format('MMMM YYYY')} -{' '}
+        {endDate ? dayjs(endDate).format('MMMM YYYY') : 'PRESENT'}
       </p>
     </header>
     {summary ? <div className="summary">{summary}</div> : null}
     {highlights ? (
       <ul className="points">
-        {highlights.map(highlight => (
+        {highlights.map((highlight) => (
           <li key={highlight}>{highlight}</li>
         ))}
       </ul>

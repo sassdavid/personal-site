@@ -1,10 +1,10 @@
-import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
+import React from 'react';
 import Main from '@/components/main';
 import Statistics from '@/components/stats/Statistics';
-import personalStats from '@/data/stats/personal';
 import gitHubStats from '@/data/stats/github';
+import personalStats from '@/data/stats/personal';
 
 export const metadata: Metadata = {
   title: 'Stats',
@@ -12,12 +12,17 @@ export const metadata: Metadata = {
 };
 
 export default async function Stats() {
-  const res = await fetch('https://api.github.com/repos/sassdavid/personal-site');
+  const res = await fetch(
+    'https://api.github.com/repos/sassdavid/personal-site',
+  );
   const resData = await res.json();
 
-  let mergedGitHubStats = gitHubStats.map(field => ({
+  let mergedGitHubStats = gitHubStats.map((field) => ({
     ...field,
-    value: field.tableKey && resData[field.tableKey] !== undefined ? resData[field.tableKey] : field.value,
+    value:
+      field.tableKey && resData[field.tableKey] !== undefined
+        ? resData[field.tableKey]
+        : field.value,
   }));
 
   return (
@@ -30,8 +35,14 @@ export default async function Stats() {
             </h2>
           </div>
         </header>
-        <Statistics title="Some stats about me and my work" data={personalStats} />
-        <Statistics title="Some stats about this site" data={mergedGitHubStats} />
+        <Statistics
+          title="Some stats about me and my work"
+          data={personalStats}
+        />
+        <Statistics
+          title="Some stats about this site"
+          data={mergedGitHubStats}
+        />
       </article>
     </Main>
   );

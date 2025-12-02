@@ -9,7 +9,8 @@ const degrees: DegreeProps[] = [
     thesis: 'Demonstration software for presenting the B&B method',
   },
   {
-    school: 'Wigner Jenő Műszaki, Informatikai Technikum, Szakképző Iskola, Gimnázium és Kollégium',
+    school:
+      'Wigner Jenő Műszaki, Informatikai Technikum, Szakképző Iskola, Gimnázium és Kollégium',
     degree: 'High-school graduation',
     link: 'https://wignerkozepiskola.hu/',
     year: 2012,
