@@ -6,7 +6,7 @@ fd = "latest"
 node = "24"
 
 [env]
-NEXT_PUBLIC_NUMBER_OF_LINES = "2265"
+NEXT_PUBLIC_NUMBER_OF_LINES = "2259"
 
 [tasks.ci]
 alias = "ci"
@@ -41,7 +41,7 @@ run = '''
 set -euxo pipefail
 
 # Find all TypeScript files once
-files=$(fd -Iitf -e ts -e tsx -E node_modules)
+files=$(fd -Iitf -e ts -e tsx -E node_modules -E next-env.d.ts)
 
 # Count files
 filecount=$(wc -l <<< "$files")
@@ -61,11 +61,10 @@ if [ -n "${GITHUB_ENV:-}" ]; then
 fi
 '''
 run_windows = '''
-#!/usr/bin/env pwsh
 $ErrorActionPreference = "Stop"
 
 # Get all TypeScript files and count their lines
-$files = @(fd -Iitf -e ts -e tsx -E node_modules)
+$files = @(fd -Iitf -e ts -e tsx -E node_modules -E next-env.d.ts)
 Write-Output "Found $($files.Count) TypeScript files"
 
 $nroflines = 0
