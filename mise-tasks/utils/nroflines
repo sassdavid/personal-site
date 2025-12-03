@@ -7,5 +7,11 @@ nroflines=$(fd -Iitf -e ts -e tsx -E node_modules -x cat | wc -l)
 
 printf "Lines of TypeScript powering this website: %d\n" "$nroflines"
 
-# Set in mise environment (available to subsequent mise run commands)
+# Set in mise environment for local development
 mise set NEXT_PUBLIC_NUMBER_OF_LINES="${nroflines}"
+
+# Export to GitHub Actions environment for subsequent steps
+if [ -n "${GITHUB_ENV:-}" ]; then
+  printf "NEXT_PUBLIC_NUMBER_OF_LINES=%s\n" "${nroflines}" >> "$GITHUB_ENV"
+  printf "Exported to GitHub Actions: NEXT_PUBLIC_NUMBER_OF_LINES=%s\n" "${nroflines}"
+fi
