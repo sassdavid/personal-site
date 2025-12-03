@@ -8,26 +8,26 @@ NEXT_PUBLIC_NUMBER_OF_LINES = "2276"
 
 [tasks.ci]
 alias = "ci"
-description = "Install npm dependencies with npm ci"
-depends = ["utils:nroflines"]
+description = "Install npm dependencies with npm ci for CI environments"
 run = "npm ci"
-
-[tasks.install]
-alias = "i"
-description = "Install npm dependencies"
-run = "npm install"
 
 [tasks.build]
 alias = "b"
-description = "Build the project"
+description = "Build Next.js application for production static export"
 run = ["npm run build"]
 
-[tasks.format]
-alias = "f"
-description = "Format project files"
-run = "npm run format"
+[tasks."test:ci"]
+description = "Run Jest tests with CI mode and coverage reporting"
+run = "npm test -- --ci --coverage"
 
-[tasks.test]
-alias = "t"
-description = "Run tests"
-run = "npm test"
+[tasks.lint]
+description = "Lint code with Biome linter"
+run = "npm run lint"
+
+[tasks."type-check"]
+description = "Run TypeScript type checking with tsc --noEmit"
+run = "npm run type-check"
+
+[tasks."format:check"]
+description = "Check code formatting with Biome and Prettier"
+run = "npm run format:check"
