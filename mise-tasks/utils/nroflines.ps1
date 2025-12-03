@@ -4,10 +4,13 @@
 $ErrorActionPreference = "Stop"
 
 # Get all TypeScript files and count their lines
-$files = fd -Iitf -e ts -e tsx -E node_modules
+$files = @(fd -Iitf -e ts -e tsx -E node_modules)
+Write-Output "Found $($files.Count) TypeScript files"
+
 $nroflines = 0
 foreach ($file in $files) {
-    $nroflines += (Get-Content $file | Measure-Object -Line).Lines
+    $lineCount = (Get-Content $file -Raw | Measure-Object -Line).Lines
+    $nroflines += $lineCount
 }
 
 Write-Output "Lines of TypeScript powering this website: $nroflines"
