@@ -1,32 +1,18 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import React from 'react';
-import Main from '@/components/main';
-import Statistics from '@/components/stats/Statistics';
-import gitHubStats from '@/data/stats/github';
-import personalStats from '@/data/stats/personal';
+import PageWrapper from '@/app/components/PageWrapper';
+import Personal from '@/components/stats/Personal';
+import Site from '@/components/stats/Site';
 
 export const metadata: Metadata = {
   title: 'Stats',
-  description: 'Some statistics about David Sass and davidsass.eu',
+  description: 'Some statistics about David Sass-Kovacs and davidsass.eu',
 };
 
-export default async function Stats() {
-  const res = await fetch(
-    'https://api.github.com/repos/sassdavid/personal-site',
-  );
-  const resData = await res.json();
-
-  let mergedGitHubStats = gitHubStats.map((field) => ({
-    ...field,
-    value:
-      field.tableKey && resData[field.tableKey] !== undefined
-        ? resData[field.tableKey]
-        : field.value,
-  }));
-
+export default function StatsPage() {
   return (
-    <Main>
+    <PageWrapper>
       <article className="post" id="stats">
         <header>
           <div className="title">
@@ -35,15 +21,9 @@ export default async function Stats() {
             </h2>
           </div>
         </header>
-        <Statistics
-          title="Some stats about me and my work"
-          data={personalStats}
-        />
-        <Statistics
-          title="Some stats about this site"
-          data={mergedGitHubStats}
-        />
+        <Personal />
+        <Site />
       </article>
-    </Main>
+    </PageWrapper>
   );
 }

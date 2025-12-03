@@ -3,7 +3,12 @@
 import React, { useReducer } from 'react';
 import CategoryButton from '@/components/resume/skills/CategoryButton';
 import SkillBar from '@/components/resume/skills/SkillBar';
-import { CategoryProps, SkillProps } from '@/lib/types';
+import type { Category, Skill } from '@/data/resume/skills';
+
+interface SkillsProps {
+  skills: Skill[];
+  categories: Category[];
+}
 
 // React 19: Using useReducer for complex filter state management
 type ButtonState = Record<string, boolean>;
@@ -36,13 +41,7 @@ const buttonReducer = (
   }
 };
 
-const Skills = ({
-  skills = [],
-  categories = [],
-}: {
-  skills: SkillProps[];
-  categories: CategoryProps[];
-}) => {
+const Skills: React.FC<SkillsProps> = ({ skills, categories }) => {
   const initialButtons = Object.fromEntries(
     [['All', false]].concat(categories.map(({ name }) => [name, false])),
   );
@@ -53,13 +52,24 @@ const Skills = ({
     dispatch({ type: 'TOGGLE_CATEGORY', label });
   };
 
+  const getButtons = () =>
+    Object.keys(buttons).map((key) => (
+      <CategoryButton
+        label={key}
+        key={key}
+        active={buttons}
+        handleClick={handleChildClick}
+      />
+    ));
+
   const getRows = () => {
+    // search for true active categories
     const actCat = Object.keys(buttons).reduce(
       (cat, key) => (buttons[key] ? key : cat),
       'All',
     );
 
-    const comparator = (a: SkillProps, b: SkillProps) => {
+    const comparator = (a: Skill, b: Skill) => {
       let ret = 0;
       if (a.competency > b.competency) ret = -1;
       else if (a.competency < b.competency) ret = 1;
@@ -74,30 +84,15 @@ const Skills = ({
       .sort(comparator)
       .filter((skill) => actCat === 'All' || skill.category.includes(actCat))
       .map((skill) => (
-        <SkillBar key={skill.title} categories={categories} skill={skill} />
+        <SkillBar categories={categories} data={skill} key={skill.title} />
       ));
   };
-
-  const getButtons = () =>
-    Object.keys(buttons).map((key) => (
-      <CategoryButton
-        key={key}
-        label={key}
-        active={buttons}
-        handleClick={handleChildClick}
-      />
-    ));
 
   return (
     <div className="skills">
       <div className="link-to" id="skills" />
       <div className="title">
         <h3>Skills</h3>
-        <p>
-          Note: While I don&apos;t find these sections particularly necessary,
-          it seems like a common addition to resumes. Below is an overview of my
-          skills, with an attempt at honesty.
-        </p>
       </div>
       <div className="skill-button-container">{getButtons()}</div>
       <div className="skill-row-container">{getRows()}</div>

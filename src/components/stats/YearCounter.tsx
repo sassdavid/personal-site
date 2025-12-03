@@ -12,6 +12,7 @@ const YearCounter = ({ fromDateString }: { fromDateString: string }) => {
   };
 
   useEffect(() => {
+    tick(); // Initial tick
     const timer = setInterval(() => tick(), 25);
     return () => {
       clearInterval(timer);

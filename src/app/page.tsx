@@ -1,42 +1,43 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import React from 'react';
-import Main from '@/components/main';
 
-export const siteConfig = {
-  name: 'David Sass',
-  description: "David Sass's personal website.",
-  url: 'https://davidsass.eu',
+import PageWrapper from '@/app/components/PageWrapper';
+
+export const metadata: Metadata = {
+  description: "David Sass-Kovacs's personal website.",
 };
 
-const Index = () => (
-  <Main>
-    <article className="post" id="index">
-      <header>
-        <div className="title">
-          <h2>
-            <Link href="/">Hi! I&apos;m David</Link>
-          </h2>
-          <p>
-            I&apos;m constantly exploring innovative approaches and emerging
-            technologies to improve system reliability, streamline processes,
-            and deliver scalable solutions. My focus is on creating efficient,
-            automated workflows that drive both technical excellence and
-            operational success.
-          </p>
-        </div>
-      </header>
-      <p>
-        Welcome to my website! I&apos;m thrilled to have you here. Feel free to
-        take a look around and explore the various pages, including{' '}
-        <Link href="/resume">my resume</Link> and the{' '}
-        <Link href="/about">about me</Link> section. You&apos;ll also find some
-        interesting <Link href="/stats">statistics</Link> about me and my
-        website. If you have any questions or would like to get in touch, please
-        don&apos;t hesitate to use the <Link href="/contact">contact</Link>{' '}
-        page. Thank you for visiting!
-      </p>
-    </article>
-  </Main>
-);
-
-export default Index;
+export default function HomePage() {
+  return (
+    <PageWrapper>
+      <article className="post" id="index">
+        <header>
+          <div className="title">
+            <h2>
+              <Link href="/about">Hi! I&apos;m David</Link>
+            </h2>
+            <p>
+              I build reliable, scalable infrastructure using modern cloud
+              technologies and automation. Focused on creating efficient
+              workflows that drive technical excellence and operational success.
+            </p>
+          </div>
+        </header>
+        <p>
+          {' '}
+          Welcome to my website. Please feel free to read more{' '}
+          <Link href="/about">about me</Link>, or you can check out my{' '}
+          <Link href="/resume">resume</Link>,{' '}
+          <Link href="/stats">site statistics</Link>, or{' '}
+          <Link href="/contact">contact</Link> me.
+        </p>
+        <p>
+          {' '}
+          Source available{' '}
+          <a href="https://github.com/sassdavid/personal-site">here</a>.
+        </p>
+      </article>
+    </PageWrapper>
+  );
+}

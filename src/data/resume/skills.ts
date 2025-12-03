@@ -1,6 +1,15 @@
-import { CategoryProps, SkillProps } from '@/lib/types';
+export interface Skill {
+  title: string;
+  competency: number;
+  category: string[];
+}
 
-const skills: SkillProps[] = [
+export interface Category {
+  name: string;
+  color: string;
+}
+
+const skills: Skill[] = [
   {
     title: 'Python',
     competency: 6,
@@ -128,7 +137,9 @@ const skills: SkillProps[] = [
   },
 ].map((skill) => ({ ...skill, category: skill.category.sort() }));
 
-const colors = [
+// this is a list of colors that I like. The length should be === to the
+// number of categories. Re-arrange this list until you find a pattern you like.
+const colors: string[] = [
   '#16cdd2',
   '#37b1f5',
   '#2987b7',
@@ -143,9 +154,9 @@ const colors = [
   '#108ede',
 ];
 
-const categories: CategoryProps[] = [
-  ...new Set(skills.flatMap(({ category }) => category)),
-]
+const categories: Category[] = Array.from(
+  new Set(skills.flatMap(({ category }) => category)),
+)
   .sort()
   .map((category, index) => ({
     name: category,

@@ -1,39 +1,55 @@
-import { GoogleAnalytics } from '@next/third-parties/google';
-import { Metadata } from 'next';
-import { ThemeProvider } from 'next-themes';
+import type { Metadata } from 'next';
+import { Raleway, Source_Sans_3 } from 'next/font/google';
 import React from 'react';
-import { siteConfig } from '@/app/page';
-import { config } from '@/lib/config';
+
+import GoogleAnalytics from '@/components/template/GoogleAnalytics';
+import Navigation from '@/components/template/Navigation';
 import '@/assets/scss/main.scss';
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://davidsass.eu'),
-  title: {
-    default: siteConfig.name,
-    template: `${siteConfig.name} | %s`,
-  },
-  description: siteConfig.description,
-  authors: [
-    {
-      name: 'David Sass',
-      url: 'https://github.com/sassdavid',
-    },
-  ],
-  creator: 'David Sass',
+import { ThemeProvider } from 'next-themes';
 
+const sourceSans = Source_Sans_3({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  variable: '--font-source-sans',
+  display: 'swap',
+});
+
+const raleway = Raleway({
+  weight: ['400', '800', '900'],
+  subsets: ['latin'],
+  variable: '--font-raleway',
+  display: 'swap',
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: 'David Sass-Kovacs',
+    template: '%s | David Sass-Kovacs',
+  },
+  description: "David Sass-Kovacs's personal website.",
+  keywords: ['David Sass-Kovacs', 'DevOps', 'Engineer', 'DevOps Engineer'],
+  authors: [{ name: 'David Sass-Kovacs' }],
+  creator: 'David Sass-Kovacs',
+  metadataBase: new URL('https://davidsass.eu'),
   openGraph: {
     type: 'website',
     locale: 'hu_HU',
-    url: siteConfig.url,
-    title: siteConfig.name,
-    description: siteConfig.description,
-    siteName: siteConfig.name,
+    url: 'https://davidsass.eu',
+    siteName: 'David Sass-Kovacs',
+    title: 'David Sass-Kovacs',
+    description: "David Sass-Kovacs's personal website.",
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: siteConfig.name,
-    description: siteConfig.description,
-    creator: 'David Sass',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: '/favicon.ico',
@@ -46,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${sourceSans.variable} ${raleway.variable}`} suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute="class"
@@ -55,10 +71,13 @@ export default function RootLayout({
           enableColorScheme
           enableSystem={false}
         >
-          {children}
+          <div id="wrapper">
+            <Navigation />
+            {children}
+          </div>
         </ThemeProvider>
+        <GoogleAnalytics />
       </body>
-      {config.gaId && <GoogleAnalytics gaId={config.gaId} />}
     </html>
   );
 }

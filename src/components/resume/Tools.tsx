@@ -1,27 +1,26 @@
 import React from 'react';
 import Tool from '@/components/resume/tools/Tool';
-import { ToolProps } from '@/lib/types';
+import type { Tool as ToolType } from '@/data/resume/tools';
 
-const getRows = (tools: ToolProps[]) =>
+interface ToolProps {
+  data: ToolType[];
+}
+
+const getRows = (tools: ToolType[]) =>
   tools
     .sort((a, b) => {
       let ret = 0;
-      if (a.toolName > b.toolName) ret = 1;
-      else if (a.toolName < b.toolName) ret = -1;
+      if (a.name > b.name) ret = 1;
+      else if (a.name < b.name) ret = -1;
       else if (a.link > b.link) ret = 1;
       else if (a.link < b.link) ret = -1;
       return ret;
     })
     .map((tool, idx) => (
-      <Tool
-        key={tool.toolName}
-        toolName={tool.toolName}
-        link={tool.link}
-        last={idx === tools.length - 1}
-      />
+      <Tool data={tool} key={tool.name} last={idx === tools.length - 1} />
     ));
 
-const Tools = ({ data = [] }: { data: ToolProps[] }) => (
+const Tools: React.FC<ToolProps> = ({ data }) => (
   <div className="tools">
     <div className="link-to" id="tools" />
     <div className="title">

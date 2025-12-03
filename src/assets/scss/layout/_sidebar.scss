@@ -1,6 +1,8 @@
 @use '../libs/skel' as skel;
 @use '../libs/functions' as functions;
 
+/* Sidebar */
+
 #sidebar {
   margin-right: functions.size(section-spacing);
   min-width: 22em;

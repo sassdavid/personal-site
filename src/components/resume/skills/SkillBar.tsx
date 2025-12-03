@@ -1,15 +1,16 @@
 import React from 'react';
-import { CategoryProps, SkillProps } from '@/lib/types';
 
-const SkillBar = ({
-  skill,
-  categories,
-}: {
-  skill: SkillProps;
-  categories: CategoryProps[];
-}) => {
-  const { category, competency, title } = skill;
+import type { Category, Skill } from '@/data/resume/skills';
 
+interface SkillBarProps {
+  data: Skill;
+  categories: Category[];
+}
+
+const SkillBar: React.FC<SkillBarProps> = ({ data, categories }) => {
+  const { category, competency, title } = data;
+
+  // TODO: Consider averaging colors
   const titleStyle = {
     background: categories
       .filter((cat) => category.includes(cat.name))

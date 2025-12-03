@@ -1,6 +1,8 @@
-@use '../libs/skel' as skel;
 @use 'sass:color';
+@use '../libs/skel' as skel;
 @use '../libs/functions' as functions;
+
+/* Button */
 
 input[type='submit'],
 input[type='reset'],
@@ -19,7 +21,7 @@ button,
   background-color: transparent;
   border: 0;
   box-shadow: inset 0 0 0 1px functions.palette(border);
-  color: functions.palette(fg-bold);
+  color: functions.palette(fg-bold) !important;
   cursor: pointer;
   display: inline-block;
   font-family: functions.font(family-heading);
@@ -59,21 +61,6 @@ button,
     padding: 0 0.75em 0 0;
   }
 
-  &.fit {
-    display: block;
-    margin: 0 0 (functions.size(element-margin) * 0.5) 0;
-    width: 100%;
-  }
-
-  &.big {
-    font-size: 0.7em;
-    padding: 0 3em;
-  }
-
-  &.small {
-    font-size: 0.5em;
-  }
-
   &.disabled,
   &:disabled {
     @include skel.vendor('pointer-events', 'none');
@@ -86,6 +73,6 @@ button,
 
   &.opposite {
     background-color: var(--bgThemeColor1Swapped);
-    color: var(--textThemeColor1Swapped);
+    color: var(--textThemeColor1Swapped) !important;
   }
 }

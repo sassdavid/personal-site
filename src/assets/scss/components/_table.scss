@@ -1,9 +1,6 @@
 @use '../libs/functions' as functions;
 
-.table-wrapper {
-  -webkit-overflow-scrolling: touch;
-  overflow-x: auto;
-}
+/* Table */
 
 table {
   margin: 0 0 functions.size(element-margin) 0;
@@ -39,37 +36,5 @@ table {
 
   tfoot {
     border-top: solid 2px functions.palette(border);
-  }
-
-  &.alt {
-    border-collapse: separate;
-
-    tbody {
-      tr {
-        td {
-          border: solid 1px functions.palette(border);
-          border-left-width: 0;
-          border-top-width: 0;
-
-          &:first-child {
-            border-left-width: 1px;
-          }
-        }
-
-        &:first-child {
-          td {
-            border-top-width: 1px;
-          }
-        }
-      }
-    }
-
-    thead {
-      border-bottom: 0;
-    }
-
-    tfoot {
-      border-top: 0;
-    }
   }
 }

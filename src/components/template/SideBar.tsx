@@ -8,7 +8,7 @@ import ContactIcons from '@/components/contact/ContactIcons';
 import ThemeSwitch from '@/components/template/ThemeSwitch';
 import profilePic from '../../../public/me.jpg';
 
-const SideBar = () => {
+const SideBar: React.FC = () => {
   const pathname = usePathname();
 
   return (
@@ -18,7 +18,7 @@ const SideBar = () => {
           <Image src={profilePic} width={186.66} height={186.66} alt="" />
         </Link>
         <header>
-          <h2>David Sass</h2>
+          <h2>David Sass-Kovacs</h2>
           <p>
             <a href="mailto:david.sass14@gmail.com">david.sass14@gmail.com</a>
           </p>
@@ -33,11 +33,8 @@ const SideBar = () => {
       <section className="blurb">
         <h2>About</h2>
         <p>
-          As a highly skilled and experienced DevOps Engineer with a degree in
-          Computer Engineering, I am passionate about leveraging my technical
-          expertise to design, optimize, and maintain robust infrastructure
-          solutions that drive impactful outcomes. Currently, I am thriving in
-          my role at{' '}
+          DevOps Engineer with a Computer Engineering degree, specializing in
+          cloud infrastructure and automation. Currently at{' '}
           <a
             href="https://www.loxon.eu/"
             target="_blank"
@@ -45,16 +42,13 @@ const SideBar = () => {
           >
             Loxon
           </a>
-          , where I tackle complex challenges and contribute to cutting-edge
-          infrastructure and deployment projects. My commitment to excellence
-          and dedication to staying up-to-date with the latest industry
-          advancements have enabled me to achieve significant success in my
-          career, and I am excited to continue building on this momentum in
-          future endeavors.
+          , building scalable solutions with Kubernetes, AWS, and modern DevOps
+          tools. Passionate about optimizing systems and solving complex
+          infrastructure challenges.
         </p>
         <ul className="actions">
           <li>
-            {!pathname.includes('/resume') ? (
+            {pathname && !pathname.includes('/resume') ? (
               <Link href="/resume" className="button">
                 Learn More
               </Link>
@@ -70,7 +64,7 @@ const SideBar = () => {
       <section id="footer">
         <ContactIcons />
         <p className="copyright">
-          &copy; David Sass <Link href="/">davidsass.eu</Link>.
+          &copy; David Sass-Kovacs <Link href="/">davidsass.eu</Link>.
         </p>
       </section>
     </section>

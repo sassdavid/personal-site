@@ -1,5 +1,7 @@
 @use '../libs/mixins' as mixins;
 
+/* Icon */
+
 .icon {
   @include mixins.icon;
   border-bottom: none;
@@ -7,9 +9,6 @@
 
   > .label {
     display: none;
-  }
-
-  &.prefix {
   }
 
   &.suffix {

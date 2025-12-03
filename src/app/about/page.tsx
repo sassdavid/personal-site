@@ -1,54 +1,27 @@
-import { Metadata } from 'next';
+import Markdown from 'markdown-to-jsx';
+
 import Link from 'next/link';
 import React from 'react';
-import Main from '@/components/main';
-import AboutMardown from '@/data/about/about.mdx';
-import { config } from '@/lib/config';
+import PageWrapper from '@/app/components/PageWrapper';
+import { aboutMarkdown } from '@/data/about';
 
-export const metadata: Metadata = {
-  title: 'About',
-  description: 'Learn about David Sass',
-};
+const count = (str: string) =>
+  str.split(/\s+/).filter((word) => word !== '').length;
 
-function CustomLink({
-  href,
-  children,
-  ...rest
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
+export default function AboutPage() {
   return (
-    <a href={href} target="_blank" rel="nofollow noopener noreferrer" {...rest}>
-      {children}
-    </a>
-  );
-}
-
-const overrideComponents = {
-  a: CustomLink,
-};
-
-const About = () => {
-  return (
-    <Main>
+    <PageWrapper>
       <article className="post markdown" id="about">
         <header>
           <div className="title">
             <h2>
               <Link href="/about">About Me</Link>
             </h2>
-            {config.mdxDetailsAbout ? (
-              <p>(in about {config.mdxDetailsAbout})</p>
-            ) : (
-              <p>(No data available)</p>
-            )}
+            <p>(in about {count(aboutMarkdown)} words)</p>
           </div>
         </header>
-        <AboutMardown components={overrideComponents} />
+        <Markdown>{aboutMarkdown}</Markdown>
       </article>
-    </Main>
+    </PageWrapper>
   );
-};
-
-export default About;
+}

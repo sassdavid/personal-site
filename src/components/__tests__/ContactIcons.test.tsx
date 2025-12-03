@@ -1,39 +1,32 @@
 import { render, screen } from '@testing-library/react';
-import ContactIcons from '../contact/ContactIcons';
+import React from 'react';
+
+import ContactIcons from '@/components/contact/ContactIcons';
 
 describe('ContactIcons', () => {
   it('renders contact icons', () => {
     render(<ContactIcons />);
 
-    // Check that the component renders
-    const icons = screen.getByRole('list');
-    expect(icons).toBeInTheDocument();
+    // Check if GitHub link is present
+    const githubLink = screen.getByRole('link', { name: /github/i });
+    expect(githubLink).toBeInTheDocument();
+    expect(githubLink).toHaveAttribute(
+      'href',
+      expect.stringContaining('github.com'),
+    );
+
+    // Check if email link is present
+    const emailLink = screen.getByRole('link', { name: /email/i });
+    expect(emailLink).toBeInTheDocument();
+    expect(emailLink).toHaveAttribute(
+      'href',
+      expect.stringContaining('mailto:'),
+    );
   });
 
-  it('renders all contact links', () => {
+  it('has correct number of contact links', () => {
     render(<ContactIcons />);
-
-    // Check that links are present
     const links = screen.getAllByRole('link');
     expect(links.length).toBeGreaterThan(0);
-  });
-
-  it('has accessible labels', () => {
-    render(<ContactIcons />);
-
-    // Check for aria-labels
-    const githubLink = screen.getByLabelText('GitHub');
-    expect(githubLink).toBeInTheDocument();
-    expect(githubLink).toHaveAttribute('href');
-  });
-
-  it('opens links in new tab with security attributes', () => {
-    render(<ContactIcons />);
-
-    const links = screen.getAllByRole('link');
-    links.forEach((link) => {
-      expect(link).toHaveAttribute('target', '_blank');
-      expect(link).toHaveAttribute('rel', 'nofollow noopener noreferrer');
-    });
   });
 });

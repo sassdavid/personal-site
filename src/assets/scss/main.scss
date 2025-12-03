@@ -1,6 +1,8 @@
 @use 'sass:meta';
 @use 'libs/skel' as skel;
 
+@import-normalize;
+
 @include meta.load-css('libs/vars');
 @include meta.load-css('libs/functions');
 @include meta.load-css('libs/mixins');

@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Gets the number of words in all MDX files in the project"
-
-set -euxo pipefail
-
-fd -Iitf -e mdx -E node_modules -x wc -w

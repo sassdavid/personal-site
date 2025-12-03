@@ -24,11 +24,11 @@
     ]
   },
   "include": [
-    "new-types.d.ts",
     "next-env.d.ts",
-    ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx",
+    ".next/types/**/*.ts",
+    "jest.setup.ts",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules"]

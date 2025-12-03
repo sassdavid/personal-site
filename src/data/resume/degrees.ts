@@ -1,6 +1,12 @@
-import { DegreeProps } from '@/lib/types';
+export interface Degree {
+  school: string;
+  degree: string;
+  link: string;
+  year: number;
+  thesis?: string;
+}
 
-const degrees: DegreeProps[] = [
+const degrees: Degree[] = [
   {
     school: 'Széchenyi István Egyetem',
     degree: 'Computer Science Engineer',

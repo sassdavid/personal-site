@@ -1,16 +1,21 @@
 import React from 'react';
-import { DegreeProps } from '@/lib/types';
 
-const Degree = ({ degree, link, school, year, thesis }: DegreeProps) => (
+import type { Degree as DegreeType } from '@/data/resume/degrees';
+
+interface DegreeProps {
+  data: DegreeType;
+}
+
+const Degree: React.FC<DegreeProps> = ({ data }) => (
   <article className="degree-container">
     <header>
-      <h4 className="degree">{degree}</h4>
-      <h4 className="thesis">{thesis}</h4>
+      <h4 className="degree">{data.degree}</h4>
+      <h4 className="thesis">{data.thesis}</h4>
       <p className="school">
-        <a href={link} target="_blank" rel="nofollow noopener noreferrer">
-          {school}
+        <a href={data.link} target="_blank" rel="nofollow noopener noreferrer">
+          {data.school}
         </a>
-        , {year}
+        , {data.year}
       </p>
     </header>
   </article>

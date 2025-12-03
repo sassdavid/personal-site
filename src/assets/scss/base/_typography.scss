@@ -1,6 +1,8 @@
 @use '../libs/skel' as skel;
 @use '../libs/functions' as functions;
 
+/* Type */
+
 body,
 input,
 select,
@@ -85,6 +87,7 @@ h3,
 h4,
 h5,
 h6 {
+  color: functions.palette(fg-bold);
   font-family: functions.font(family-heading);
   font-weight: functions.font(weight-heading-bold);
   letter-spacing: functions.font(kerning-heading);
@@ -104,12 +107,6 @@ h2 {
 
 h3 {
   font-size: 0.9em;
-
-  &.icon {
-    display: inline-flex;
-    margin: 0;
-    margin-top: 0.1em;
-  }
 }
 
 h4 {
@@ -175,16 +172,4 @@ hr {
   &.major {
     margin: (functions.size(element-margin) * 1.5) 0;
   }
-}
-
-.align-left {
-  text-align: left;
-}
-
-.align-center {
-  text-align: center;
-}
-
-.align-right {
-  text-align: right;
 }

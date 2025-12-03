@@ -1,18 +1,18 @@
 import React from 'react';
-import TableRow from '@/components/stats/TableRow';
-import { TableRowProps } from '@/lib/types';
 
-const Table = ({ data }: { data: TableRowProps[] }) => (
+import TableRow from '@/components/stats/TableRow';
+import { TableProps } from '@/components/stats/types';
+
+const Table: React.FC<TableProps> = ({ data }) => (
   <table>
     <tbody>
-      {data.map((tableRowData) => (
+      {data.map((pair) => (
         <TableRow
-          key={tableRowData.label}
-          tableKey={tableRowData.tableKey}
-          value={tableRowData.value}
-          label={tableRowData.label}
-          link={tableRowData.link}
-          format={tableRowData.format}
+          format={pair.format}
+          key={pair.label}
+          label={pair.label}
+          link={pair.link}
+          value={pair.value}
         />
       ))}
     </tbody>

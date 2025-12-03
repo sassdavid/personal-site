@@ -1,11 +1,6 @@
 @use '../libs/functions' as functions;
 
-section,
-article {
-  &.special {
-    text-align: center;
-  }
-}
+/* Section/Article */
 
 header {
   p {

@@ -1,15 +1,23 @@
 import React from 'react';
-import { CategoryButtonProps } from '@/lib/types';
 
-const CategoryButton = ({
+interface CategoryButtonProps {
+  label: string;
+  handleClick: (label: string) => void;
+  active: Record<string, boolean>;
+}
+
+const CategoryButton: React.FC<CategoryButtonProps> = ({
   handleClick,
   active,
   label,
-}: CategoryButtonProps) => (
+}) => (
   <button
     className={`skillbutton ${active[label] ? 'skillbutton-active' : ''}`}
     type="button"
-    onClick={() => handleClick(label)}
+    onClick={(e) => {
+      handleClick(label);
+      e.currentTarget.blur();
+    }}
   >
     {label}
   </button>

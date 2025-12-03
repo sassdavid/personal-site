@@ -1,32 +1,29 @@
-import createMDX from '@next/mdx';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Configure `pageExtensions` to include markdown and MDX files
-  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
-  // Configure for GitHub Pages static export
   output: 'export',
-  reactStrictMode: true, // PRESERVE: Custom feature
   images: {
     unoptimized: true,
   },
-  trailingSlash: true,
-
-  // Sass configuration
   sassOptions: {
     includePaths: ['./src/assets/scss'],
     silenceDeprecations: ['import'], // Silence @import deprecation warnings
   },
+  basePath: process.env.NODE_ENV === 'production' ? '' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  trailingSlash: true,
 
   // Turbopack configuration
   turbopack: {
+    // Define module resolution rules
     rules: {},
+    // Module resolution extensions
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
 
   // Experimental features
   experimental: {
-    // Enable optimizations for FontAwesome packages
+    // Enable optimizations for packages
     optimizePackageImports: [
       '@fortawesome/react-fontawesome',
       '@fortawesome/fontawesome-svg-core',
@@ -34,21 +31,16 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Wrap with MDX support
-const withMDX = createMDX({
-  // Add markdown plugins here, as desired
-});
-
-// Apply MDX wrapper
-let config = withMDX(nextConfig);
-
 // Only apply bundle analyzer when not using Turbopack
-// Bundle analyzer requires Webpack, so we skip it when Turbopack is active
-if (process.env.TURBOPACK !== '1' && process.env.ANALYZE === 'true') {
+// This prevents the warning about Webpack being configured while Turbopack is not
+if (process.env.TURBOPACK !== '1') {
   const withBundleAnalyzer = require('@next/bundle-analyzer')({
-    enabled: true,
+    enabled: process.env.ANALYZE === 'true',
   });
-  config = withBundleAnalyzer(config);
+
+  module.exports = withBundleAnalyzer(nextConfig);
+} else {
+  module.exports = nextConfig;
 }
 
-export default config;
+export default nextConfig;

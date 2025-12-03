@@ -3,14 +3,13 @@ fd = "latest"
 node = "24"
 
 [env]
-NEXT_PUBLIC_GOOGLE_ANALYTICS = ""
-NEXT_PUBLIC_NUMBER_OF_LINES = "1879"
-NEXT_PUBLIC_MDX_DETAILS_ABOUT = "834 words (5 min read)"
+NEXT_PUBLIC_GA_TRACKING_ID = ""
+NEXT_PUBLIC_NUMBER_OF_LINES = "2276"
 
 [tasks.ci]
 alias = "ci"
 description = "Install npm dependencies with npm ci"
-depends = ["utils:nroflines", "utils:nrofwordsandtime"]
+depends = ["utils:nroflines"]
 run = "npm ci"
 
 [tasks.install]

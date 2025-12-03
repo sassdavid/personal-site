@@ -1,7 +1,5 @@
-import { Metadata } from 'next';
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import React from 'react';
-import Main from '@/components/main';
 import Education from '@/components/resume/Education';
 import Experience from '@/components/resume/Experience';
 import References from '@/components/resume/References';
@@ -14,39 +12,57 @@ import work from '@/data/resume/work';
 
 export const metadata: Metadata = {
   title: 'Resume',
-  description: "David Sass's Resume. Currently at Loxon.",
+  description: "David Sass-Kovacs's Resume. Currently at Loxon.",
 };
 
-const sections = {
-  Experience: () => <Experience data={work} />,
-  Education: () => <Education data={degrees} />,
-  Skills: () => <Skills skills={skills} categories={categories} />,
-  Tools: () => <Tools data={tools} />,
-  References: () => <References />,
-};
+const sections = [
+  { name: 'Education', id: 'education' },
+  { name: 'Experience', id: 'experience' },
+  { name: 'Skills', id: 'skills' },
+  { name: 'Tools', id: 'tools' },
+  { name: 'References', id: 'references' },
+];
 
-const Resume = () => (
-  <Main>
+export default function ResumePage() {
+  return (
     <article className="post" id="resume">
       <header>
         <div className="title">
-          <h2>
-            <Link href="/resume">Resume</Link>
-          </h2>
+          <h2>Resume</h2>
           <div className="link-container">
-            {Object.keys(sections).map((sec) => (
-              <h4 key={sec}>
-                <a href={`#${sec.toLowerCase()}`}>{sec}</a>
+            {sections.map((section) => (
+              <h4 key={section.id}>
+                <a href={`#${section.id}`}>{section.name}</a>
               </h4>
             ))}
           </div>
         </div>
       </header>
-      {Object.entries(sections).map(([name, Section]) => (
-        <Section key={name} />
-      ))}
-    </article>
-  </Main>
-);
 
-export default Resume;
+      <section id="education" className="education">
+        <div className="link-to" />
+        <Education data={degrees} />
+      </section>
+
+      <section id="experience" className="experience">
+        <div className="link-to" />
+        <Experience data={work} />
+      </section>
+
+      <section id="skills" className="skills">
+        <div className="link-to" />
+        <Skills skills={skills} categories={categories} />
+      </section>
+
+      <section id="tools" className="tools">
+        <div className="link-to" />
+        <Tools data={tools} />
+      </section>
+
+      <section id="references" className="references">
+        <div className="link-to" />
+        <References />
+      </section>
+    </article>
+  );
+}

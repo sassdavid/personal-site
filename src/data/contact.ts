@@ -1,3 +1,4 @@
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faFacebookF } from '@fortawesome/free-brands-svg-icons/faFacebookF';
 import { faGithub } from '@fortawesome/free-brands-svg-icons/faGithub';
 import { faInstagram } from '@fortawesome/free-brands-svg-icons/faInstagram';
@@ -5,14 +6,20 @@ import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons/faLinkedinIn';
 import { faTwitter } from '@fortawesome/free-brands-svg-icons/faTwitter';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons/faEnvelope';
 
-const data = [
+export interface ContactItem {
+  link: string;
+  label: string;
+  icon: IconDefinition;
+}
+
+const data: ContactItem[] = [
   {
     link: 'https://github.com/sassdavid',
     label: 'GitHub',
     icon: faGithub,
   },
   {
-    link: 'https://www.facebook.com/sass.david',
+    link: 'https://facebook.com/sass.david',
     label: 'Facebook',
     icon: faFacebookF,
   },
@@ -27,8 +34,8 @@ const data = [
     icon: faLinkedinIn,
   },
   {
-    link: 'https://twitter.com/sassdavid14',
-    label: 'Twitter',
+    link: 'https://x.com/sassdavid14',
+    label: 'X',
     icon: faTwitter,
   },
   {

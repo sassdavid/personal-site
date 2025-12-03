@@ -69,9 +69,8 @@ Three environment variables are injected at build time (managed via mise.toml):
 
 - **NEXT_PUBLIC_GOOGLE_ANALYTICS**: Google Analytics ID (set via GitHub secret in CI)
 - **NEXT_PUBLIC_NUMBER_OF_LINES**: TypeScript line count (calculated by nroflines task)
-- **NEXT_PUBLIC_MDX_DETAILS_ABOUT**: Word count and reading time for about.mdx (calculated by nrofwordsandtime task)
 
-These are accessed via src/lib/config.tsx which provides a centralized config object with fallback defaults.
+These are accessed directly via process.env with fallback defaults where needed.
 
 ## Architecture
 
@@ -89,16 +88,15 @@ src/
 ├── components/          # React components organized by feature
 │   ├── contact/
 │   ├── resume/          # Education, Experience, Skills, Tools, References
-│   ├── stats/           # Statistics display components
+│   ├── stats/           # PersonalStats display components
 │   └── template/        # Navigation, SideBar, Hamburger, ThemeSwitch
 ├── data/                # Static data and content
 │   ├── about/about.mdx  # MDX content for about page
-│   ├── contact.tsx
-│   ├── routes.tsx
+│   ├── contact.ts
+│   ├── routes.ts
 │   ├── resume/          # Data for work history, skills, tools, degrees
 │   └── stats/           # GitHub and personal statistics
 ├── lib/                 # Utilities and shared code
-│   ├── config.tsx       # Environment variable access with defaults
 │   └── types.tsx        # Centralized TypeScript type definitions
 └── assets/scss/         # SCSS organized by base, components, layout, pages
 ```
@@ -107,7 +105,7 @@ src/
 
 1. **Type Consolidation**: All shared types (JobProps, DegreeProps, SkillProps, etc.) are in src/lib/types.tsx. Always import from here rather than defining inline.
 
-2. **Data Separation**: Component data is separated into src/data/ files. For example, resume work history is in src/data/resume/work.tsx as an array that components map over.
+2. **Data Separation**: Component data is separated into src/data/ files. For example, resume work history is in src/data/resume/work.ts as an array that components map over.
 
 3. **MDX Content**: Long-form content like the About page lives in .mdx files (e.g., src/data/about/about.mdx). The build automatically calculates reading time via mise tasks.
 
@@ -183,15 +181,36 @@ Two GitHub Actions workflows:
 
 ## Theme System
 
-**CRITICAL FILES - DO NOT MODIFY**:
-- `src/assets/scss/base/_themes.scss` - Theme color definitions
-- `src/assets/scss/base/_light-dark-theme.scss` - Theme classes
+**CRITICAL: Theme Color Architecture**
 
-The theme system uses CSS custom properties integrated with next-themes:
-- Dark mode: `var(--bgThemeColor1)`, `var(--textThemeColor1)`, etc.
-- Light mode: Automatically switches via `.dark` and `.light` classes
-- Persists across sessions
-- Can be toggled by user
+The theme system uses CSS custom properties with next-themes integration:
+
+### Core Files
+- `src/assets/scss/base/_themes.scss` - Theme color variable definitions for both dark and light modes
+- `src/assets/scss/base/_light-dark-theme.scss` - Theme class selectors (`.dark`, `.light`)
+- `src/assets/scss/libs/_vars.scss` - Palette mappings using theme variables
+
+### Theme Colors (Updated 2025-01)
+
+**Dark Theme** (default):
+- Backgrounds: `#242424` (main), `#2f2f2f` (alt)
+- Text: `#d0d0d0`, `#dbdbdb`, `#c9c9c9`
+
+**Light Theme** (optimized for readability):
+- Backgrounds: `#ffffff` (main), `#f4f4f4` (alt)
+- Text: `#646464` (main), `#3c3b3b` (bold), `#646464` (secondary)
+- Note: Light theme uses softer grays for better readability
+
+### Important Theme Variables
+- `--bgThemeColor1` / `--bgThemeColor2`: Main/alt backgrounds
+- `--textThemeColor1` / `--textThemeColor2`: Text colors
+- `--textThemeColor1Same`: Light text for both themes (used on blue backgrounds)
+- `--bgThemeColor1Swapped`: Opposite theme background (e.g., for theme toggle button)
+
+### Theme Implementation Notes
+1. **Skills Section**: Uses `--textThemeColor1Same` for text on blue accent backgrounds
+2. **Mini-post Component**: Uses `--bgThemeColor2` for background overlays
+3. **Theme Toggle**: Uses `--bgThemeColor1Swapped` and `--textThemeColor1Swapped` for opposite theme styling
 
 ## FontAwesome 7
 
@@ -200,10 +219,101 @@ The theme system uses CSS custom properties integrated with next-themes:
 - Icons imported individually for optimal bundle size
 - Example: `import { faGithub } from '@fortawesome/free-brands-svg-icons/faGithub'`
 
+## Content Guidelines
+
+### Homepage (src/app/page.tsx)
+- **Intro paragraph**: Keep compact (20-30 words), action-oriented
+- Current: "I build reliable, scalable infrastructure using modern cloud technologies and automation..."
+- Avoid: Corporate buzzwords, vague phrases like "constantly exploring innovative approaches"
+
+### Sidebar About (src/components/template/SideBar.tsx)
+- **About paragraph**: Keep brief (30-40 words), technical focus
+- Current: "DevOps Engineer with a Computer Engineering degree, specializing in cloud infrastructure and automation..."
+- Include: Role, current company, key technologies, focus areas
+- Avoid: First-person excessive praise ("highly skilled and experienced")
+
+### Work Experience (src/data/resume/work.ts)
+
+**Data Structure** (conforms to https://jsonresume.org/schema/):
+```typescript
+interface Position {
+  name: string;           // Company name
+  position: string;       // Job title
+  url: string;           // Company URL
+  startDate: string;     // ISO date format (YYYY-MM-DD)
+  endDate?: string;      // Optional for current positions
+  summary?: string;      // 1-2 sentence overview of the role
+  highlights?: string[]; // Bullet points of achievements
+}
+```
+
+**Best Practices**:
+1. **Always add summaries** for positions lasting >6 months
+   - Summary: High-level overview (25-40 words)
+   - Highlights: Specific achievements (5-6 bullets, condensed when summary exists)
+2. **Summaries should**:
+   - Start with action verb or gerund (e.g., "Leading...", "Spearheaded...")
+   - Mention key technologies/focus areas
+   - Reference major accomplishments or clients (when appropriate)
+3. **Highlights should be**:
+   - Specific and measurable
+   - Technology-focused (mention tools/platforms)
+   - Achievement-oriented (what you built/delivered)
+   - Condensed when a summary exists (avoid redundancy)
+
+**Example** (Current Senior DevOps Engineer role):
+```typescript
+{
+  name: 'Loxon Solutions Zrt.',
+  position: 'Senior DevOps Engineer',
+  startDate: '2025-07-01',
+  summary: 'Leading AWS multi-region infrastructure initiatives and DevOps practices, maintaining multi-tenant environments serving multiple clients across Indonesia...',
+  highlights: [
+    'Architecting and managing AWS multi-region, multi-tenant infrastructure for enterprise SaaS deployments',
+    'Maintaining multi-tenant AWS environments serving major clients including Grab across Indonesia',
+    // ... (5-6 concise bullets)
+  ]
+}
+```
+
+## Repository Information
+
+- **GitHub**: https://github.com/sassdavid/personal-site
+- **Live Site**: https://davidsass.eu
+- **Original Source**: Forked from https://github.com/mldangelo/personal-site (properly attributed in README)
+
+### Important GitHub API References
+- All GitHub API calls reference `sassdavid/personal-site`
+- Located in: `src/components/stats/Site.tsx` and `src/data/stats/site.ts`
+
+## Critical Layout Requirements
+
+### Root Layout Wrapper
+The layout MUST include `<div id="wrapper">` for proper flexbox styling:
+
+```tsx
+// src/app/layout.tsx
+<body>
+  <ThemeProvider {...}>
+    <div id="wrapper">  {/* REQUIRED */}
+      <Navigation />
+      {children}
+    </div>
+  </ThemeProvider>
+</body>
+```
+
+The `#wrapper` styles in `src/assets/scss/layout/_wrapper.scss` define:
+- Flexbox layout with `flex-direction: row-reverse`
+- Max-width, margins, padding
+- Responsive breakpoint behavior
+
+**Without this wrapper, the layout will break.**
+
 ## Documentation
 
 Additional documentation in `docs/` directory:
-- `adapting-guide.md` - Customizing the site
+- `adapting-guide.md` - Customizing the site (updated for sassdavid repo)
 - `contributing.md` - Contribution guidelines
 - `design-goals.md` - Architecture decisions
 - `roadmap.md` - Future plans

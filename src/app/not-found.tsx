@@ -1,21 +1,25 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: '404 Not Found',
-  description: 'The content you are looking for cannot be found.',
+  title: 'Page Not Found',
+  description: 'Page not found',
 };
 
-const NotFoundPage = () => (
-  <>
-    <div className="not-found">
-      <h1>David Not Found</h1>
-      <p>
-        :) Go back and find me <Link href="/">here</Link>.
-      </p>
+export default function NotFound() {
+  return (
+    <div id="wrapper">
+      <div id="main">
+        <article className="post" id="contact">
+          <header>
+            <div className="title">
+              <h2>Page Not Found</h2>
+            </div>
+          </header>
+          <Link href="/">Return Home</Link>
+        </article>
+      </div>
     </div>
-  </>
-);
-
-export default NotFoundPage;
+  );
+}

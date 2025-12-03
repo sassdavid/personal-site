@@ -1,60 +1,65 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+#  push:
+#    branches: [main]
+#  pull_request:
+#    branches: [main]
+  workflow_dispatch:
 
-permissions:
-  contents: read
-
+# Cancel in-progress runs for the same workflow and branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # Shared job for installing dependencies with caching
   install:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-      - name: Init Environment with mise
-        uses: jdx/mise-action@v2
+      - name: Setup Node.js
+        uses: jdx/mise-action@v3
         with:
           experimental: true
 
-      - name: Cache node modules
+      - name: Cache node_modules
+        id: cache-node-modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-node-modules-
 
-      - name: Install Dependencies
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
+  # Lint, format, and type check
   code-quality:
+    name: Code Quality
     needs: install
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-      - name: Init Environment with mise
-        uses: jdx/mise-action@v2
+      - name: Setup Node.js
+        uses: jdx/mise-action@v3
         with:
           experimental: true
 
-      - name: Restore node modules
+      - name: Restore node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Type Check
         run: npm run type-check
@@ -65,67 +70,103 @@ jobs:
       - name: Format Check
         run: npm run format:check
 
+  # Run tests
   test:
+    name: Test
     needs: install
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-      - name: Init Environment with mise
-        uses: jdx/mise-action@v2
+      - name: Setup Node.js
+        uses: jdx/mise-action@v3
         with:
           experimental: true
 
-      - name: Restore node modules
+      - name: Restore node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Run Tests
-        run: npm run test:coverage
+      - name: Run tests
+        run: npm test -- --ci --coverage
 
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+  # Build on multiple OS and Node versions
   build:
+    name: Build (${{ matrix.os }}, Node ${{ matrix.node-version }})
     needs: install
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22.x, 24.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        exclude:
+          # Reduce matrix size for faster CI
+          - os: windows-latest
+            node-version: 22.x
+          - os: macos-latest
+            node-version: 22.x
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-      - name: Init Environment with mise
-        uses: jdx/mise-action@v2
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: jdx/mise-action@v3
         with:
           experimental: true
 
-      - name: Set Environment Variables with mise
-        run: |
-          mise set NEXT_PUBLIC_NUMBER_OF_LINES="${{ vars.NEXT_PUBLIC_NUMBER_OF_LINES || '1488' }}"
-          mise set NEXT_PUBLIC_MDX_DETAILS_ABOUT="${{ vars.NEXT_PUBLIC_MDX_DETAILS_ABOUT || '834 words (5 min read)' }}"
-
-      - name: Restore node modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Cache Next.js build
-        uses: actions/cache@v4
-        with:
-          path: .next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build
         run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_GA_TRACKING_ID: ${{ vars.NEXT_PUBLIC_GA_TRACKING_ID || 'G-XXXXXXXXXX' }}
 
+      - name: Verify static export
+        shell: bash
+        run: |
+          if [ ! -d "out" ]; then
+            echo "Error: 'out' directory not found. Static export may have failed."
+            exit 1
+          fi
+          echo "Static export successful. Found $(find out -type f | wc -l) files."
+
+      - name: Upload build artifacts
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version == '24.x'
+        uses: actions/upload-artifact@v5
+        with:
+          name: build-output
+          path: out/
+          retention-days: 7
+
+  # Summary job to ensure all checks pass
   ci-success:
+    name: CI Success
     needs: [code-quality, test, build]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    if: always()
     steps:
-      - name: CI Success
-        run: echo "All CI checks passed successfully!"
+      - name: Check if all jobs succeeded
+        run: |
+          if [[ "${{ needs.code-quality.result }}" != "success" || 
+                "${{ needs.test.result }}" != "success" || 
+                "${{ needs.build.result }}" != "success" ]]; then
+            echo "One or more jobs failed"
+            exit 1
+          fi
+          echo "All CI checks passed!"

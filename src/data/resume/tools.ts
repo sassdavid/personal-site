@@ -1,168 +1,171 @@
-import { ToolProps } from '@/lib/types';
+export interface Tool {
+  name: string;
+  link: string;
+}
 
-const tools: ToolProps[] = [
+const tools: Tool[] = [
   {
-    toolName: 'Terraform',
+    name: 'Terraform',
     link: 'https://www.terraform.io/',
   },
   {
-    toolName: 'Terragrunt',
+    name: 'Terragrunt',
     link: 'https://terragrunt.gruntwork.io/',
   },
   {
-    toolName: 'QuickSight',
+    name: 'QuickSight',
     link: 'https://aws.amazon.com/quicksight/',
   },
   {
-    toolName: 'RDS',
+    name: 'RDS',
     link: 'https://aws.amazon.com/rds/',
   },
   {
-    toolName: 'MSK',
+    name: 'MSK',
     link: 'https://aws.amazon.com/msk/',
   },
   {
-    toolName: 'Kinesis',
+    name: 'Kinesis',
     link: 'https://aws.amazon.com/kinesis/',
   },
   {
-    toolName: 'EventBridge',
+    name: 'EventBridge',
     link: 'https://aws.amazon.com/eventbridge/',
   },
   {
-    toolName: 'EKS',
+    name: 'EKS',
     link: 'https://aws.amazon.com/eks/',
   },
   {
-    toolName: 'S3',
+    name: 'S3',
     link: 'https://aws.amazon.com/s3/',
   },
   {
-    toolName: 'Lambda',
+    name: 'Lambda',
     link: 'https://aws.amazon.com/lambda/',
   },
   {
-    toolName: 'VPC',
+    name: 'VPC',
     link: 'https://aws.amazon.com/vpc/',
   },
   {
-    toolName: 'EC2',
+    name: 'EC2',
     link: 'https://aws.amazon.com/ec2/',
   },
   {
-    toolName: 'Redshift',
+    name: 'Redshift',
     link: 'https://aws.amazon.com/redshift/',
   },
   {
-    toolName: 'DynamoDB',
+    name: 'DynamoDB',
     link: 'https://aws.amazon.com/dynamodb/',
   },
   {
-    toolName: 'Helm',
+    name: 'Helm',
     link: 'https://helm.sh/',
   },
   {
-    toolName: 'ArgoCD',
+    name: 'ArgoCD',
     link: 'https://argo-cd.readthedocs.io/en/stable/',
   },
   {
-    toolName: 'Docker',
+    name: 'Docker',
     link: 'https://www.docker.com/',
   },
   {
-    toolName: 'Kubernetes',
+    name: 'Kubernetes',
     link: 'https://kubernetes.io/',
   },
   {
-    toolName: 'Maven',
+    name: 'Maven',
     link: 'https://maven.apache.org/',
   },
   {
-    toolName: 'Gradle',
+    name: 'Gradle',
     link: 'https://gradle.org/',
   },
   {
-    toolName: 'Kafka',
+    name: 'Kafka',
     link: 'https://kafka.apache.org/',
   },
   {
-    toolName: 'Bitbucket',
+    name: 'Bitbucket',
     link: 'https://bitbucket.org/',
   },
   {
-    toolName: 'CloudFormation',
+    name: 'CloudFormation',
     link: 'https://aws.amazon.com/cloudformation/',
   },
   {
-    toolName: 'Oracle',
+    name: 'Oracle',
     link: 'https://www.oracle.com/database/',
   },
   {
-    toolName: 'MSSQL',
+    name: 'MSSQL',
     link: 'https://www.microsoft.com/en-us/sql-server',
   },
   {
-    toolName: 'Typescript',
+    name: 'Typescript',
     link: 'https://www.typescriptlang.org/',
   },
   {
-    toolName: 'Node.JS',
+    name: 'Node.JS',
     link: 'https://nodejs.org/en/',
   },
   {
-    toolName: 'Angular',
+    name: 'Angular',
     link: 'https://angular.dev/',
   },
   {
-    toolName: 'Kotlin',
+    name: 'Kotlin',
     link: 'https://kotlinlang.org/',
   },
   {
-    toolName: 'Python',
+    name: 'Python',
     link: 'https://www.python.org/',
   },
   {
-    toolName: 'IntelliJ IDEA',
+    name: 'IntelliJ IDEA',
     link: 'https://www.jetbrains.com/idea/',
   },
   {
-    toolName: 'PyCharm',
+    name: 'PyCharm',
     link: 'https://www.jetbrains.com/pycharm/',
   },
   {
-    toolName: 'DataGrip',
+    name: 'DataGrip',
     link: 'https://www.jetbrains.com/datagrip/',
   },
   {
-    toolName: 'React',
+    name: 'React',
     link: 'https://reactjs.org/',
   },
   {
-    toolName: 'Spring',
+    name: 'Spring',
     link: 'https://spring.io/',
   },
   {
-    toolName: 'MongoDB',
+    name: 'MongoDB',
     link: 'https://www.mongodb.com/',
   },
   {
-    toolName: 'Redis',
+    name: 'Redis',
     link: 'https://redis.io/',
   },
   {
-    toolName: 'ElasticSearch',
+    name: 'ElasticSearch',
     link: 'https://www.elastic.co/',
   },
   {
-    toolName: 'Git',
+    name: 'Git',
     link: 'https://git-scm.com/',
   },
   {
-    toolName: 'Java',
+    name: 'Java',
     link: 'https://www.oracle.com/uk/java/',
   },
   {
-    toolName: 'C#',
+    name: 'C#',
     link: 'https://learn.microsoft.com/en-us/dotnet/csharp/',
   },
 ];

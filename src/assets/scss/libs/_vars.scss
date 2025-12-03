@@ -16,11 +16,13 @@ $size: (
   section-spacing: 3em,
   section-spacing-small: 1.5em,
   menu: 25em,
+  letter-spacing-alt: 0.25em,
 );
 
 // Font.
 $font: (
   family: (
+    var(--font-source-sans),
     'Source Sans Pro',
     Helvetica,
     sans-serif,
@@ -30,6 +32,7 @@ $font: (
     monospace,
   ),
   family-heading: (
+    var(--font-raleway),
     'Raleway',
     Helvetica,
     sans-serif,

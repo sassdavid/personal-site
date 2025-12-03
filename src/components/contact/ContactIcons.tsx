@@ -1,8 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
+
 import data from '@/data/contact';
 
-const ContactIcons = () => (
+const ContactIcons: React.FC = () => (
   <ul className="icons">
     {data.map((s) => (
       <li key={s.label}>

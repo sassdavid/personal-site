@@ -46,10 +46,8 @@ Three environment variables are used during the build process. Their values are 
 
 - `NEXT_PUBLIC_GOOGLE_ANALYTICS`: Used for Google Analytics integration.
 - `NEXT_PUBLIC_NUMBER_OF_LINES`: Reflects the number of TypeScript lines, calculated at build time.
-- `NEXT_PUBLIC_MDX_DETAILS_ABOUT`: Provides details about `.mdx` files, including word count and reading time.
 
-These variables are substituted at build time, with their management implemented
-in [src/lib/config.tsx](https://github.com/sassdavid/personal-site/blob/main/src/lib/config.tsx).
+These variables are accessed directly via `process.env` in components with fallback defaults where needed.
 
 ## GitHub Action
 
