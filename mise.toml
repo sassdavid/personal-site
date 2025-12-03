@@ -58,7 +58,6 @@ if [ -n "${GITHUB_ENV:-}" ]; then
 fi
 '''
 run_windows = '''
-#!/usr/bin/env pwsh
 $ErrorActionPreference = "Stop"
 
 # Get all TypeScript files and count their lines
