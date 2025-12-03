@@ -133,6 +133,9 @@ jobs:
       - name: Install dependencies
         run: mise run ci
 
+      - name: Calculate lines of code
+        run: mise run utils:nroflines
+
       - name: Build
         run: mise run build
         env:

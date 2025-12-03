@@ -3,7 +3,6 @@ fd = "latest"
 node = "24"
 
 [env]
-NEXT_PUBLIC_GA_TRACKING_ID = ""
 NEXT_PUBLIC_NUMBER_OF_LINES = "2276"
 
 [tasks.ci]

@@ -57,6 +57,9 @@ jobs:
       - name: Install dependencies
         run: mise run ci
 
+      - name: Calculate lines of code
+        run: mise run utils:nroflines
+
       - name: Build with Next.js
         run: mise run build
         env:

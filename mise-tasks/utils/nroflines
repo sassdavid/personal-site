@@ -7,4 +7,5 @@ nroflines=$(fd -Iitf -e ts -e tsx -E node_modules -x cat | wc -l)
 
 printf "Lines of TypeScript powering this website: %d\n" "$nroflines"
 
+# Set in mise environment (available to subsequent mise run commands)
 mise set NEXT_PUBLIC_NUMBER_OF_LINES="${nroflines}"
