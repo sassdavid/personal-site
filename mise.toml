@@ -1,3 +1,6 @@
+[settings]
+windows_default_inline_shell_args = "pwsh -Command"
+
 [tools]
 fd = "latest"
 node = "24"
