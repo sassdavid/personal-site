@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import ContactIcons from '@/components/contact/ContactIcons';
 import ThemeSwitch from '@/components/template/ThemeSwitch';
-import profilePic from '../../../public/me.jpg';
 
 const SideBar: React.FC = () => {
   const pathname = usePathname();
@@ -15,7 +14,7 @@ const SideBar: React.FC = () => {
     <section id="sidebar">
       <section id="intro">
         <Link href="/" className="logo">
-          <Image src={profilePic} width={186.66} height={186.66} alt="" />
+          <Image src="/me.jpg" width={186.66} height={186.66} alt="" />
         </Link>
         <header>
           <h2>David Sass-Kovacs</h2>

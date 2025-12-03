@@ -127,10 +127,8 @@ jobs:
         uses: jdx/mise-action@v3
         with:
           experimental: true
-          mise_toml: |
-            [tools]
-            fd = "latest"
-            node = "${{ matrix.node-version }}"
+        env:
+          MISE_NODE_VERSION: ${{ matrix.node-version }}
 
       - name: Install dependencies
         run: npm ci
