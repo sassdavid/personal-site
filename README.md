@@ -32,17 +32,13 @@ The following TOML tasks are defined in [mise.toml](https://github.com/sassdavid
 
 ### File Tasks
 
-These file tasks, located in the [mise-tasks](https://github.com/sassdavid/personal-site/tree/main/mise-tasks) directory, help ensure code cleanliness
-and dynamically gather project data during build time:
+Utility tasks defined in [mise.toml](https://github.com/sassdavid/personal-site/blob/main/mise.toml) dynamically gather project data during build time:
 
-- [mise-tasks/utils/nroflines](https://github.com/sassdavid/personal-site/blob/main/mise-tasks/utils/nroflines): Counts the number of lines of
-  TypeScript powering the website.
-- [mise-tasks/utils/nrofwordsandtime](https://github.com/sassdavid/personal-site/blob/main/mise-tasks/utils/nrofwordsandtime): Calculates the number
-  of words and estimated reading time for `.mdx` files in the project.
+- **utils:nroflines**: Counts the number of lines of TypeScript powering the website. Includes cross-platform support with bash (Unix/Linux/macOS) and PowerShell (Windows) scripts.
 
 ## Environment Variables
 
-Three environment variables are used during the build process. Their values are managed through `mise` and defined in `mise.toml`:
+Two environment variables are used during the build process. Their values are managed through `mise` and defined in `mise.toml`:
 
 - `NEXT_PUBLIC_GOOGLE_ANALYTICS`: Used for Google Analytics integration.
 - `NEXT_PUBLIC_NUMBER_OF_LINES`: Reflects the number of TypeScript lines, calculated at build time.

@@ -8,7 +8,7 @@ NEXT_PUBLIC_NUMBER_OF_LINES = "2276"
 [tasks.ci]
 alias = "ci"
 description = "Install npm dependencies with npm ci for CI environments"
-run = "npm ci"
+run = "npm ci --no-fund"
 
 [tasks.build]
 alias = "b"
@@ -30,3 +30,55 @@ run = "npm run type-check"
 [tasks."format:check"]
 description = "Check code formatting with Biome and Prettier"
 run = "npm run format:check"
+
+[tasks."utils:nroflines"]
+description = "Gets the number of lines of TypeScript code in the project"
+run = '''
+#!/usr/bin/env bash
+set -euxo pipefail
+
+# Find all TypeScript files once
+files=$(fd -Iitf -e ts -e tsx -E node_modules)
+
+# Count files
+filecount=$(wc -l <<< "$files")
+printf "Found %d TypeScript files\n" "$filecount"
+
+# Count total lines
+nroflines=$(xargs cat <<< "$files" | wc -l)
+printf "Lines of TypeScript powering this website: %d\n" "$nroflines"
+
+# Set in mise environment for local development
+mise set NEXT_PUBLIC_NUMBER_OF_LINES="${nroflines}"
+
+# Export to GitHub Actions environment for subsequent steps
+if [ -n "${GITHUB_ENV:-}" ]; then
+  printf "NEXT_PUBLIC_NUMBER_OF_LINES=%s\n" "${nroflines}" >> "$GITHUB_ENV"
+  printf "Exported to GitHub Actions: NEXT_PUBLIC_NUMBER_OF_LINES=%s\n" "${nroflines}"
+fi
+'''
+run_windows = '''
+#!/usr/bin/env pwsh
+$ErrorActionPreference = "Stop"
+
+# Get all TypeScript files and count their lines
+$files = @(fd -Iitf -e ts -e tsx -E node_modules)
+Write-Output "Found $($files.Count) TypeScript files"
+
+$nroflines = 0
+foreach ($file in $files) {
+    $lineCount = (Get-Content $file -Raw | Measure-Object -Line).Lines
+    $nroflines += $lineCount
+}
+
+Write-Output "Lines of TypeScript powering this website: $nroflines"
+
+# Set in mise environment for local development
+mise set NEXT_PUBLIC_NUMBER_OF_LINES="$nroflines"
+
+# Export to GitHub Actions environment for subsequent steps
+if ($env:GITHUB_ENV) {
+    Add-Content -Path $env:GITHUB_ENV -Value "NEXT_PUBLIC_NUMBER_OF_LINES=$nroflines"
+    Write-Output "Exported to GitHub Actions: NEXT_PUBLIC_NUMBER_OF_LINES=$nroflines"
+}
+'''

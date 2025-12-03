@@ -51,21 +51,20 @@ npm run analyze     # analyze bundle size (Webpack only)
 
 # CI install (used in GitHub Actions)
 mise run ci         # or: mise r ci
-# This runs npm ci and depends on utils:nroflines and utils:nrofwordsandtime tasks
 ```
 
 ### Mise Utility Tasks
 
-Two file-based tasks in mise-tasks/utils/ calculate build-time metadata:
+Build-time metadata tasks defined in mise.toml:
 
-- **nroflines**: Counts TypeScript lines using fd and sets NEXT_PUBLIC_NUMBER_OF_LINES
-- **nrofwordsandtime**: Calculates word count and reading time for .mdx files, sets NEXT_PUBLIC_MDX_DETAILS_* vars
-
-These tasks run automatically before `mise r ci` (see mise.toml dependencies).
+- **utils:nroflines**: Counts TypeScript lines using fd and sets NEXT_PUBLIC_NUMBER_OF_LINES
+  - Uses bash script for Unix/Linux/macOS (`run`)
+  - Uses PowerShell script for Windows (`run_windows`)
+  - Both scripts produce identical results and export to GitHub Actions via `$GITHUB_ENV`
 
 ## Environment Variables
 
-Three environment variables are injected at build time (managed via mise.toml):
+Two environment variables are injected at build time (managed via mise.toml):
 
 - **NEXT_PUBLIC_GOOGLE_ANALYTICS**: Google Analytics ID (set via GitHub secret in CI)
 - **NEXT_PUBLIC_NUMBER_OF_LINES**: TypeScript line count (calculated by nroflines task)
