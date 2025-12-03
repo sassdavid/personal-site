@@ -6,7 +6,7 @@ fd = "latest"
 node = "24"
 
 [env]
-NEXT_PUBLIC_NUMBER_OF_LINES = "2276"
+NEXT_PUBLIC_NUMBER_OF_LINES = "2265"
 
 [tasks.ci]
 alias = "ci"
@@ -61,6 +61,7 @@ if [ -n "${GITHUB_ENV:-}" ]; then
 fi
 '''
 run_windows = '''
+#!/usr/bin/env pwsh
 $ErrorActionPreference = "Stop"
 
 # Get all TypeScript files and count their lines
