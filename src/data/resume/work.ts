@@ -17,7 +17,8 @@ const work: Position[] = [
     position: 'Senior DevOps Engineer',
     url: 'https://www.loxon.eu/',
     startDate: '2025-07-01',
-    summary: 'Leading AWS multi-region infrastructure initiatives and DevOps practices, maintaining multi-tenant environments serving multiple clients across Indonesia while mentoring team members and driving technical excellence.',
+    summary:
+      'Leading AWS multi-region infrastructure initiatives and DevOps practices, maintaining multi-tenant environments serving multiple clients across Indonesia while mentoring team members and driving technical excellence.',
     highlights: [
       'Architecting and managing AWS multi-region, multi-tenant infrastructure for enterprise SaaS deployments',
       'Maintaining multi-tenant AWS environments serving major clients including Grab across Indonesia',
@@ -33,7 +34,8 @@ const work: Position[] = [
     url: 'https://www.loxon.eu/',
     startDate: '2024-08-01',
     endDate: '2025-06-30',
-    summary: 'Spearheaded cloud infrastructure design and Kubernetes migration, establishing robust DevOps practices and implementing comprehensive AWS architecture for enterprise-scale systems.',
+    summary:
+      'Spearheaded cloud infrastructure design and Kubernetes migration, establishing robust DevOps practices and implementing comprehensive AWS architecture for enterprise-scale systems.',
     highlights: [
       'Designed AWS architecture utilizing VPC, EKS, S3, Lambda, RDS, MSK, Redshift, DynamoDB, Kinesis, and EventBridge',
       'Led migration from Docker Swarm to Kubernetes (Rancher on-prem, EKS on AWS)',
@@ -49,7 +51,8 @@ const work: Position[] = [
     url: 'https://www.loxon.eu/',
     startDate: '2022-08-01',
     endDate: '2024-07-31',
-    summary: 'Architected and delivered enterprise-grade microservices on AWS cloud infrastructure, focusing on scalable data solutions, event-driven architectures, and business intelligence capabilities.',
+    summary:
+      'Architected and delivered enterprise-grade microservices on AWS cloud infrastructure, focusing on scalable data solutions, event-driven architectures, and business intelligence capabilities.',
     highlights: [
       'Designed microservices using Java and Spring Boot for large-scale business functions',
       'Built database solutions with MongoDB, Redshift, MariaDB, and PostgreSQL',
@@ -65,7 +68,8 @@ const work: Position[] = [
     url: 'https://www.loxon.eu/',
     startDate: '2021-08-01',
     endDate: '2022-07-31',
-    summary: 'Contributed to cloud-native system development for ING Spain, working across full-stack development with microservices architecture and leading ETL integration efforts.',
+    summary:
+      'Contributed to cloud-native system development for ING Spain, working across full-stack development with microservices architecture and leading ETL integration efforts.',
     highlights: [
       'Developed REST APIs for multiple projects using microservices architecture',
       'Implemented ETL pipelines with Talend for high-volume data transfers',
@@ -80,7 +84,8 @@ const work: Position[] = [
     url: 'https://www.loxon.eu/',
     startDate: '2019-04-01',
     endDate: '2021-07-31',
-    summary: 'Advanced database engineering and authentication systems, specializing in Oracle optimization and implementing enterprise security solutions for banking clients across Europe.',
+    summary:
+      'Advanced database engineering and authentication systems, specializing in Oracle optimization and implementing enterprise security solutions for banking clients across Europe.',
     highlights: [
       'Designed Oracle databases handling hundreds of millions of rows with advanced optimization',
       'Developed native SQL statements, stored procedures, and functions',
@@ -95,7 +100,8 @@ const work: Position[] = [
     url: 'https://www.loxon.eu/',
     startDate: '2017-06-01',
     endDate: '2019-03-31',
-    summary: 'Started professional career delivering on-premise Collection Systems to banking clients, working with Java EE full-stack development and establishing foundational skills in enterprise application deployment.',
+    summary:
+      'Started professional career delivering on-premise Collection Systems to banking clients, working with Java EE full-stack development and establishing foundational skills in enterprise application deployment.',
     highlights: [
       'Delivered on-prem Collection Systems to multiple banking clients',
       'Developed full-stack solutions with Java EE and PrimeFaces',

@@ -62,7 +62,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${sourceSans.variable} ${raleway.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${sourceSans.variable} ${raleway.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <ThemeProvider
           attribute="class"
