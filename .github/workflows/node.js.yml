@@ -111,14 +111,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [22.x, 24.x]
+        node-version: [22, 24]
         os: [ubuntu-latest, windows-latest, macos-latest]
         exclude:
           # Reduce matrix size for faster CI
           - os: windows-latest
-            node-version: 22.x
+            node-version: 22
           - os: macos-latest
-            node-version: 22.x
+            node-version: 22
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -127,8 +127,10 @@ jobs:
         uses: jdx/mise-action@v3
         with:
           experimental: true
-        env:
-          MISE_NODE_VERSION: ${{ matrix.node-version }}
+          mise_toml: |
+            [tools]
+            fd = "latest"
+            node = "${{ matrix.node-version }}"
 
       - name: Install dependencies
         run: npm ci
