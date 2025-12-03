@@ -1,10 +1,10 @@
 name: CI
 
 on:
-#  push:
-#    branches: [main]
-#  pull_request:
-#    branches: [main]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 # Cancel in-progress runs for the same workflow and branch
@@ -152,7 +152,7 @@ jobs:
           echo "Static export successful. Found $(find out -type f | wc -l) files."
 
       - name: Upload build artifacts
-        if: matrix.os == 'ubuntu-latest' && matrix.node-version == '24.x'
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version == '24'
         uses: actions/upload-artifact@v5
         with:
           name: build-output
