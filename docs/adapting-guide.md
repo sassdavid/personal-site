@@ -7,29 +7,30 @@ You may wish to fork this repository or remove my remote origin and add your own
 ## Before you start
 
 1. Make sure you have a good text editor. I recommend [Visual Studio Code](https://code.visualstudio.com/).
-2. Review the project structure. This is a Next.js app using the App Router. Pages are defined in the `app/` directory. If you wish to add or remove a page, you should do so there.
+2. Review the project structure. This is a Next.js 16 app using the App Router. Pages are defined in the `src/app/` directory. If you wish to add or remove a page, you should do so there.
+3. (Optional but recommended) Install [mise](https://mise.jdx.dev/) for tool version management. Alternatively, ensure you have Node.js >= v22.
 
 ## Checklist
 
 ### Setup
 
-1. Run the project before making any modifications by following the set up and running instructions in the main [README.md](https://github.com/sassdavid/personal-site#set-up).
-2. Change `homepage` in `package.json` to reflect where you plan to host the site. This is important for static exporting. This also changes your path when developing locally. For example, a homepage of `davidsass.eu` places the site at `localhost:3000` and a homepage of `https://sassdavid.github.io/personal-site/` places the site at `localhost:3000/personal-site/`. If you plan to host at on a path such as `https://[your-github-username].github.io/[your-repo-name]`, you should set this now so that your development environment mirrors your production environment.
-3. Create a `.env.local` file. To do this, run:
+1. Run the project before making any modifications by following the setup instructions in the main [README.md](https://github.com/sassdavid/personal-site#-setup-and-running).
+
+2. Create a `.env.local` file. To do this, run:
 
    ```bash
    cp .env.example .env.local
    ```
 
-   and set values as appropriate. Most people will only need to update the Google Analytics tracking ID.
+   and set values as appropriate. Most people will only need to update the Google Analytics tracking ID (`NEXT_PUBLIC_GA_TRACKING_ID`).
 
 ### Adapt Content
 
 I recommend keeping the project running as you go (with `npm run dev`) to help correct mistakes quickly.
 
-1. Start by changing text in the sidebar. This file is located at `src/components/Template/SideBar.tsx`.
-2. Add an image of yourself in `public/images/me.jpg`. Your image should be approximately 256 x 256 pixels. Larger and smaller is ok, but avoid very large images to save bandwidth. If you need help resizing your image, Adobe makes a great online tool [here](https://www.adobe.com/photoshop/online/resize-image.html).
-3. Modify the text on the homepage. This file is located at `app/page.tsx`.
+1. Start by changing text in the sidebar. This file is located at `src/components/template/SideBar.tsx`.
+2. Add an image of yourself in `public/me.jpg`. Your image should be approximately 256 x 256 pixels. Larger and smaller is ok, but avoid very large images to save bandwidth. If you need help resizing your image, Adobe makes a great online tool [here](https://www.adobe.com/photoshop/online/resize-image.html).
+3. Modify the text on the homepage. This file is located at `src/app/page.tsx`.
 4. Modify the files in `src/data/resume/` next.
 5. Modify all of the other files in the `src/data/` directory.
 6. You've finished modifying >95% of the pages. Search through the rest of the files for references to `David` or `Sass` and change values to your name.
@@ -45,11 +46,11 @@ echo "[your-custom-domain][.com]" > public/CNAME
 
 as a shortcut.
 
-I recommend purchasing your own domain name from [Google Domains](https://domains.google). The project is pre-configured to automatically deploy to github pages via the deploy github action. Go to `https://github.com/[your-github-username]/[your-repo-name]/settings` and configure accordingly:
+I recommend purchasing your own domain name from [Google Domains](https://domains.google.com) or [Cloudflare Registrar](https://www.cloudflare.com/products/registrar/). The project is pre-configured to automatically deploy to GitHub Pages via the deploy GitHub Action. Go to `https://github.com/[your-github-username]/[your-repo-name]/settings` and configure accordingly:
 
 <center><img src="images/gh-pages.png"></center>
 
-Next, configure your domains DNS record. See [here](https://help.github.com/articles/using-a-custom-domain-with-github-pages/) for more information. After a few minutes, your website should be live on your domain.
+Next, configure your domain's DNS record. See [here](https://help.github.com/articles/using-a-custom-domain-with-github-pages/) for more information. After a few minutes, your website should be live on your domain.
 
 That's it. Thank you for reading. If you go through this guide and run into issues or areas you find unclear, please consider submitting a PR to help others like you.
 
@@ -57,34 +58,49 @@ That's it. Thank you for reading. If you go through this guide and run into issu
 
 Here are answers to questions I've been asked at least twice. I've attempted to simplify development and improve documentation throughout the project to address them. This section is updated frequently.
 
-1. My CSS isn't rendering, or I see a 404 instead of my site:
+1. **My CSS isn't rendering, or I see a 404 instead of my site:**
 
-   Make sure the `homepage` field of `package.json` points to where you plan to host your site index. Also, double check that you created a `CNAME` file (see deployment instructions above). If neither of these work, please open an issue.
+   Make sure the `.nojekyll` file exists in `public/`. This file directs GitHub to not attempt to render the website with Jekyll. If you're using a custom domain, ensure your `CNAME` file is correct. If neither of these work, please open an issue.
 
-2. LF / CRLF issues with eslint.
+2. **LF / CRLF issues with Biome:**
 
-   This is a common Windows development pitfall. Configure your eslint to handle line ending differences between Windows and Unix systems.
+   This is a common Windows development pitfall. Biome should handle line endings automatically, but if you encounter issues, run:
+   ```bash
+   npm run format
+   ```
 
-3. master / main
+3. **master / main:**
 
-   Github decided to rename the default branch of all of their repositories from master to main. See their reasoning [here](https://github.com/github/renaming). If you're trying to pull in recent changes, consider renaming your own branch, or just create a merge commit.
+   GitHub renamed the default branch from master to main. See their reasoning [here](https://github.com/github/renaming). If you're trying to pull in recent changes, consider renaming your own branch, or just create a merge commit.
 
-4. Google Analytics Warnings when building.
+4. **Google Analytics warnings when building:**
 
-   Either set up Google Analytics 4 or remove the `<GoogleAnalytics />` component from `app/layout.tsx`. The site now uses the official `@next/third-parties` package for GA4 integration.
+   Either set up Google Analytics 4 (set `NEXT_PUBLIC_GA_TRACKING_ID` in `.env.local` or as a GitHub repository variable) or remove the `<GoogleAnalytics />` component from `src/app/layout.tsx`. The site now uses the official `@next/third-parties` package for GA4 integration.
 
-5. How do I configure git? What is nano?
+5. **How do I configure git? What is nano?**
 
-   Read through [git-scm](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup)'s excellent documentation. I recommend setting your default text editor to something you're comfortable with. I like to use vim for writing commit messages.
+   Read through [git-scm](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup)'s excellent documentation. I recommend setting your default text editor to something you're comfortable with.
 
-6. Can I host at [username.github.io]?
+6. **Can I host at [username.github.io]?**
 
-   Sure, see github's documentation [here](https://pages.github.com/).
+   Sure, see GitHub's documentation [here](https://pages.github.com/).
 
-7. How do I disable eslint?
+7. **How do I disable Biome?**
 
-   `echo "*\n" > .eslintignore` Although I really don't recommend it. Linters are good. They help prevent errors, enforce uniform style so that you can spend less time thinking about formatting and more time reading code, and eliminate easy nits for code reviews. If the rules aren't working for you, you should change them. See eslint's documentation [here](https://eslint.org/docs/about/) for more information.
+   I really don't recommend it. Linters are good. They help prevent errors, enforce uniform style so that you can spend less time thinking about formatting and more time reading code, and eliminate easy nits for code reviews. If the rules aren't working for you, you should change them in `biome.json`. See Biome's documentation [here](https://biomejs.dev/) for more information.
 
-8. Why is my website rendering the readme file?
+8. **Why is my website rendering the README file?**
 
-   See 1. above and make sure that `.nojekyll` still exists in `public`. This file directs github to not attempt to render the website with Jekyll.
+   See 1. above and make sure that `.nojekyll` still exists in `public/`. This file directs GitHub to not attempt to render the website with Jekyll.
+
+9. **What is mise and do I need it?**
+
+   [mise](https://mise.jdx.dev/) is a tool version manager and task runner. It's optional but recommended. If you prefer not to use it, you can run standard npm commands directly. The main benefit is automatic tool version management and convenient task aliases.
+
+10. **TypeScript errors during build:**
+
+    Run type checking locally:
+    ```bash
+    npm run type-check
+    ```
+    Fix any errors before deploying.

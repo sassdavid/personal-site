@@ -13,7 +13,8 @@ Key architectural choices:
 - **Centralized Types**: All TypeScript types are consolidated in src/lib/types.tsx to avoid duplication across components
 - **Theme System**: Dark/light theme implementation using next-themes with ThemeProvider in layout.tsx (attribute="class", defaultTheme="dark")
 - **Modern Tooling**: Biome for linting, Jest for testing, Bundle Analyzer for optimization
-- **Build-time Environment Variables**: Three env vars are dynamically set at build time via mise tasks (see below)
+- **mise Integration**: Tool version management and task runner with cross-platform support
+- **Build-time Environment Variables**: Two env vars are dynamically set at build time via mise tasks (see below)
 
 ## Development Commands
 
@@ -62,12 +63,59 @@ Build-time metadata tasks defined in mise.toml:
   - Uses PowerShell script for Windows (`run_windows`)
   - Both scripts produce identical results and export to GitHub Actions via `$GITHUB_ENV`
 
+## Mise Configuration
+
+The project uses [mise](https://mise.jdx.dev/) for polyglot tool version management and task automation. Configuration is in `mise.toml`.
+
+### Tool Versions
+
+```toml
+[tools]
+fd = "latest"
+node = "24"
+```
+
+- **fd**: Fast file finder (used for counting TypeScript files)
+- **node**: Node.js version 24 (can be overridden via `MISE_NODE_VERSION` environment variable in CI)
+
+### Settings
+
+```toml
+[settings]
+windows_default_inline_shell_args = "pwsh -Command"
+```
+
+- **windows_default_inline_shell_args**: Configures mise to use PowerShell instead of CMD on Windows for inline scripts in tasks. This enables the `run_windows` property in tasks to execute PowerShell scripts correctly.
+
+### Task Structure
+
+Tasks are defined as TOML inline scripts with cross-platform support:
+
+```toml
+[tasks."utils:nroflines"]
+description = "Gets the number of lines of TypeScript code in the project"
+run = '''
+#!/usr/bin/env bash
+# Unix/Linux/macOS bash script
+'''
+run_windows = '''
+# Windows PowerShell script (no shebang needed)
+'''
+```
+
+**Key Points:**
+- Tasks use `run` property for Unix/Linux/macOS (bash with shebang)
+- Tasks use `run_windows` property for Windows (PowerShell, no shebang needed)
+- Windows scripts are automatically executed via PowerShell due to `windows_default_inline_shell_args` setting
+- Multi-line scripts use triple quotes (`'''`)
+- Environment variables can be set via `mise set` command or `$GITHUB_ENV` for GitHub Actions
+
 ## Environment Variables
 
-Two environment variables are injected at build time (managed via mise.toml):
+Two environment variables are injected at build time:
 
-- **NEXT_PUBLIC_GOOGLE_ANALYTICS**: Google Analytics ID (set via GitHub secret in CI)
-- **NEXT_PUBLIC_NUMBER_OF_LINES**: TypeScript line count (calculated by nroflines task)
+- **NEXT_PUBLIC_GA_TRACKING_ID**: Google Analytics 4 tracking ID (set via GitHub repository variable in CI, or .env.local for local development)
+- **NEXT_PUBLIC_NUMBER_OF_LINES**: TypeScript line count (calculated dynamically by utils:nroflines task)
 
 These are accessed directly via process.env with fallback defaults where needed.
 
@@ -125,10 +173,11 @@ src/
 GitHub Actions workflow (.github/workflows/github-pages.yml) handles CI/CD:
 
 1. Uses mise-action to set up environment
-2. Sets NEXT_PUBLIC_GOOGLE_ANALYTICS from GitHub secret
-3. Runs `mise r ci` to install deps and calculate metadata
-4. Runs `mise r b` to build
-5. Deploys ./out directory to GitHub Pages
+2. Sets NEXT_PUBLIC_GA_TRACKING_ID from GitHub repository variable
+3. Runs `mise run utils:nroflines` to calculate TypeScript line count
+4. Runs `mise run ci` to install deps
+5. Runs `mise run build` to create static export
+6. Deploys ./out directory to GitHub Pages
 
 The CNAME file in public/ configures the custom domain davidsass.eu.
 
@@ -162,21 +211,31 @@ describe('Component', () => {
 
 ## CI/CD
 
-Two GitHub Actions workflows:
+Two GitHub Actions workflows (both manual-trigger only via `workflow_dispatch`):
 
 1. **node.js.yml** (CI Validation):
-   - Parallel jobs: code-quality, test, build
-   - Runs on all pushes and PRs
-   - Uses mise for environment management
-   - Caches node_modules and .next/cache
+   - **Trigger**: Manual only via workflow_dispatch
+   - **Jobs**: code-quality, test, build (run in parallel)
+   - **Matrix Build**: Tests on multiple platforms (ubuntu-latest, windows-latest) and Node versions (22, 24)
+   - **Node Version Override**: Uses `MISE_NODE_VERSION` environment variable to override mise.toml node version in matrix builds
+   - **Cross-platform**: Full support for Linux, macOS, and Windows builds
+   - **Uses mise**: For environment management, tool installation, and task execution
+   - **Caching**: node_modules and .next/cache for faster builds
 
 2. **github-pages.yml** (Deployment):
-   - Builds and deploys to GitHub Pages
-   - Runs on push to main
-   - Sets environment variables via mise
-   - Caches for faster deployments
+   - **Trigger**: Manual only via workflow_dispatch
+   - **Workflow**: Builds and deploys to GitHub Pages
+   - **Environment Variables**: Sets NEXT_PUBLIC_GA_TRACKING_ID from GitHub repository variables
+   - **Build Steps**:
+     1. Sets up mise environment with mise-action
+     2. Runs `mise run utils:nroflines` to calculate TypeScript line count
+     3. Runs `mise run ci` to install dependencies
+     4. Runs `mise run build` to create static export
+     5. Deploys ./out directory to GitHub Pages
+   - **Custom Domain**: CNAME file in public/ configures davidsass.eu
+   - **Caching**: Enabled for faster deployments
 
-**Dependabot**: Configured for weekly npm and GitHub Actions updates
+**Dependabot**: Configured for weekly npm and GitHub Actions updates (see .github/dependabot.yml)
 
 ## Theme System
 
