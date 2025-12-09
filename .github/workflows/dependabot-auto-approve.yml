@@ -1,4 +1,4 @@
-name: Dependabot Auto-merge
+name: Dependabot Auto-approve
 
 on:
   pull_request_target:
@@ -8,7 +8,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  auto-merge:
+  auto-approve:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     steps:
@@ -17,11 +17,18 @@ jobs:
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-      - name: Enable auto-merge for patch and minor updates
+      - name: Auto-approve patch and minor updates
         if: |
           steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
           steps.metadata.outputs.update-type == 'version-update:semver-minor'
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: |
+          gh pr review "$PR_URL" --approve --body "**Auto-approved by GitHub Actions**
+
+          This PR updates a dependency with a ${{ steps.metadata.outputs.update-type }}.
+          - Dependency: ${{ steps.metadata.outputs.dependency-names }}
+          - Update type: ${{ steps.metadata.outputs.update-type }}
+
+          Auto-merge will proceed once all checks pass."
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
