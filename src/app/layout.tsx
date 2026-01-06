@@ -1,44 +1,73 @@
 import type { Metadata } from 'next';
 import { Raleway, Source_Sans_3 } from 'next/font/google';
-import React from 'react';
+import Script from 'next/script';
 
-import GoogleAnalytics from '@/components/template/GoogleAnalytics';
-import Navigation from '@/components/template/Navigation';
-import '@/assets/scss/main.scss';
-
-import { ThemeProvider } from 'next-themes';
+import GoogleAnalytics from '@/components/Template/GoogleAnalytics';
+import Navigation from '@/components/Template/Navigation';
+import ScrollToTop from '@/components/Template/ScrollToTop';
+import { AUTHOR_NAME, SITE_URL, TWITTER_HANDLE } from '@/lib/utils';
+import './tailwind.css';
 
 const sourceSans = Source_Sans_3({
   weight: ['400', '700'],
   subsets: ['latin'],
   variable: '--font-source-sans',
   display: 'swap',
+  preload: true,
+  adjustFontFallback: true,
 });
 
 const raleway = Raleway({
-  weight: ['400', '800', '900'],
+  weight: ['400', '800'],
   subsets: ['latin'],
   variable: '--font-raleway',
   display: 'swap',
+  preload: true,
+  adjustFontFallback: true,
 });
+
+const siteDescription = "David Sass-Kovacs's personal website.";
 
 export const metadata: Metadata = {
   title: {
-    default: 'David Sass-Kovacs',
-    template: '%s | David Sass-Kovacs',
+    default: AUTHOR_NAME,
+    template: `%s | ${AUTHOR_NAME}`,
   },
-  description: "David Sass-Kovacs's personal website.",
-  keywords: ['David Sass-Kovacs', 'DevOps', 'Engineer', 'DevOps Engineer'],
-  authors: [{ name: 'David Sass-Kovacs' }],
-  creator: 'David Sass-Kovacs',
-  metadataBase: new URL('https://davidsass.eu'),
+  description: siteDescription,
+  keywords: [
+    AUTHOR_NAME,
+    'DevOps',
+    'Engineer',
+    'DevOps Engineer',
+    'Hungary',
+    'AWS',
+  ],
+  authors: [{ name: AUTHOR_NAME }],
+  creator: AUTHOR_NAME,
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     type: 'website',
     locale: 'hu_HU',
-    url: 'https://davidsass.eu',
-    siteName: 'David Sass-Kovacs',
-    title: 'David Sass-Kovacs',
-    description: "David Sass-Kovacs's personal website.",
+    url: SITE_URL,
+    siteName: AUTHOR_NAME,
+    title: AUTHOR_NAME,
+    description: siteDescription,
+    images: [
+      {
+        url: '/images/me.jpg',
+        width: 1200,
+        height: 630,
+        alt: AUTHOR_NAME,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: TWITTER_HANDLE,
+    creator: TWITTER_HANDLE,
+    title: AUTHOR_NAME,
+    description: siteDescription,
+    images: ['/images/me.jpg'],
   },
   robots: {
     index: true,
@@ -51,9 +80,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  icons: {
-    icon: '/favicon.ico',
-  },
 };
 
 export default function RootLayout({
@@ -65,21 +91,21 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${sourceSans.variable} ${raleway.variable}`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
+      <head>
+        {/* CSP-safe theme initialization - prevents flash on load */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t)}else if(window.matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.setAttribute('data-theme','dark')}else{document.documentElement.setAttribute('data-theme','light')}}catch(e){}})();`}
+        </Script>
+      </head>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          disableTransitionOnChange
-          enableColorScheme
-          enableSystem={false}
-        >
-          <div id="wrapper">
-            <Navigation />
-            {children}
-          </div>
-        </ThemeProvider>
+        <ScrollToTop />
+        <div className="site-wrapper">
+          <Navigation />
+          {children}
+        </div>
         <GoogleAnalytics />
       </body>
     </html>

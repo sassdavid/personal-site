@@ -1,6 +1,6 @@
 export const aboutMarkdown = `# Intro
 
-As a DevOps Engineer at <a href="https://www.loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a>, I play a key role in designing, implementing, and maintaining the infrastructure and deployment pipelines
+As a Senior DevOps Engineer at <a href="https://loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a>, I play a key role in designing, implementing, and maintaining the infrastructure and deployment pipelines
 that support our software solutions. By leveraging my expertise in cloud technologies, containerization, and automation, I ensure the reliability,
 scalability, and efficiency of our systems. My passion for optimizing processes and building innovative solutions has significantly contributed to
 the success of our team and projects.
@@ -22,7 +22,7 @@ more about me, my work, or have a project that you think I could help with, plea
 
 # Currently
 
-In my role as a DevOps Engineer at <a href="https://www.loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a>, I primarily focus on optimizing and managing our infrastructure in AWS.
+In my role as a DevOps Engineer at <a href="https://loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a>, I primarily focus on optimizing and managing our infrastructure in AWS.
 My responsibilities include creating and maintaining Helm charts, leveraging Terraform and Terragrunt to streamline and simplify infrastructure
 as code practices, and enhancing GitOps workflows for seamless deployment and scalability. By utilizing Terragrunt,
 I ensure consistent and efficient management of Terraform configurations across environments. Additionally,
@@ -30,25 +30,25 @@ I am dedicated to optimizing our product in Amazon EKS, ensuring high availabili
 
 <br />
 
-Another crucial aspect of my work at <a href="https://www.loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a> has been developing strong relationships with clients. Through regular
+Another crucial aspect of my work at <a href="https://loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a> has been developing strong relationships with clients. Through regular
 communication and a customer-centric
 approach, I have been able to understand their needs and requirements, and ensure that our software products and solutions meet or exceed their
 expectations.
 
 <br />
 
-Furthermore, my experience at <a href="https://www.loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a> has allowed me to gain hands-on experience in implementing enterprise-grade products,
+Furthermore, my experience at <a href="https://loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a> has allowed me to gain hands-on experience in implementing enterprise-grade products,
 working with cutting-edge
 technologies, and using agile methodologies to deliver software solutions that meet complex business needs. These experiences have helped me to
 develop a well-rounded skillset and the ability to work effectively in dynamic and challenging environments.
 
 <br />
 
-Overall, my time at <a href="https://www.loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a> has been instrumental in shaping my professional development and has given me a solid foundation
+Overall, my time at <a href="https://loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a> has been instrumental in shaping my professional development and has given me a solid foundation
 for the next steps in my
 career. If you have any questions or would like to discuss potential collaboration, please do not hesitate to reach out.
 
-# I like
+# I Like
 
 - Enjoy going to the gym to stay healthy and fit.
 - Love going for runs and exploring new routes.
@@ -70,7 +70,7 @@ career. If you have any questions or would like to discuss potential collaborati
 - In 2023, I traveled to Pisa, Italy, High Tatras, Stuttgart, Germany and Strasbourg, France.
 - In 2024, I am hoping to travel again.
 
-# Fun facts
+# Fun Facts
 
 - I have a passion for solving coding challenges, and one of my favorite yearly events is Advent of Code. I have participated in the event from the
   very beginning and enjoy the opportunity to apply my problem-solving skills to new and exciting puzzles each year.
@@ -81,7 +81,7 @@ career. If you have any questions or would like to discuss potential collaborati
   pandemic, when I decided to explore new culinary horizons, and now it has become a weekly ritual. I've experimented with different techniques and
   recipes, and I'm proud to say that my pizza is now one of my specialties.
 
-# I dream of
+# I Dream Of
 
 - Continuously finding inspiration to fuel personal growth and development.
 - Striving to do better and better, whether it's in personal or professional pursuits.

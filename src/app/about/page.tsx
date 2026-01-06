@@ -1,27 +1,31 @@
 import Markdown from 'markdown-to-jsx';
+import type { Metadata } from 'next';
 
-import Link from 'next/link';
-import React from 'react';
-import PageWrapper from '@/app/components/PageWrapper';
+import PageWrapper from '@/components/Template/PageWrapper';
 import { aboutMarkdown } from '@/data/about';
 
-const count = (str: string) =>
+export const metadata: Metadata = {
+  title: 'About',
+  description: 'Learn about David Sass-Kovacs - Senior DevOps Engineer @ Loxon',
+};
+
+const countWords = (str: string) =>
   str.split(/\s+/).filter((word) => word !== '').length;
 
 export default function AboutPage() {
   return (
     <PageWrapper>
-      <article className="post markdown" id="about">
-        <header>
-          <div className="title">
-            <h2>
-              <Link href="/about">About Me</Link>
-            </h2>
-            <p>(in about {count(aboutMarkdown)} words)</p>
-          </div>
+      <section className="about-page">
+        <header className="about-header">
+          <h1 className="page-title">About Me</h1>
+          <p className="page-subtitle">
+            A quick intro in {countWords(aboutMarkdown)} words
+          </p>
         </header>
-        <Markdown>{aboutMarkdown}</Markdown>
-      </article>
+        <article className="about-content">
+          <Markdown>{aboutMarkdown}</Markdown>
+        </article>
+      </section>
     </PageWrapper>
   );
 }

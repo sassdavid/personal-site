@@ -15,7 +15,7 @@ const work: Position[] = [
   {
     name: 'Loxon Solutions Zrt.',
     position: 'Senior DevOps Engineer',
-    url: 'https://www.loxon.eu/',
+    url: 'https://loxon.eu/',
     startDate: '2025-07-01',
     summary:
       'Leading AWS multi-region infrastructure initiatives and DevOps practices, maintaining multi-tenant environments serving multiple clients across Indonesia while mentoring team members and driving technical excellence.',
@@ -31,7 +31,7 @@ const work: Position[] = [
   {
     name: 'Loxon Solutions Zrt.',
     position: 'DevOps Engineer',
-    url: 'https://www.loxon.eu/',
+    url: 'https://loxon.eu/',
     startDate: '2024-08-01',
     endDate: '2025-06-30',
     summary:
@@ -48,7 +48,7 @@ const work: Position[] = [
   {
     name: 'Loxon Solutions Zrt.',
     position: 'Staff Software Engineer',
-    url: 'https://www.loxon.eu/',
+    url: 'https://loxon.eu/',
     startDate: '2022-08-01',
     endDate: '2024-07-31',
     summary:
@@ -65,7 +65,7 @@ const work: Position[] = [
   {
     name: 'Loxon Solutions Zrt.',
     position: 'Senior Software Engineer',
-    url: 'https://www.loxon.eu/',
+    url: 'https://loxon.eu/',
     startDate: '2021-08-01',
     endDate: '2022-07-31',
     summary:
@@ -81,7 +81,7 @@ const work: Position[] = [
   {
     name: 'Loxon Solutions Zrt.',
     position: 'Software Engineer',
-    url: 'https://www.loxon.eu/',
+    url: 'https://loxon.eu/',
     startDate: '2019-04-01',
     endDate: '2021-07-31',
     summary:
@@ -97,7 +97,7 @@ const work: Position[] = [
   {
     name: 'Loxon Solutions Zrt.',
     position: 'Software Developer',
-    url: 'https://www.loxon.eu/',
+    url: 'https://loxon.eu/',
     startDate: '2017-06-01',
     endDate: '2019-03-31',
     summary:

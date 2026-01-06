@@ -15,31 +15,22 @@ This projects attempts to follow these design principles. Feedback and discussio
 ## Good Developer Experience
 
 1. Modular
-   - It should be relatively straightforward to replace the content in this repository or to add a new feature.
+   - It should be relatively straight forward to replace the content in this repository or to add a new feature.
    - Good separation of concerns. Components keep track of their own state. Props are not over-utilized.
-   - Limited vertical depth (changes should be relatively self-encapsulated).
-   - Correct abstractions - Next.js build system is complex, but developers don't need to understand the internals to use this project.
-   - Centralized type definitions in `src/lib/types.tsx` to avoid duplication.
+   - Limited vertical depth (changes should be relatively self encapsulated).
+   - Correct abstractions. - Next.js build system is complex, but developers don't need to understand the internals to use this project.
 1. Good Documentation
    - Comments exist and have an appropriate level of detail.
    - Code should be readable.
-   - Comprehensive guides for adaptation, contribution, and architecture (see [docs/](../docs/) directory).
-   - Developer-focused documentation in CLAUDE.md for AI-assisted development.
 1. Lean
    - Projects bloat over time. Actively prune for old and dead code.
    - New features that affect the entire project should be carefully considered.
    - Buy, don't build. Don't reinvent the wheel. Use popular npm libraries when possible.
 1. Limited horizontal fragmentation
-   - Modern linting with [Biome](https://biomejs.dev/) to prevent PR nits & minimize time spent on code style.
-   - Additional formatting via [Prettier](https://prettier.io/) for Markdown, SCSS, and YAML.
-   - Preferred React Style - functional components with hooks, TypeScript for type safety.
+   - Linter to prevent easy PR nits & to prevent developers from wasting time thinking about code style.
+   - Preferred React Style - functional components with TypeScript for type safety.
    - Consistent file structure based on current best practices.
    - Similar features are built similarly. Code reads like an assembly line, not a layer cake.
-1. Modern Tooling
-   - [mise](https://mise.jdx.dev/) for tool version management and task automation.
-   - Cross-platform support (Windows, macOS, Linux) with appropriate scripts for each platform.
-   - Fast builds with Turbopack in development mode.
-   - Jest with SWC for fast test execution.
 
 ## Stable
 

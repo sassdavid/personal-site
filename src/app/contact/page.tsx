@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import React from 'react';
-import PageWrapper from '@/app/components/PageWrapper';
-import ContactIcons from '@/components/contact/ContactIcons';
-import EmailLink from '@/components/contact/EmailLink';
+
+import ContactIcons from '@/components/Contact/ContactIcons';
+import EmailLink from '@/components/Contact/EmailLink';
+
+import PageWrapper from '@/components/Template/PageWrapper';
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -13,20 +13,24 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <PageWrapper>
-      <article className="post" id="contact">
-        <header>
-          <div className="title">
-            <h2>
-              <Link href="/contact">Contact</Link>
-            </h2>
-          </div>
+      <section className="contact-page">
+        <header className="contact-header">
+          <h1 className="page-title">Get in Touch</h1>
         </header>
-        <div className="email-at">
-          <p>Feel free to get in touch. You can email me at:</p>
-          <EmailLink />
+
+        <div className="contact-content">
+          <div className="contact-email-block">
+            <EmailLink />
+            <p className="contact-hint">Usually respond within 24 hours</p>
+          </div>
+
+          <div className="contact-divider">
+            <span>or find me on</span>
+          </div>
+
+          <ContactIcons />
         </div>
-        <ContactIcons />
-      </article>
+      </section>
     </PageWrapper>
   );
 }

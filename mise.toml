@@ -6,21 +6,39 @@ fd = "latest"
 node = "24"
 
 [env]
-NEXT_PUBLIC_NUMBER_OF_LINES = "2259"
+NEXT_PUBLIC_NUMBER_OF_LINES = "12825"
 
 [tasks.ci]
 alias = "ci"
 description = "Install npm dependencies with npm ci for CI environments"
 run = "npm ci --no-fund"
 
+[tasks.dev]
+alias = "d"
+description = "Start Next.js development server with Turbopack"
+run = "npm run dev"
+
 [tasks.build]
 alias = "b"
 description = "Build Next.js application for production static export"
-run = ["npm run build"]
+run = "npm run build"
+
+[tasks.test]
+alias = "t"
+description = "Run Vitest tests"
+run = "npm test"
 
 [tasks."test:ci"]
-description = "Run Jest tests with CI mode and coverage reporting"
-run = "npm test -- --ci --coverage"
+description = "Run Vitest tests with coverage reporting for CI"
+run = "npm run test:coverage"
+
+[tasks."test:watch"]
+description = "Run Vitest tests in watch mode"
+run = "npm run test:watch"
+
+[tasks."test:coverage"]
+description = "Run Vitest tests with coverage reporting"
+run = "npm run test:coverage"
 
 [tasks.lint]
 description = "Lint code with Biome linter"
@@ -30,9 +48,23 @@ run = "npm run lint"
 description = "Run TypeScript type checking with tsc --noEmit"
 run = "npm run type-check"
 
+[tasks.format]
+alias = "f"
+description = "Format code with Biome and Prettier"
+run = "npm run format"
+
 [tasks."format:check"]
 description = "Check code formatting with Biome and Prettier"
 run = "npm run format:check"
+
+[tasks.analyze]
+description = "Build with bundle analyzer for bundle size analysis"
+run = "ANALYZE=true npm run build"
+
+[tasks.clean]
+alias = "c"
+description = "Clean all cache, build artifacts, and node_modules"
+run = "rm -rf node_modules .next out .turbo coverage .tsbuildinfo .npm .DS_Store"
 
 [tasks."utils:nroflines"]
 description = "Gets the number of lines of TypeScript code in the project"

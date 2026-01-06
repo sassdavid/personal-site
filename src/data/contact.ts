@@ -14,14 +14,19 @@ export interface ContactItem {
 
 const data: ContactItem[] = [
   {
+    link: 'https://www.linkedin.com/in/sassd',
+    label: 'LinkedIn',
+    icon: faLinkedinIn,
+  },
+  {
     link: 'https://github.com/sassdavid',
     label: 'GitHub',
     icon: faGithub,
   },
   {
-    link: 'https://facebook.com/sass.david',
-    label: 'Facebook',
-    icon: faFacebookF,
+    link: 'https://x.com/sassdavid14',
+    label: 'X',
+    icon: faTwitter,
   },
   {
     link: 'https://www.instagram.com/sdaviid',
@@ -29,14 +34,9 @@ const data: ContactItem[] = [
     icon: faInstagram,
   },
   {
-    link: 'https://www.linkedin.com/in/sassd',
-    label: 'LinkedIn',
-    icon: faLinkedinIn,
-  },
-  {
-    link: 'https://x.com/sassdavid14',
-    label: 'X',
-    icon: faTwitter,
+    link: 'https://facebook.com/sass.david',
+    label: 'Facebook',
+    icon: faFacebookF,
   },
   {
     link: 'mailto:david.sass14@gmail.com',

@@ -1,23 +1,47 @@
-import React from 'react';
-import { StatData } from '@/components/stats/types';
-import YearCounter from '@/components/stats/YearCounter';
+'use client';
+
+import { useEffect, useState } from 'react';
+
+import type { StatData } from '../../components/Stats/types';
+
+/** Birth date for age calculation (ISO format) */
+const BIRTH_DATE = '1993-06-16T09:30:00';
+
+/** Milliseconds in an average year (accounting for leap years) */
+const MS_PER_YEAR = 1000 * 60 * 60 * 24 * 365.2421897;
+
+/** Update interval for age display in ms */
+const AGE_UPDATE_INTERVAL = 25;
+
+/** Number of decimal places for age display */
+const AGE_PRECISION = 11;
+
+function Age() {
+  const [age, setAge] = useState<string>('');
+
+  const tick = () => {
+    const birthTime = new Date(BIRTH_DATE);
+    setAge(
+      ((Date.now() - birthTime.getTime()) / MS_PER_YEAR).toFixed(AGE_PRECISION),
+    );
+  };
+
+  useEffect(() => {
+    tick(); // Initial tick
+    const timer = setInterval(() => tick(), AGE_UPDATE_INTERVAL);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  return <>{age}</>;
+}
 
 const data: StatData[] = [
   {
     key: 'age',
     label: 'Current age',
-    value: <YearCounter fromDateString="1993-06-16T09:30:00" />,
-  },
-  {
-    key: 'currentjob',
-    label: 'Years in my current job',
-    value: <YearCounter fromDateString="2017-06-06T08:00:00" />,
-    link: 'https://www.loxon.eu/',
-  },
-  {
-    key: 'coffe',
-    label: 'Average cups of coffee per day',
-    value: 4,
+    value: <Age />,
   },
   {
     key: 'countries',
@@ -26,7 +50,7 @@ const data: StatData[] = [
   },
   {
     key: 'location',
-    label: 'Current location',
+    label: 'Current city',
     value: 'Budapest, HU',
   },
 ];

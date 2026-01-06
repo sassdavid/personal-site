@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
-import React from 'react';
-import Education from '@/components/resume/Education';
-import Experience from '@/components/resume/Experience';
-import References from '@/components/resume/References';
-import Skills from '@/components/resume/Skills';
-import Tools from '@/components/resume/Tools';
+
+import Education from '@/components/Resume/Education';
+import Experience from '@/components/Resume/Experience';
+import References from '@/components/Resume/References';
+import ResumeNav from '@/components/Resume/ResumeNav';
+import Skills from '@/components/Resume/Skills';
+import Tools from '@/components/Resume/Tools';
+import PageWrapper from '@/components/Template/PageWrapper';
 import degrees from '@/data/resume/degrees';
 import { categories, skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
@@ -15,54 +17,43 @@ export const metadata: Metadata = {
   description: "David Sass-Kovacs's Resume. Currently at Loxon.",
 };
 
-const sections = [
-  { name: 'Education', id: 'education' },
-  { name: 'Experience', id: 'experience' },
-  { name: 'Skills', id: 'skills' },
-  { name: 'Tools', id: 'tools' },
-  { name: 'References', id: 'references' },
-];
-
 export default function ResumePage() {
   return (
-    <article className="post" id="resume">
-      <header>
-        <div className="title">
-          <h2>Resume</h2>
-          <div className="link-container">
-            {sections.map((section) => (
-              <h4 key={section.id}>
-                <a href={`#${section.id}`}>{section.name}</a>
-              </h4>
-            ))}
-          </div>
+    <PageWrapper>
+      <section className="resume-page">
+        <header className="resume-header">
+          <h1 className="resume-title">Resume</h1>
+          <p className="resume-summary">
+            I build reliable, scalable infrastructure using modern cloud
+            technologies and automation. Focused on creating efficient workflows
+            that drive technical excellence and operational success.
+          </p>
+        </header>
+
+        <ResumeNav />
+
+        <div className="resume-content">
+          <section id="experience" className="resume-section">
+            <Experience data={work} />
+          </section>
+
+          <section id="education" className="resume-section">
+            <Education data={degrees} />
+          </section>
+
+          <section id="skills" className="resume-section">
+            <Skills skills={skills} categories={categories} />
+          </section>
+
+          <section id="tools" className="resume-section">
+            <Tools data={tools} />
+          </section>
+
+          <section id="references" className="resume-section">
+            <References />
+          </section>
         </div>
-      </header>
-
-      <section id="education" className="education">
-        <div className="link-to" />
-        <Education data={degrees} />
       </section>
-
-      <section id="experience" className="experience">
-        <div className="link-to" />
-        <Experience data={work} />
-      </section>
-
-      <section id="skills" className="skills">
-        <div className="link-to" />
-        <Skills skills={skills} categories={categories} />
-      </section>
-
-      <section id="tools" className="tools">
-        <div className="link-to" />
-        <Tools data={tools} />
-      </section>
-
-      <section id="references" className="references">
-        <div className="link-to" />
-        <References />
-      </section>
-    </article>
+    </PageWrapper>
   );
 }

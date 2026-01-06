@@ -1,8 +1,0 @@
-@use '../libs/skel' as skel;
-
-/* Main */
-
-#main {
-  @include skel.vendor('flex-grow', '1');
-  width: 100%;
-}
