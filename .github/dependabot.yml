@@ -8,6 +8,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "12:00"
+      timezone: "Europe/Budapest"
     groups:
       react:
         patterns:
@@ -30,6 +32,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "12:00"
+      timezone: "Europe/Budapest"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
