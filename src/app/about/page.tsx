@@ -23,7 +23,17 @@ export default function AboutPage() {
           </p>
         </header>
         <article className="about-content">
-          <Markdown>{aboutMarkdown}</Markdown>
+          <Markdown
+            options={{
+              overrides: {
+                br: {
+                  component: () => <br />,
+                },
+              },
+            }}
+          >
+            {aboutMarkdown}
+          </Markdown>
         </article>
       </section>
     </PageWrapper>
