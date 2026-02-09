@@ -5,8 +5,6 @@ that support our software solutions. By leveraging my expertise in cloud technol
 scalability, and efficiency of our systems. My passion for optimizing processes and building innovative solutions has significantly contributed to
 the success of our team and projects.
 
-<br />
-
 Throughout my career, I have honed my skills in various tools, technologies, and platforms essential to modern DevOps practices, including
 <a href="https://www.terraform.io/" target="_blank" rel="nofollow noopener noreferrer">Terraform</a>, <a href="https://terragrunt.gruntwork.io/" target="_blank" rel="nofollow noopener noreferrer">Terragrunt</a>, <a href="https://helm.sh/" target="_blank" rel="nofollow noopener noreferrer">Helm</a>,
 <a href="https://kubernetes.io/" target="_blank" rel="nofollow noopener noreferrer">Kubernetes</a>, <a href="https://aws.amazon.com/" target="_blank" rel="nofollow noopener noreferrer">AWS</a>, and <a href="https://aws.amazon.com/eks/" target="_blank" rel="nofollow noopener noreferrer">Amazon EKS</a>.
@@ -14,8 +12,6 @@ Additionally, I have experience with <a href="https://www.python.org/" target="_
 as well as tools like <a href="https://argo-cd.readthedocs.io/en/stable/" target="_blank" rel="nofollow noopener noreferrer">Argo CD</a>, <a href="https://www.jenkins.io/" target="_blank" rel="nofollow noopener noreferrer">Jenkins</a>, and <a href="https://www.docker.com/" target="_blank" rel="nofollow noopener noreferrer">Docker</a>
 for continuous integration, delivery, and containerization. I am constantly learning and exploring new technologies to stay ahead of the curve and
 bring the latest innovations to my work.
-
-<br />
 
 I am always excited to meet new people, collaborate on interesting projects, and share my knowledge and expertise. If you are interested in learning
 more about me, my work, or have a project that you think I could help with, please do not hesitate to reach out. I look forward to hearing from you!
@@ -28,21 +24,15 @@ as code practices, and enhancing GitOps workflows for seamless deployment and sc
 I ensure consistent and efficient management of Terraform configurations across environments. Additionally,
 I am dedicated to optimizing our product in Amazon EKS, ensuring high availability, performance, and reliability across systems.
 
-<br />
-
 Another crucial aspect of my work at <a href="https://loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a> has been developing strong relationships with clients. Through regular
 communication and a customer-centric
 approach, I have been able to understand their needs and requirements, and ensure that our software products and solutions meet or exceed their
 expectations.
 
-<br />
-
 Furthermore, my experience at <a href="https://loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a> has allowed me to gain hands-on experience in implementing enterprise-grade products,
 working with cutting-edge
 technologies, and using agile methodologies to deliver software solutions that meet complex business needs. These experiences have helped me to
 develop a well-rounded skillset and the ability to work effectively in dynamic and challenging environments.
-
-<br />
 
 Overall, my time at <a href="https://loxon.eu/" target="_blank" rel="nofollow noopener noreferrer">Loxon</a> has been instrumental in shaping my professional development and has given me a solid foundation
 for the next steps in my
