@@ -64,7 +64,7 @@ run = "ANALYZE=true npm run build"
 [tasks.clean]
 alias = "c"
 description = "Clean all cache, build artifacts, and node_modules"
-run = "rm -rf node_modules .next out .turbo coverage .tsbuildinfo .npm .DS_Store"
+run = "rm -rf .DS_Store .next .npm .tsbuildinfo .turbo coverage next-env.d.ts node_modules out tsconfig.tsbuildinfo"
 
 [tasks."utils:nroflines"]
 description = "Gets the number of lines of TypeScript code in the project"

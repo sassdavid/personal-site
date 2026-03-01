@@ -29,7 +29,6 @@ src/app/styles/       → Modular CSS (tokens, base, components, layout, pages)
 src/components/       → React components (organized by feature)
 src/data/             → Static data (resume, projects, contact)
 src/hooks/            → Custom React hooks
-content/writing/      → Blog posts (Markdown with frontmatter)
 public/images/        → Images and favicons
 docs/                 → Documentation
 ```
@@ -63,7 +62,6 @@ Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Biome ·
 - **Theming**: `data-theme` attribute on `<html>`, persisted to localStorage
 - **Static export**: `output: 'export'` for GitHub Pages—no server features
 - **Theme images**: Use `ThemePortrait` component for light/dark variants
-- **Blog posts**: Markdown files in `content/writing/` with frontmatter (title, date, description); slug derived from filename
 
 ## Testing
 
