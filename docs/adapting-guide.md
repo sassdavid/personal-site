@@ -125,6 +125,6 @@ Edit `app/tailwind.css`. Find `:root` (light mode) and `[data-theme="dark"]` (da
 ## Getting Help
 
 - Open an issue: https://github.com/sassdavid/personal-site/issues
-- Email: david.sass14@gmail.com
+- Email: help@sasskovacs.dev
 
 If you find bugs or unclear instructions, please submit a PR—contributions help everyone.

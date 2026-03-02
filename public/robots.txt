@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: /api
 
-Sitemap: https://davidsass.eu/sitemap.xml
+Sitemap: https://sasskovacs.dev/sitemap.xml

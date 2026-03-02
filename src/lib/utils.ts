@@ -3,7 +3,7 @@
  */
 
 // Site configuration
-export const SITE_URL = 'https://davidsass.eu';
+export const SITE_URL = 'https://sasskovacs.dev';
 export const AUTHOR_NAME = 'David Sass-Kovacs';
 export const TWITTER_HANDLE = '@sassdavid14';
 

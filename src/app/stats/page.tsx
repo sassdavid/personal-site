@@ -7,7 +7,7 @@ import PageWrapper from '@/components/Template/PageWrapper';
 
 export const metadata: Metadata = {
   title: 'Stats',
-  description: 'Some statistics about David Sass-Kovacs and davidsass.eu',
+  description: 'Some statistics about David Sass-Kovacs and sasskovacs.dev',
 };
 
 export default function StatsPage() {

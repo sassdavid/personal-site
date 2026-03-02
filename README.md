@@ -7,7 +7,7 @@
 
 A free, open-source portfolio website template built with [Next.js](https://nextjs.org/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), and [Tailwind CSS](https://tailwindcss.com/). Fork it and make it your own in under an hour.
 
-**[See it live →](https://davidsass.eu)**
+**[See it live →](https://sasskovacs.dev)**
 
 ## Why This Template?
 
