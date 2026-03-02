@@ -11,8 +11,9 @@
 
   /* Theme-aware portrait images */
   .theme-portrait {
-    display: inline-block;
-    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
     line-height: 0;
   }
 
