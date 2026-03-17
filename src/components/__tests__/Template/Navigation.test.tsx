@@ -38,7 +38,7 @@ describe('Navigation', () => {
   it('renders navigation links for all non-index routes', () => {
     render(<Navigation />);
 
-    // Should have links for About, Resume, Projects, Writing, Stats, Contact
+    // Should have links for About, Resume, Stats, Contact
     expect(screen.getByRole('link', { name: /about/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /resume/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /stats/i })).toBeInTheDocument();

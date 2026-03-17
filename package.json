@@ -30,19 +30,19 @@
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
     "@fortawesome/free-regular-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.2.0",
-    "@next/third-parties": "^16.1.6",
+    "@next/third-parties": "^16.1.7",
     "@tailwindcss/postcss": "^4.2.1",
     "dayjs": "^1.11.20",
     "gray-matter": "^4.0.3",
     "markdown-to-jsx": "^9.7.9",
-    "next": "^16.1.6",
+    "next": "^16.1.7",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.7",
-    "@next/bundle-analyzer": "^16.1.6",
+    "@next/bundle-analyzer": "^16.1.7",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^25.5.0",
@@ -53,7 +53,7 @@
     "jsdom": "^29.0.0",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.16"
+    "vitest": "^4.1.0"
   },
   "browserslist": {
     "production": [

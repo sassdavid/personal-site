@@ -15,7 +15,7 @@ describe('Footer', () => {
     render(<Footer />);
 
     expect(screen.getByText('David Sass-Kovacs')).toBeInTheDocument();
-    expect(screen.getByText('Senior DevOps Engineer')).toBeInTheDocument();
+    expect(screen.getByText(/Senior DevOps Engineer/)).toBeInTheDocument();
   });
 
   it('displays the current year in copyright', () => {

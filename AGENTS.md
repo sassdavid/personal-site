@@ -53,6 +53,15 @@ docs/                 → Documentation
 - Skip type annotations on function parameters
 - Commit without running `npm run format` first
 
+## Git Workflow
+
+- Create a topic branch for every task; never commit or push directly to `main`
+- Make small, frequent conventional commits as you go (e.g., `feat:`, `fix:`, `refactor:`)
+- Push to your remote branch after every commit to keep it in sync
+- Land changes on `main` by merging GitHub PRs with conventional-commit titles (deploys trigger automatically from these merges)
+- If multiple PRs need to land together, open an integration branch PR; do not locally merge into `main`
+- Treat `main` as protected: force-pushes and history rewrites require explicit user approval
+
 ## Tech Stack
 
 Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Biome · Vitest
@@ -61,7 +70,10 @@ Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Biome ·
 
 - **Theming**: `data-theme` attribute on `<html>`, persisted to localStorage
 - **Static export**: `output: 'export'` for GitHub Pages—no server features
+- **Canonical/export URLs**: When generating absolute URLs for metadata, RSS, sitemap, or schema, match `trailingSlash: true` output (`/about/`, `/writing/post-slug/`) instead of non-canonical no-slash variants; file-like routes such as `/feed.xml` and `/sitemap.xml` stay file-like
 - **Theme images**: Use `ThemePortrait` component for light/dark variants
+- **Profile copy**: Keep role/bio updates in sync across `src/components/Template/Hero.tsx`, `app/layout.tsx` metadata, `src/data/about.ts`, and `src/data/resume/work.ts` so homepage copy, SEO, schema, and resume stay aligned
+- **Long-form markdown pages**: Prefer a dedicated renderer component that can parse markdown into semantic sections instead of styling raw headings globally; if `markdown-to-jsx` causes dev/runtime issues in App Router, a `'use client'` boundary may still be required even without hooks
 
 ## Testing
 
