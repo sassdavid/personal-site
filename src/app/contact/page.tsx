@@ -4,11 +4,13 @@ import ContactIcons from '@/components/Contact/ContactIcons';
 import EmailLink from '@/components/Contact/EmailLink';
 
 import PageWrapper from '@/components/Template/PageWrapper';
+import { createPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: 'Contact',
   description: 'Contact David Sass-Kovacs via email @ hi@sasskovacs.dev',
-};
+  path: '/contact/',
+});
 
 export default function ContactPage() {
   return (

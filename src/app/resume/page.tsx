@@ -11,11 +11,13 @@ import degrees from '@/data/resume/degrees';
 import { categories, skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
+import { createPageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: 'Resume',
   description: "David Sass-Kovacs's Resume. Currently at Loxon.",
-};
+  path: '/resume/',
+});
 
 export default function ResumePage() {
   return (
