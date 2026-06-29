@@ -52,21 +52,6 @@
   padding-top: 1em;
 }
 
-.resume-page .tools .tool-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-@media (max-width: 736px) {
-  .resume-page .tools .tool-list {
-    grid-template-columns: 1fr;
-  }
-}
-
 .resume-page .references {
   margin: var(--spacing-8) 0;
 }

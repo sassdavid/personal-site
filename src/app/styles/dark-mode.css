@@ -103,15 +103,15 @@
   border-color: var(--color-border-alt);
 }
 
-/* Tool cards */
-[data-theme='dark'] .tool-container a {
+/* Tool tags */
+[data-theme='dark'] .tool-tag {
   background: var(--color-surface-subtle);
   border-color: var(--color-border);
+  border-left-color: var(--color-accent);
 }
 
-[data-theme='dark'] .tool-container a:hover {
+[data-theme='dark'] a.tool-tag:hover {
   background: var(--color-surface-hover);
-  border-color: var(--color-border-alt);
 }
 
 /* Skill buttons/tags */
