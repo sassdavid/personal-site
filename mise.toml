@@ -6,7 +6,7 @@ fd = "latest"
 node = "24"
 
 [env]
-NEXT_PUBLIC_NUMBER_OF_LINES = "12825"
+NEXT_PUBLIC_NUMBER_OF_LINES = "7610"
 
 [tasks.ci]
 alias = "ci"
@@ -75,12 +75,12 @@ set -euxo pipefail
 # Find all TypeScript files once
 files=$(fd -Iitf -e ts -e tsx -E node_modules -E next-env.d.ts)
 
-# Count files
-filecount=$(wc -l <<< "$files")
+# Count files (strip whitespace padding from wc on BSD/macOS)
+filecount=$(($(wc -l <<< "$files")))
 printf "Found %d TypeScript files\n" "$filecount"
 
-# Count total lines
-nroflines=$(xargs cat <<< "$files" | wc -l)
+# Count total lines (strip whitespace padding from wc on BSD/macOS)
+nroflines=$(($(xargs cat <<< "$files" | wc -l)))
 printf "Lines of TypeScript powering this website: %d\n" "$nroflines"
 
 # Set in mise environment for local development
@@ -101,7 +101,7 @@ Write-Output "Found $($files.Count) TypeScript files"
 
 $nroflines = 0
 foreach ($file in $files) {
-    $lineCount = (Get-Content $file -Raw | Measure-Object -Line).Lines
+    $lineCount = (Get-Content -LiteralPath $file -Raw | Measure-Object -Line).Lines
     $nroflines += $lineCount
 }
 
