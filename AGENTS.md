@@ -27,8 +27,10 @@ npm test -- ComponentName                    # Test single component
 src/app/              → Pages, layouts, global CSS
 src/app/styles/       → Modular CSS (tokens, base, components, layout, pages)
 src/components/       → React components (organized by feature)
-src/data/             → Static data (resume, projects, contact)
+src/data/             → Static data (resume, projects, writing, contact)
 src/hooks/            → Custom React hooks
+src/lib/              → Shared helpers (schema graph, metadata, posts, utils)
+content/writing/      → Blog posts (Markdown with frontmatter); empty by default
 public/images/        → Images and favicons
 docs/                 → Documentation
 ```
@@ -75,6 +77,8 @@ Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Biome ·
 - **Theme images**: Use `ThemePortrait` component for light/dark variants
 - **Profile copy**: Keep role/bio updates in sync across `src/components/Template/Hero.tsx`, `app/layout.tsx` metadata, `src/data/about.ts`, and `src/data/resume/work.ts` so homepage copy, SEO, schema, and resume stay aligned
 - **Long-form markdown pages**: Prefer a dedicated renderer component that can parse markdown into semantic sections instead of styling raw headings globally; if `markdown-to-jsx` causes dev/runtime issues in App Router, a `'use client'` boundary may still be required even without hooks. Preserve stable heading ids when converting markdown headings so deep links and `scroll-margin-top` behavior keep working, prefer a shared helper over duplicating slug logic in each page component, and expose those anchors in the UI with section nav or self-links if readers are expected to use them
+- **JSON-LD schema**: Structured data is built in `src/lib/schema.ts` as a node graph with stable `@id`s. `SiteSchema` (canonical `Person` + `WebSite`) is emitted once from `app/layout.tsx`; each page emits a `<SchemaGraph nodes={[...]} />` composed from the builders (`profilePageNode`, `collectionPageNode`, `webPageNode`, `blogNode`, `blogPostingNode`, `breadcrumbNode`) instead of repeating entity properties. Keep `SITE_IMAGE_DIMENSIONS` in `lib/utils.ts` in sync with the real `public/images/me.jpg` asset—a test in `lib/__tests__/schema.test.ts` reads the JPEG header and will fail if they drift.
+- **Dormant Writing/Projects features**: The `/writing`, `/writing/[slug]`, `/feed.xml`, and `/projects` routes are fully wired but ship with empty data (`src/data/writing.ts`, `src/data/projects.ts`) and no `content/writing/*.md`, so they are intentionally **not** linked from `Navigation`, `Footer`, `routes.ts`, or `sitemap.ts`. To enable one: add content (a Markdown post and/or `writing.ts` entries, or `projects.ts` entries plus images under `public/images/projects/`), then add its nav entry to `src/data/routes.ts` and a `sitemap.ts` entry. Because `output: 'export'` forbids a dynamic route with zero params, `app/writing/[slug]/page.tsx` emits a single `coming-soon` placeholder slug that resolves to the 404 page while there are no posts—remove that fallback once real posts exist.
 
 ## Testing
 

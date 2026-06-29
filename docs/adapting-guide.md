@@ -43,7 +43,38 @@ Work through these steps in order for the smoothest experience.
 | Skills & categories | `src/data/resume/skills.ts`  |
 | Tools (optional)    | `src/data/resume/tools.ts`   |
 
-### Step 4: Branding & Theme
+### Step 4: Projects
+
+| What to change  | File                      |
+| --------------- | ------------------------- |
+| Project entries | `src/data/projects.ts`    |
+| Project images  | `public/images/projects/` |
+
+### Step 5: Blog/Writing (Optional)
+
+The site includes a blog at `/writing` with RSS feed. You can use it, customize it, or remove it entirely.
+
+**To add posts**, create Markdown files in `content/writing/`. The filename becomes the URL slug (e.g., `my-post.md` → `/writing/my-post`).
+
+```markdown
+---
+title: 'Your Post Title'
+date: '2026-01-15'
+description: 'A brief description for previews and SEO.'
+---
+
+Your content here...
+```
+
+**To disable the blog entirely:**
+
+```bash
+rm -rf app/writing app/feed.xml content/writing
+```
+
+Then remove the "Writing" link from `src/data/routes.ts`.
+
+### Step 6: Branding & Theme
 
 | What to change      | File                                       |
 | ------------------- | ------------------------------------------ |
@@ -51,7 +82,7 @@ Work through these steps in order for the smoothest experience.
 | Favicon             | `public/images/favicon/`                   |
 | Site metadata/SEO   | `app/layout.tsx`                           |
 
-### Step 5: Final Cleanup
+### Step 7: Final Cleanup
 
 Search the codebase for "David" or "sassdavid" to find any remaining references to change.
 
@@ -89,7 +120,7 @@ Run `npm run build` and upload the `out/` directory to any static host (Vercel, 
 Delete its folder from `app/` and remove the link from `src/data/routes.ts`.
 
 ```bash
-rm -rf app/stats # removes the /stats page
+rm -rf app/stats  # removes the /stats page
 ```
 
 ### Add a social icon
