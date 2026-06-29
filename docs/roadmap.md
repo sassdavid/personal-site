@@ -6,6 +6,7 @@ This site has been a work in progress since 2014, evolving to reflect current be
 
 **Features**
 
+- Writing/blog page with RSS feed (`/writing`, `/feed.xml`)
 - Dark mode with system preference detection and manual toggle
 - Theme-aware portraits for light/dark modes
 - Modernized favicon with SVG source

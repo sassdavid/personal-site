@@ -1,17 +1,21 @@
 import type { Metadata } from 'next';
 
-import { PersonSchema } from '@/components/Schema';
+import { SchemaGraph } from '@/components/Schema';
 import Hero from '@/components/Template/Hero';
 import PageWrapper from '@/components/Template/PageWrapper';
+import { HOME_URL, profilePageNode } from '@/lib/schema';
+import { AUTHOR_NAME, SITE_DESCRIPTION } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  description: "David Sass-Kovacs's personal website.",
+  description: SITE_DESCRIPTION,
 };
 
 export default function HomePage() {
   return (
     <PageWrapper>
-      <PersonSchema />
+      <SchemaGraph
+        nodes={[profilePageNode({ url: HOME_URL, name: AUTHOR_NAME })]}
+      />
       <Hero />
     </PageWrapper>
   );

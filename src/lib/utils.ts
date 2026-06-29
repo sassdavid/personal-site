@@ -6,6 +6,21 @@
 export const SITE_URL = 'https://sasskovacs.dev';
 export const AUTHOR_NAME = 'David Sass-Kovacs';
 export const TWITTER_HANDLE = '@sassdavid14';
+export const SITE_IMAGE_PATH = '/images/me.jpg';
+export const SITE_IMAGE_DIMENSIONS = {
+  width: 256,
+  height: 256,
+} as const;
+
+// Canonical one-line bio, shared across page metadata, OpenGraph, and JSON-LD.
+export const SITE_DESCRIPTION =
+  'Senior DevOps Engineer specializing in cloud infrastructure and automation, currently at Loxon Solutions.';
+
+// Image dimension constants
+export const PROJECT_IMAGE = {
+  width: 600,
+  height: 400,
+} as const;
 
 // Skill competency
 export const MAX_COMPETENCY = 5;

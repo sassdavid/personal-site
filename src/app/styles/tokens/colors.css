@@ -29,20 +29,6 @@
   --color-accent-border: color-mix(in srgb, var(--color-accent) 50%, transparent);
 
   /* ===================
-     SKILL CATEGORY COLORS
-     Blue and purple theme with distinct shades
-     Categories are sorted alphabetically:
-     1=Backend&Frameworks, 2=Cloud&Infrastructure, 3=Databases,
-     4=DevOps, 5=Languages, 6=Web Development
-     =================== */
-  --color-skill-1: #6366f1; /* Indigo - Backend & Frameworks */
-  --color-skill-2: #2563eb; /* Royal Blue - Cloud & Infrastructure */
-  --color-skill-3: #06b6d4; /* Turquoise - Databases */
-  --color-skill-4: #a855f7; /* Bright Purple - DevOps */
-  --color-skill-5: #1e40af; /* Navy Blue - Languages */
-  --color-skill-6: #38bdf8; /* Sky Blue - Web Development */
-
-  /* ===================
      BORDER COLORS
      =================== */
   --color-border: rgba(0, 0, 0, 0.1);
@@ -55,15 +41,12 @@
   --color-surface-subtle: rgba(0, 0, 0, 0.03);
   --color-surface-hover: rgba(0, 0, 0, 0.06);
   --color-surface-active: rgba(0, 0, 0, 0.1);
-  --color-text-muted: rgba(0, 0, 0, 0.5);
-  --color-text-dim: rgba(0, 0, 0, 0.6);
   --color-fg-muted: rgba(0, 0, 0, 0.5);
 
   /* ===================
      SEMANTIC COLORS
      =================== */
   --color-white: #fff;
-  --color-black: #000;
   --color-overlay-light: rgba(255, 255, 255, 0.15);
   --color-overlay-dark: rgba(0, 0, 0, 0.15);
   --color-overlay-darker: rgba(0, 0, 0, 0.3);
