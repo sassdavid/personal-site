@@ -31,18 +31,41 @@ describe('Navigation', () => {
 
   it('renders the logo link to home', () => {
     render(<Navigation />);
-    const logo = screen.getByRole('link', { name: /ds/i });
+    const logo = screen.getByRole('link', {
+      name: /david sass-kovacs.*home/i,
+    });
     expect(logo).toHaveAttribute('href', '/');
   });
 
-  it('renders navigation links for all non-index routes', () => {
+  it('labels the primary navigation landmark', () => {
     render(<Navigation />);
 
-    // Should have links for About, Resume, Stats, Contact
+    expect(
+      screen.getByRole('navigation', { name: 'Primary' }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders only primary navigation routes', () => {
+    render(<Navigation />);
+
     expect(screen.getByRole('link', { name: /about/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /resume/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /stats/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /contact/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /stats/i })).toBeInTheDocument();
+  });
+
+  // Writing and Archive have no content yet and are `enabled: false` in
+  // src/data/routes.ts. Archive was already secondary; Writing was not, so
+  // this is the assertion that would catch it being surfaced empty.
+  it('omits routes disabled for lack of content', () => {
+    render(<Navigation />);
+
+    expect(
+      screen.queryByRole('link', { name: /writing/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: /archive/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('marks home route as active when on homepage', () => {

@@ -31,7 +31,9 @@ const data: StatData[] = [
     value: '0', // enforced via github workflow
   },
   {
-    label: 'Open GitHub issues',
+    // GitHub's open_issues_count includes open pull requests, so the label
+    // says what the number actually counts rather than overstating issues.
+    label: 'Open GitHub issues and pull requests',
     key: 'open_issues_count',
     link: 'https://github.com/sassdavid/personal-site/issues',
   },
@@ -42,10 +44,12 @@ const data: StatData[] = [
     format: (x: unknown) => dayjs(x as string).format('MMMM DD, YYYY'),
   },
   {
+    // Counted from the working tree at build time by `Site.tsx`; see
+    // `src/lib/loc.ts`. Do not hardcode a number here — the previous one
+    // drifted by nearly 2,000 lines before anyone noticed.
     label: 'Lines of TypeScript powering this website',
-    key: 'lines_of_code',
-    value: process.env.NEXT_PUBLIC_NUMBER_OF_LINES || 'No data available',
-    link: 'https://github.com/sassdavid/personal-site',
+    key: 'source_lines',
+    link: 'https://github.com/sassdavid/personal-site/graphs/contributors',
   },
 ];
 

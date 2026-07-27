@@ -52,12 +52,9 @@ describe('Education', () => {
     expect(wignerLink).toHaveAttribute('href', 'https://wignerkozepiskola.hu');
   });
 
-  it('has anchor link for navigation', () => {
-    render(<Education data={mockDegrees} />);
-
-    const anchor = document.getElementById('education');
-    expect(anchor).toBeInTheDocument();
-  });
+  // The `#education` anchor now lives on the page's <section> wrapper rather
+  // than a marker div inside this component, so it is asserted in
+  // `src/app/__tests__/resume-anchors.test.tsx` instead.
 });
 
 describe('Degree', () => {

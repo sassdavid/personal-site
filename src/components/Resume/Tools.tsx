@@ -7,24 +7,23 @@ interface ToolProps {
 }
 
 function getRows(tools: ToolType[]) {
-  return tools
-    .sort((a, b) => {
-      let ret = 0;
-      if (a.name > b.name) ret = 1;
-      else if (a.name < b.name) ret = -1;
-      else if (a.link > b.link) ret = 1;
-      else if (a.link < b.link) ret = -1;
-      return ret;
-    })
+  // Copy first: `sort` mutates in place, and this receives the imported
+  // module array, so rendering was reordering shared data as a side effect.
+  return [...tools]
+    .sort(
+      (a, b) => a.name.localeCompare(b.name) || a.link.localeCompare(b.link),
+    )
     .map((tool) => <Tool data={tool} key={tool.name} />);
 }
 
 export default function Tools({ data }: ToolProps) {
   return (
     <div className="tools">
-      <div className="link-to" id="tools" />
+      {/* No `link-to` marker here: the page already wraps this in
+          `<section id="tools">`, and emitting the id twice made `#tools`
+          ambiguous. Sections are h2 so the page does not jump h1 → h3. */}
       <div className="title">
-        <h3>Tools & Technologies</h3>
+        <h2>Tools &amp; Technologies</h2>
       </div>
       <div className="tool-tags">{getRows(data)}</div>
     </div>

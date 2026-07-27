@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import routes from '../routes';
+import routes, { allRoutes } from '../routes';
 
 describe('routes', () => {
   it('exports an array of routes', () => {
@@ -34,12 +34,27 @@ describe('routes', () => {
   });
 
   it('contains expected navigation routes', () => {
-    const paths = routes.map((r) => r.path);
+    const paths = allRoutes.map((r) => r.path);
 
     expect(paths).toContain('/');
     expect(paths).toContain('/about');
     expect(paths).toContain('/resume');
+    expect(paths).toContain('/projects');
     expect(paths).toContain('/contact');
+  });
+
+  // Disabled entries stay in `allRoutes` so re-enabling them is a one-word
+  // edit, but the default export is what every menu renders.
+  it('keeps disabled routes defined but out of the rendered set', () => {
+    const disabled = allRoutes.filter((route) => route.enabled === false);
+    expect(disabled.map((route) => route.path)).toEqual([
+      '/writing',
+      '/projects',
+    ]);
+
+    const rendered = routes.map((route) => route.path);
+    expect(rendered).not.toContain('/writing');
+    expect(rendered).not.toContain('/projects');
   });
 
   it('has unique paths', () => {
@@ -62,5 +77,13 @@ describe('routes', () => {
     for (const route of navRoutes) {
       expect(route.label.trim().length).toBeGreaterThan(0);
     }
+  });
+
+  it('keeps secondary destinations out of the primary navigation', () => {
+    const secondaryPaths = allRoutes
+      .filter((route) => route.primary === false)
+      .map((route) => route.path);
+
+    expect(secondaryPaths).toEqual(['/projects']);
   });
 });

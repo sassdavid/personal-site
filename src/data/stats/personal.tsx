@@ -1,40 +1,29 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import useLiveAge from '@/hooks/useLiveAge';
+import {
+  AGE_PRECISION_FULL,
+  agePlaceholder,
+  COUNTRIES_VISITED,
+  CURRENT_CITY,
+} from '@/lib/telemetry';
 
 import type { StatData } from '../../components/Stats/types';
 
-/** Birth date for age calculation (ISO format) */
-const BIRTH_DATE = '1993-06-16T09:30:00';
-
-/** Milliseconds in an average year (accounting for leap years) */
-const MS_PER_YEAR = 1000 * 60 * 60 * 24 * 365.2421897;
-
-/** Update interval for age display in ms */
-const AGE_UPDATE_INTERVAL = 25;
-
-/** Number of decimal places for age display */
-const AGE_PRECISION = 11;
-
+/**
+ * The stats page reports age at deliberately absurd precision.
+ *
+ * The placeholder is the rendered content; `useLiveAge` writes the reading into
+ * this node directly, so the ticking never re-renders React.
+ */
 function Age() {
-  const [age, setAge] = useState<string>('');
+  const ref = useLiveAge<HTMLSpanElement>(AGE_PRECISION_FULL);
 
-  const tick = () => {
-    const birthTime = new Date(BIRTH_DATE);
-    setAge(
-      ((Date.now() - birthTime.getTime()) / MS_PER_YEAR).toFixed(AGE_PRECISION),
-    );
-  };
-
-  useEffect(() => {
-    tick(); // Initial tick
-    const timer = setInterval(() => tick(), AGE_UPDATE_INTERVAL);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
-
-  return <>{age}</>;
+  return (
+    <span className="stat-live" ref={ref}>
+      {agePlaceholder(AGE_PRECISION_FULL)}
+    </span>
+  );
 }
 
 const data: StatData[] = [
@@ -46,12 +35,12 @@ const data: StatData[] = [
   {
     key: 'countries',
     label: 'Countries visited',
-    value: 10,
+    value: COUNTRIES_VISITED,
   },
   {
     key: 'location',
     label: 'Current city',
-    value: 'Budapest, HU',
+    value: CURRENT_CITY,
   },
 ];
 

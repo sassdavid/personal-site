@@ -44,6 +44,20 @@ describe('Footer', () => {
     );
   });
 
+  // The footer renders every non-index route, so unlike the nav it has no
+  // `primary` filter to hide behind — it is the surface a disabled route
+  // would otherwise still leak through.
+  it('omits routes disabled for lack of content', () => {
+    render(<Footer />);
+
+    expect(
+      screen.queryByRole('link', { name: /archive/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: /writing/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it('renders contact icons section', () => {
     render(<Footer />);
 

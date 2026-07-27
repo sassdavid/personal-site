@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
+import profile from '@/data/profile.json';
 import Hero from '../../Template/Hero';
 
 describe('Hero', () => {
@@ -15,26 +16,37 @@ describe('Hero', () => {
     render(<Hero />);
 
     const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toHaveTextContent('David Sass-Kovacs');
+    expect(heading).toHaveTextContent(profile.name);
   });
 
-  it('renders the tagline with Loxon link', () => {
-    render(<Hero />);
+  // The tagline reads its role and focus from the shared profile, so this
+  // asserts they agree rather than restating the sentence — restating it just
+  // means editing the copy in two places.
+  it('describes the current work from the shared profile', () => {
+    const { container } = render(<Hero />);
 
-    const loxonLink = screen.getByRole('link', { name: /loxon/i });
-    expect(loxonLink).toHaveAttribute('href', 'https://loxon.eu');
-    expect(loxonLink).toHaveClass('hero-highlight');
+    const tagline = container.querySelector('.hero-tagline');
+    expect(tagline).toHaveTextContent(profile.role);
+    expect(tagline).toHaveTextContent(profile.focus);
+
+    const employerLink = screen.getByRole('link', { name: /loxon/i });
+    expect(employerLink).toHaveAttribute('href', 'https://loxon.eu');
+    expect(employerLink).toHaveClass('hero-highlight');
+    expect(employerLink).toHaveAttribute('rel', 'nofollow noopener noreferrer');
   });
 
-  it('displays hero chips for credentials', () => {
-    render(<Hero />);
+  it('keeps personal stats off the homepage', () => {
+    const { container } = render(<Hero />);
 
-    expect(screen.getByText('DevOps')).toBeInTheDocument();
-    expect(screen.getByText('Engineer')).toBeInTheDocument();
-    expect(screen.getByText('AWS')).toBeInTheDocument();
+    // Telemetry belongs on /stats. It was on the homepage once, where a
+    // ticking age readout sat above the introduction.
+    expect(container.querySelector('.telemetry')).not.toBeInTheDocument();
+    expect(screen.queryByText('Countries visited')).not.toBeInTheDocument();
+    expect(screen.queryByText('Computing since')).not.toBeInTheDocument();
+    expect(screen.queryByText('Based in')).not.toBeInTheDocument();
   });
 
-  it('renders CTA buttons with correct links', () => {
+  it('renders one primary CTA and one quieter resume link', () => {
     render(<Hero />);
 
     const aboutButton = screen.getByRole('link', { name: /about me/i });
@@ -43,7 +55,8 @@ describe('Hero', () => {
 
     const resumeButton = screen.getByRole('link', { name: /view resume/i });
     expect(resumeButton).toHaveAttribute('href', '/resume');
-    expect(resumeButton).toHaveClass('button-secondary');
+    expect(resumeButton).toHaveClass('hero-resume-link');
+    expect(resumeButton).not.toHaveClass('button');
   });
 
   it('has decorative background elements', () => {

@@ -1,118 +1,17 @@
-[settings]
-windows_default_inline_shell_args = "pwsh -Command"
-
 [tools]
-fd = "latest"
-node = "24"
+node = "26"
 
-[env]
-NEXT_PUBLIC_NUMBER_OF_LINES = "7610"
-
-[tasks.ci]
-alias = "ci"
-description = "Install npm dependencies with npm ci for CI environments"
-run = "npm ci --no-fund"
-
-[tasks.dev]
-alias = "d"
-description = "Start Next.js development server with Turbopack"
-run = "npm run dev"
-
-[tasks.build]
-alias = "b"
-description = "Build Next.js application for production static export"
-run = "npm run build"
-
-[tasks.test]
-alias = "t"
-description = "Run Vitest tests"
-run = "npm test"
-
-[tasks."test:ci"]
-description = "Run Vitest tests with coverage reporting for CI"
-run = "npm run test:coverage"
-
-[tasks."test:watch"]
-description = "Run Vitest tests in watch mode"
-run = "npm run test:watch"
-
-[tasks."test:coverage"]
-description = "Run Vitest tests with coverage reporting"
-run = "npm run test:coverage"
-
-[tasks.lint]
-description = "Lint code with Biome linter"
-run = "npm run lint"
-
-[tasks."type-check"]
-description = "Run TypeScript type checking with tsc --noEmit"
-run = "npm run type-check"
-
-[tasks.format]
-alias = "f"
-description = "Format code with Biome and Prettier"
-run = "npm run format"
-
-[tasks."format:check"]
-description = "Check code formatting with Biome and Prettier"
-run = "npm run format:check"
-
-[tasks.analyze]
-description = "Build with bundle analyzer for bundle size analysis"
-run = "ANALYZE=true npm run build"
+[tasks.check]
+alias = "k"
+description = "Run the full CI quality gate: types, lint, format, tests"
+run = [
+  "npm run type-check",
+  "npm run lint",
+  "npm run format:check",
+  "npm test",
+]
 
 [tasks.clean]
 alias = "c"
 description = "Clean all cache, build artifacts, and node_modules"
 run = "rm -rf .DS_Store .next .npm .tsbuildinfo .turbo coverage next-env.d.ts node_modules out tsconfig.tsbuildinfo"
-
-[tasks."utils:nroflines"]
-description = "Gets the number of lines of TypeScript code in the project"
-run = '''
-#!/usr/bin/env bash
-set -euxo pipefail
-
-# Find all TypeScript files once
-files=$(fd -Iitf -e ts -e tsx -E node_modules -E next-env.d.ts)
-
-# Count files (strip whitespace padding from wc on BSD/macOS)
-filecount=$(($(wc -l <<< "$files")))
-printf "Found %d TypeScript files\n" "$filecount"
-
-# Count total lines (strip whitespace padding from wc on BSD/macOS)
-nroflines=$(($(xargs cat <<< "$files" | wc -l)))
-printf "Lines of TypeScript powering this website: %d\n" "$nroflines"
-
-# Set in mise environment for local development
-mise set NEXT_PUBLIC_NUMBER_OF_LINES="${nroflines}"
-
-# Export to GitHub Actions environment for subsequent steps
-if [ -n "${GITHUB_ENV:-}" ]; then
-  printf "NEXT_PUBLIC_NUMBER_OF_LINES=%s\n" "${nroflines}" >> "$GITHUB_ENV"
-  printf "Exported to GitHub Actions: NEXT_PUBLIC_NUMBER_OF_LINES=%s\n" "${nroflines}"
-fi
-'''
-run_windows = '''
-$ErrorActionPreference = "Stop"
-
-# Get all TypeScript files and count their lines
-$files = @(fd -Iitf -e ts -e tsx -E node_modules -E next-env.d.ts)
-Write-Output "Found $($files.Count) TypeScript files"
-
-$nroflines = 0
-foreach ($file in $files) {
-    $lineCount = (Get-Content -LiteralPath $file -Raw | Measure-Object -Line).Lines
-    $nroflines += $lineCount
-}
-
-Write-Output "Lines of TypeScript powering this website: $nroflines"
-
-# Set in mise environment for local development
-mise set NEXT_PUBLIC_NUMBER_OF_LINES="$nroflines"
-
-# Export to GitHub Actions environment for subsequent steps
-if ($env:GITHUB_ENV) {
-    Add-Content -Path $env:GITHUB_ENV -Value "NEXT_PUBLIC_NUMBER_OF_LINES=$nroflines"
-    Write-Output "Exported to GitHub Actions: NEXT_PUBLIC_NUMBER_OF_LINES=$nroflines"
-}
-'''

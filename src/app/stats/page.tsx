@@ -5,10 +5,11 @@ import Site from '@/components/Stats/Site';
 
 import PageWrapper from '@/components/Template/PageWrapper';
 import { createPageMetadata } from '@/lib/metadata';
+import { AUTHOR_NAME } from '@/lib/utils';
 
 export const metadata: Metadata = createPageMetadata({
   title: 'Stats',
-  description: 'Some statistics about David Sass-Kovacs and sasskovacs.dev',
+  description: `Some statistics about ${AUTHOR_NAME} and sasskovacs.dev`,
   path: '/stats/',
 });
 

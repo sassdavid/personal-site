@@ -20,10 +20,10 @@ describe('skills data', () => {
     }
   });
 
-  it('competency values are between 1 and 10', () => {
+  it('competency values are between 1 and 5', () => {
     for (const skill of skills) {
       expect(skill.competency).toBeGreaterThanOrEqual(1);
-      expect(skill.competency).toBeLessThanOrEqual(10);
+      expect(skill.competency).toBeLessThanOrEqual(5);
     }
   });
 
