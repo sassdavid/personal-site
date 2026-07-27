@@ -17,6 +17,9 @@ env:
   # deploy. Must stay in step with the node version mise.toml pins; the build
   # job asserts that.
   DEPLOY_NODE: '26'
+  # Next prints a multi-line telemetry notice on every build otherwise, once per
+  # matrix leg, which is pure noise in a log people read to spot real warnings.
+  NEXT_TELEMETRY_DISABLED: '1'
 
 # Supersede stale PR runs, but never cancel a main run that may already be
 # deploying. The Pages job below serializes main deployments.
@@ -67,11 +70,22 @@ jobs:
         with:
           experimental: true
 
+      # The install job's cache is a fast path, not a guarantee. Without the
+      # fallback below, an evicted or not-yet-saved entry leaves node_modules
+      # empty and every step here fails as "command not found" rather than
+      # installing — and `cache-hit` is only true on an exact key match, so a
+      # stale prefix hit can never be mistaken for a current one. Restore-only:
+      # the install job owns the save, so parallel jobs cannot race on the key.
       - name: Restore node_modules
-        uses: actions/cache@v6
+        id: cache-node-modules
+        uses: actions/cache/restore@v6
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'mise.toml') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
 
       - name: Type Check
         run: npm run type-check
@@ -100,11 +114,17 @@ jobs:
         with:
           experimental: true
 
+      # Restore-only with an install fallback, as in code-quality above.
       - name: Restore node_modules
-        uses: actions/cache@v6
+        id: cache-node-modules
+        uses: actions/cache/restore@v6
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'mise.toml') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
 
       - name: Run tests
         run: npm run test:coverage
