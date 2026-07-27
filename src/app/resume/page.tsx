@@ -7,15 +7,17 @@ import ResumeNav from '@/components/Resume/ResumeNav';
 import Skills from '@/components/Resume/Skills';
 import Tools from '@/components/Resume/Tools';
 import PageWrapper from '@/components/Template/PageWrapper';
+import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
 import { categories, skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
 import { createPageMetadata } from '@/lib/metadata';
+import { AUTHOR_NAME, SITE_URL } from '@/lib/utils';
 
 export const metadata: Metadata = createPageMetadata({
   title: 'Resume',
-  description: "David Sass-Kovacs's Resume. Currently at Loxon.",
+  description: `${AUTHOR_NAME}'s Resume. Currently at Loxon.`,
   path: '/resume/',
 });
 
@@ -30,6 +32,16 @@ export default function ResumePage() {
             technologies and automation. Focused on creating efficient workflows
             that drive technical excellence and operational success.
           </p>
+          {/* Print-only, but real markup rather than CSS `content`, so it is
+              selectable, linkable, and reads from the shared profile. The
+              screen layout carries these in the footer, which print hides. */}
+          <address className="resume-print-contact">
+            <a href={`${SITE_URL}/`}>{SITE_URL.replace(/^https?:\/\//, '')}</a>
+            <span aria-hidden="true"> · </span>
+            <a href={`mailto:${profile.email}`}>{profile.email}</a>
+            <span aria-hidden="true"> · </span>
+            <a href="https://github.com/sassdavid">github.com/sassdavid</a>
+          </address>
         </header>
 
         <ResumeNav />

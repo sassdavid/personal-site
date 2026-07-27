@@ -3,7 +3,14 @@ import { notFound } from 'next/navigation';
 import { SchemaGraph } from '@/components/Schema';
 import PageWrapper from '@/components/Template/PageWrapper';
 import PostContent from '@/components/Writing/PostContent';
-import { getPostBySlug, getPostSlugs } from '@/lib/posts';
+import ReadingProgress from '@/components/Writing/ReadingProgress';
+import {
+  type ImageSize,
+  readImageSize,
+  readPostImageSizes,
+} from '@/lib/imageSize';
+import { isDisabledPath, sharedOpenGraph, sharedTwitter } from '@/lib/metadata';
+import { getPostBySlug, getPostSlugs, type Post } from '@/lib/posts';
 import {
   blogPostingNode,
   breadcrumbNode,
@@ -16,9 +23,23 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-// When there are no posts yet, `output: export` still needs at least one
-// param for this dynamic route. Emit a placeholder slug that resolves to a
-// 404 (via notFound below) so the build stays green until real posts exist.
+interface PostImage extends ImageSize {
+  alt: string;
+  url: string;
+}
+
+function getPostImage(post: Post): PostImage | undefined {
+  if (!post.image || !post.imageAlt) {
+    return undefined;
+  }
+
+  return {
+    ...readImageSize(post.image),
+    alt: post.imageAlt,
+    url: new URL(post.image, SITE_URL).toString(),
+  };
+}
+
 const EMPTY_PLACEHOLDER_SLUG = 'coming-soon';
 
 export function generateStaticParams() {
@@ -42,22 +63,51 @@ export async function generateMetadata({
   }
 
   const url = `${SITE_URL}/writing/${post.slug}/`;
+  const image = getPostImage(post);
 
+  // Built once and spread into both cards, so the two can never disagree about
+  // the article image.
+  const articleImage = image
+    ? {
+        images: [
+          {
+            url: image.url,
+            width: image.width,
+            height: image.height,
+            alt: image.alt,
+          },
+        ],
+      }
+    : {};
+
+  // Spreading the shared blocks matters: a route-level `openGraph` replaces
+  // the inherited one, so anything omitted here — images, siteName, locale,
+  // twitter:site — simply disappears from post pages.
   return {
     title: post.title,
     description: post.description,
+    // Publishing a post while `/writing` is still disabled keeps it out of the
+    // sitemap, so it must not claim to be indexable. Flip `enabled` in
+    // src/data/routes.ts to launch the section and both follow.
+    ...(isDisabledPath(`/writing/${post.slug}`)
+      ? { robots: { index: false } }
+      : {}),
+    alternates: { canonical: url },
     openGraph: {
+      ...sharedOpenGraph,
       type: 'article',
       title: post.title,
       description: post.description,
       url,
       publishedTime: post.date,
       authors: [AUTHOR_NAME],
+      ...articleImage,
     },
     twitter: {
-      card: 'summary_large_image',
+      ...sharedTwitter,
       title: post.title,
       description: post.description,
+      ...articleImage,
     },
   };
 }
@@ -72,6 +122,8 @@ export default async function PostPage({ params }: PageProps) {
 
   const postUrl = `${SITE_URL}/writing/${post.slug}/`;
   const writingUrl = `${SITE_URL}/writing/`;
+  const imageSizes = readPostImageSizes(post.content);
+  const postImage = getPostImage(post);
 
   return (
     <PageWrapper>
@@ -83,7 +135,7 @@ export default async function PostPage({ params }: PageProps) {
             description: post.description,
             hasBreadcrumb: true,
           }),
-          blogPostingNode(post),
+          blogPostingNode(post, postImage),
           breadcrumbNode(postUrl, [
             { name: 'Home', url: HOME_URL },
             { name: 'Writing', url: writingUrl },
@@ -92,6 +144,7 @@ export default async function PostPage({ params }: PageProps) {
         ]}
       />
       <article className="post-page">
+        <ReadingProgress />
         <header className="post-header">
           <time className="post-date" dateTime={post.date}>
             {formatDate(post.date)}
@@ -100,7 +153,7 @@ export default async function PostPage({ params }: PageProps) {
           <p className="post-description">{post.description}</p>
         </header>
         <div className="post-content prose">
-          <PostContent content={post.content} />
+          <PostContent content={post.content} imageSizes={imageSizes} />
         </div>
       </article>
     </PageWrapper>

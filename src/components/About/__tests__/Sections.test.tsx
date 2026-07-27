@@ -117,6 +117,30 @@ Lead paragraph.
     expect(html).toContain('id="travel-geography"');
   });
 
+  // Links in the copy are plain markdown, so the attributes are applied by the
+  // `a` override rather than written at each link.
+  it('opens outbound links in the copy safely', () => {
+    const html = renderToStaticMarkup(
+      <AboutContent markdown={aboutMarkdown} />,
+    );
+
+    for (const anchor of html.match(/<a [^>]*href="https?:\/\/[^>]*>/g) ?? []) {
+      expect(anchor).toContain('target="_blank"');
+      expect(anchor).toContain('rel="nofollow noopener noreferrer"');
+    }
+  });
+
+  // Section links are same-page and must not be given target/rel.
+  it('leaves in-page section links untouched', () => {
+    const html = renderToStaticMarkup(
+      <AboutContent markdown={aboutMarkdown} />,
+    );
+    const hashLink = html.match(/<a [^>]*href="#currently"[^>]*>/)?.[0];
+
+    expect(hashLink).toBeDefined();
+    expect(hashLink).not.toContain('target="_blank"');
+  });
+
   it('supports same-page hash navigation from section links', async () => {
     window.history.replaceState({}, '', '/about/');
 

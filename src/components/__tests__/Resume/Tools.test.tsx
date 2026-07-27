@@ -55,12 +55,9 @@ describe('Tools', () => {
     expect(rds).toBeInTheDocument();
   });
 
-  it('has anchor link for navigation', () => {
-    render(<Tools data={mockTools} />);
-
-    const anchor = document.getElementById('tools');
-    expect(anchor).toBeInTheDocument();
-  });
+  // The `#tools` anchor now lives on the page's <section> wrapper rather than
+  // a marker div inside this component, so it is asserted in
+  // `src/app/__tests__/resume-anchors.test.tsx` instead.
 });
 
 describe('Tool', () => {

@@ -6,6 +6,8 @@ import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons/faLinkedinIn';
 import { faTwitter } from '@fortawesome/free-brands-svg-icons/faTwitter';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons/faEnvelope';
 
+import profile from './profile.json';
+
 export interface ContactItem {
   link: string;
   label: string;
@@ -39,7 +41,8 @@ const data: ContactItem[] = [
     icon: faFacebookF,
   },
   {
-    link: 'mailto:david.sass14@gmail.com',
+    // One public address, shared with the contact CTA and JSON-LD.
+    link: `mailto:${profile.email}`,
     label: 'Email',
     icon: faEnvelope,
   },

@@ -34,13 +34,31 @@ describe('about data', () => {
   });
 
   it('contains valid markdown links', () => {
-    // Check for HTML anchor tag format <a href="url" ...>text</a>
-    // The regex accounts for additional attributes like target and rel
-    const linkRegex = /<a\s+href="[^"]+"\s*[^>]*>.*?<\/a>/g;
+    // Check for markdown link format [text](url)
+    const linkRegex = /\[.+?\]\(.+?\)/g;
     const links = aboutMarkdown.match(linkRegex);
 
     expect(links).not.toBeNull();
     expect(links!.length).toBeGreaterThan(10);
+  });
+
+  /**
+   * Links are plain markdown, so the safety attributes an outbound link needs
+   * are applied by the `a` override in `components/About/Sections.tsx` rather
+   * than written out here. What this file has to guarantee is that every link
+   * is absolute and well-formed, since the override keys off the scheme.
+   */
+  it('writes outbound links as absolute urls', () => {
+    const urls = [...aboutMarkdown.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)].map(
+      (match) => match[1],
+    );
+
+    expect(urls.length).toBeGreaterThan(0);
+
+    for (const url of urls) {
+      expect(url).toMatch(/^https?:\/\//);
+      expect(() => new URL(url)).not.toThrow();
+    }
   });
 
   it('contains properly formatted headers', () => {
