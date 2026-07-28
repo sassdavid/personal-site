@@ -54,7 +54,7 @@ describe('Education', () => {
 
   // The `#education` anchor now lives on the page's <section> wrapper rather
   // than a marker div inside this component, so it is asserted in
-  // `src/app/__tests__/resume-anchors.test.tsx` instead.
+  // `app/__tests__/resume-anchors.test.tsx` instead.
 });
 
 describe('Degree', () => {
