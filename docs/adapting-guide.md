@@ -120,8 +120,8 @@ Identity data starts in shared files, but some text and links are hard-coded.
 | Repository statistics and GitHub API URL                       | `src/components/Stats/Site.tsx`, `src/data/stats/site.ts`           |
 | Countries map                                                  | `src/data/stats/personal.tsx`                                       |
 
-Page titles and descriptions also contain personal copy in `app/layout.tsx`
-and the `page.tsx` files under `app/`. Structured data is assembled in
+Page titles and descriptions also contain personal copy in `app/layout.tsx` and
+the `page.tsx` files under `app/`. Structured data is assembled in
 `src/lib/schema.ts`.
 
 Role and bio copy is duplicated by design across `src/components/Template/Hero.tsx`,
@@ -188,7 +188,7 @@ sitemap. Publishing the first post therefore means flipping `enabled` back to
 Full removal requires a consumer search before any files are deleted:
 
 ```bash
-rg -n -i "writing|feed\\.xml|getWritingItems|getAllPosts" src scripts
+rg -n -i "writing|feed\\.xml|getWritingItems|getAllPosts" app src scripts
 ```
 
 A complete removal touches the writing routes, feed, content loaders, homepage
@@ -227,14 +227,14 @@ repository:
 
 ```bash
 rg -n -i "David|Sass-Kovacs|sassdavid|sasskovacs\\.dev|Loxon" \
-  src content public scripts package.json README.md
+  app content public scripts src package.json README.md
 ```
 
 Repeat it for anything still inherited from upstream:
 
 ```bash
 rg -n -i "Michael|mldangelo|dangelosaurus|mldangelo\\.com" \
-  src content public scripts package.json README.md docs
+  app content public scripts src package.json README.md docs
 ```
 
 This catches details in page descriptions, tests, images, and links that a
