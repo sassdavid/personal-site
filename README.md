@@ -39,7 +39,7 @@ npm ci
 npm run dev
 ```
 
-Requires [GitHub CLI](https://cli.github.com/) and Node.js 24+ ([mise](https://mise.jdx.dev/) or [nvm](https://github.com/nvm-sh/nvm)).
+Requires [GitHub CLI](https://cli.github.com/) and Node.js 24+ ([mise](https://mise.jdx.dev/) recommended — this repo pins its toolchain in `mise.toml`, not `.nvmrc`).
 
 ### Option 2: GitHub Codespaces
 

@@ -22,16 +22,16 @@ Work through these steps in order for the smoothest experience.
 
 ### Step 1: Identity & Contact
 
-| What to change          | File                                    | Notes                                                |
-| ----------------------- | --------------------------------------- | ---------------------------------------------------- |
-| Profile facts and email | `src/data/profile.json`                 | Shared by contact links, stats, metadata, and OG     |
-| Site URL and author     | `src/lib/utils.ts`, `package.json`      | Keep `SITE_URL` and `homepage` aligned               |
-| Social links            | `src/data/contact.ts`                   | Add or remove platforms as needed                    |
-| Portrait                | `public/images/me.jpg`                  | Use a square image; the current asset is 1024×1024px |
-| Homepage copy           | `src/components/Template/Hero.tsx`      | Name, role, tagline, and calls to action             |
-| Footer                  | `src/components/Template/Footer.tsx`    | Identity, source link, and copyright                 |
-| Resume introduction     | `app/resume/page.tsx`                   | Keep this summary aligned with the homepage          |
-| SEO defaults            | `app/layout.tsx`, `src/lib/metadata.ts` | Keywords and shared page-card metadata               |
+| What to change          | File                                        | Notes                                                |
+| ----------------------- | ------------------------------------------- | ---------------------------------------------------- |
+| Profile facts and email | `src/data/profile.json`                     | Shared by contact links, stats, metadata, and OG     |
+| Site URL and author     | `src/lib/utils.ts`, `package.json`          | Keep `SITE_URL` and `homepage` aligned               |
+| Social links            | `src/data/contact.ts`                       | Add or remove platforms as needed                    |
+| Portrait                | `public/images/me.jpg`                      | Use a square image; the current asset is 1024×1024px |
+| Homepage copy           | `src/components/Template/Hero.tsx`          | Name, role, tagline, and calls to action             |
+| Footer                  | `src/components/Template/Footer.tsx`        | Identity, source link, and copyright                 |
+| Resume introduction     | `src/app/resume/page.tsx`                   | Keep this summary aligned with the homepage          |
+| SEO defaults            | `src/app/layout.tsx`, `src/lib/metadata.ts` | Keywords and shared page-card metadata               |
 
 ### Step 2: About Page
 
@@ -71,24 +71,38 @@ description: 'A brief description for previews and SEO.'
 Your content here...
 ```
 
-**To disable the blog entirely:**
+**To hide the blog**, set `enabled: false` on the Writing entry in
+`src/data/routes.ts`. The entry stays defined, so turning it back on is a
+one-word edit. That flag also drops the section and its children from
+`src/app/sitemap.ts` and makes `createPageMetadata` emit `robots: noindex`;
+those move together because `npm run verify-export` fails a page that is
+indexable but missing from the sitemap.
+
+An empty `content/writing/` is fine on its own — `generateStaticParams()` falls
+back to a placeholder slug, and the homepage writing section is gated on
+`recentWriting.length > 0`, so it reappears by itself once you publish.
+
+**To remove it entirely**, expect more than deleting the routes. Find the
+consumers first:
 
 ```bash
-rm -rf app/writing app/feed.xml content/writing
+rg -l -i "writing|feed\.xml|getWritingItems|getAllPosts|getPostSlugs" src scripts
 ```
 
-Then remove the "Writing" link from `src/data/routes.ts`.
+That currently reports 37 files, including the homepage, sitemap, RSS route,
+schema, the export verifier, styles, and tests. Run a production build and
+`npm run verify-export` after the refactor.
 
 ### Step 6: Branding & Theme
 
-| What to change      | File                                 |
-| ------------------- | ------------------------------------ |
-| Colors (light/dark) | `app/styles/tokens/colors.css`       |
-| Type scale          | `app/styles/tokens/typography.css`   |
-| Font families       | `app/fonts.ts`                       |
-| Favicon             | `public/images/favicon/`             |
-| Site metadata/SEO   | `app/layout.tsx`, `src/lib/utils.ts` |
-| Share card          | `scripts/generate-og.mjs`            |
+| What to change      | File                                     |
+| ------------------- | ---------------------------------------- |
+| Colors (light/dark) | `src/app/styles/tokens/colors.css`       |
+| Type scale          | `src/app/styles/tokens/typography.css`   |
+| Font families       | `src/app/fonts.ts`                       |
+| Favicon             | `src/app/favicon.ico`                    |
+| Site metadata/SEO   | `src/app/layout.tsx`, `src/lib/utils.ts` |
+| Share card          | `scripts/generate-og.mjs`                |
 
 After changing the profile or share-card design, run `npm run og` and commit
 both `public/og.png` and `public/og.meta.json`. The metadata file binds the
@@ -100,7 +114,7 @@ will fail CI.
 Search the authored files for the existing name and handle to find any remaining references:
 
 ```bash
-rg -n "Michael|mldangelo" . \
+rg -n "Sass|sassdavid" . \
   -g '!node_modules/**' -g '!.next/**' -g '!out/**' \
   -g '!coverage/**' -g '!.git/**'
 ```
@@ -143,10 +157,10 @@ Run `npm run build` and upload the `out/` directory to any static host (Vercel, 
 
 ### Remove a page
 
-Delete its folder from `app/` and remove the link from `src/data/routes.ts`.
+Delete its folder from `src/app/` and remove the link from `src/data/routes.ts`.
 
 ```bash
-rm -rf app/stats  # removes the /stats page
+rm -rf src/app/stats  # removes the /stats page
 ```
 
 ### Add a social icon
@@ -161,7 +175,7 @@ import { faYoutube } from '@fortawesome/free-brands-svg-icons/faYoutube';
 
 ### Change theme colors
 
-Edit `app/styles/tokens/colors.css`. Its `:root` and `[data-theme='dark']` blocks define the semantic `--color-*` variables used throughout the site. Keep links on `--color-accent`, filled controls on `--color-accent-fill`, and reserve `--color-signal` for live values.
+Edit `src/app/styles/tokens/colors.css`. Its `:root` and `[data-theme='dark']` blocks define the semantic `--color-*` variables used throughout the site. Keep links on `--color-accent`, filled controls on `--color-accent-fill`, and reserve `--color-signal` for live values.
 
 ### Add Google Analytics
 
@@ -170,18 +184,19 @@ Edit `app/styles/tokens/colors.css`. Its `:root` and `[data-theme='dark']` block
 
 ## Troubleshooting
 
-| Problem                    | Solution                                                   |
-| -------------------------- | ---------------------------------------------------------- |
-| Port 3000 in use           | `npm run dev -- -p 3001`                                   |
-| Styles not updating        | Hard refresh: Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows)  |
-| Images not appearing       | Use `/images/...` not `public/images/...` in code          |
-| Build failing              | Run `npm run lint`, `npm run type-check`, and `npm test`   |
-| CSS 404 or wrong path      | Check `homepage` in `package.json` matches your deploy URL |
-| Git line endings (Windows) | `git config core.autocrlf input`                           |
+| Problem                    | Solution                                                                                                              |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Port 3000 in use           | `npm run dev -- -p 3001`                                                                                              |
+| Styles not updating        | Hard refresh: Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows)                                                             |
+| Images not appearing       | Use `/images/...` not `public/images/...` in code                                                                     |
+| Build failing              | Run `npm run lint`, `npm run type-check`, and `npm test`                                                              |
+| CSS 404 on a project site  | `basePath` comes from `actions/configure-pages`, not `homepage`; a non-root deploy also needs raw asset paths audited |
+| `EBADENGINE` on install    | `mise install`, then retry `npm ci`                                                                                   |
+| Git line endings (Windows) | `git config core.autocrlf input`                                                                                      |
 
 ## Getting Help
 
 - Open an issue: https://github.com/sassdavid/personal-site/issues
-- Email: help@sasskovacs.dev
+- Email: hi@sasskovacs.dev
 
 If you find bugs or unclear instructions, please submit a PR—contributions help everyone.
