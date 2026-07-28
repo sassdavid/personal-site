@@ -1,125 +1,251 @@
 # Adapting This Website
 
-Fork this repository as a starting point for your own personal site. The code
-is designed to be adapted, but the content and visual identity are intentionally
-specific; budget time for a full rebrand rather than treating it as a generic
-fill-in-the-blanks theme.
+A coding agent can handle the repository changes once you provide your
+identity, content, assets, and target URL. You decide what to publish, and
+account or DNS changes still require your approval.
 
-An AI assistant can help with the mechanical edits, but use the checklist below
-to verify that facts, routes, metadata, images, and generated assets stay in
-sync.
+## Set up the workspace
 
-## Before You Start
+This repository pins its toolchain with [mise](https://mise.jdx.dev/) rather
+than an `.nvmrc`. Ask your agent to use the Node version `mise.toml` pins,
+install the locked dependencies, and start the development server. To set up
+the fork manually, run:
 
-1. Fork and clone the repository
-2. Run `npm ci` then `npm run dev`
-3. Open [http://localhost:3000](http://localhost:3000) to see the site
-4. Keep the dev server running—changes appear instantly
+```bash
+git clone https://github.com/YOUR-USER/personal-site.git
+cd personal-site
+mise install
+npm ci
+npm run dev
+```
 
-## Customization Checklist
+Open [http://localhost:3000](http://localhost:3000). If you use another version
+manager, choose a release accepted by `engines.node` in `package.json`.
 
-Work through these steps in order for the smoothest experience.
+## Copyable requests
 
-### Step 1: Identity & Contact
+Use the full rebrand prompt in the
+[README](../README.md#adapt-it-with-a-coding-agent) for a first pass. For a
+smaller change, copy one of these.
 
-| What to change          | File                                        | Notes                                                |
-| ----------------------- | ------------------------------------------- | ---------------------------------------------------- |
-| Profile facts and email | `src/data/profile.json`                     | Shared by contact links, stats, metadata, and OG     |
-| Site URL and author     | `src/lib/utils.ts`, `package.json`          | Keep `SITE_URL` and `homepage` aligned               |
-| Social links            | `src/data/contact.ts`                       | Add or remove platforms as needed                    |
-| Portrait                | `public/images/me.jpg`                      | Use a square image; the current asset is 1024×1024px |
-| Homepage copy           | `src/components/Template/Hero.tsx`          | Name, role, tagline, and calls to action             |
-| Footer                  | `src/components/Template/Footer.tsx`        | Identity, source link, and copyright                 |
-| Resume introduction     | `src/app/resume/page.tsx`                   | Keep this summary aligned with the homepage          |
-| SEO defaults            | `src/app/layout.tsx`, `src/lib/metadata.ts` | Keywords and shared page-card metadata               |
+### Manage writing
 
-### Step 2: About Page
+```text
+Read AGENTS.md and work on a topic branch. Do not commit, push, merge, or change
+account settings unless I explicitly authorize it.
+Manage writing for this site as follows: [ADD, UPDATE, OR REMOVE CONTENT].
+Use content/writing/ for local posts and src/data/writing.ts for external
+links. Preserve draft isolation, RSS, the homepage writing section, metadata,
+and valid post slugs. Pair each frontmatter `image` with `imageAlt`, and give
+Markdown images descriptive alt text. If this publishes the first entry, also
+set `enabled: true` on the Writing route in src/data/routes.ts. Run the full
+validation suite and report unresolved content decisions or validation
+failures.
+```
 
-| What to change         | File                |
-| ---------------------- | ------------------- |
-| Bio, intro, everything | `src/data/about.ts` |
+### Remove a page or feature
 
-### Step 3: Resume
+```text
+Read AGENTS.md and work on a topic branch. Do not commit, push, merge, or change
+account settings unless I explicitly authorize it.
+Remove [PAGE OR FEATURE] completely. Before deleting anything, trace its route,
+navigation entry, homepage references, data imports, sitemap entries, schema,
+feed integration, styles, tests, and export verifier checks. Do not change
+unrelated routes or URLs. Run the full validation suite and report any
+remaining references.
+```
 
-| What to change      | File                         |
-| ------------------- | ---------------------------- |
-| Work experience     | `src/data/resume/work.ts`    |
-| Education           | `src/data/resume/degrees.ts` |
-| Skills & categories | `src/data/resume/skills.ts`  |
-| Tools (optional)    | `src/data/resume/tools.ts`   |
+### Change the visual identity
 
-### Step 4: Projects
+```text
+Read AGENTS.md and work on a topic branch. Do not commit, push, merge, or change
+account settings unless I explicitly authorize it.
+Rebrand the visual identity using [COLORS], [FONTS], [PORTRAIT], and
+[DESIGN DIRECTION]. Work through the existing semantic tokens. Keep light and
+dark themes, print behavior, accessibility, and the signal-color rules intact.
+Regenerate and verify the share card, then run the full validation suite.
+```
 
-| What to change  | File                      |
-| --------------- | ------------------------- |
-| Project entries | `src/data/projects.ts`    |
-| Project images  | `public/images/projects/` |
+### Prepare deployment
 
-### Step 5: Blog/Writing (Optional)
+```text
+Read AGENTS.md and work on a topic branch. Do not commit, push, merge, or change
+account settings unless I explicitly authorize it.
+Read the deployment reference in docs/adapting-guide.md, then prepare this
+repository for [FINAL URL] on [HOST]. Make every required repository change,
+run the full validation suite, and inspect out/. Do not create secrets or
+modify DNS. Report the exact external steps that remain.
+```
 
-The site includes a blog at `/writing/` with an RSS feed. You can use it, customize it, or remove it entirely.
+### Add a social link
 
-**To add posts**, create Markdown files in `content/writing/`. The filename becomes the URL slug (for example, `my-post.md` becomes `/writing/my-post/`).
+```text
+Read AGENTS.md and work on a topic branch. Do not commit, push, merge, or change
+account settings unless I explicitly authorize it.
+Add my [PLATFORM] profile at [URL]. Follow the existing src/data/contact.ts
+pattern and reuse the installed Font Awesome packages, bumping those packages
+only in lockstep. Update affected tests, run the relevant checks, and show me
+the diff.
+```
+
+### Add Google Analytics
+
+```text
+Read AGENTS.md and work on a topic branch. Do not commit, push, merge, or change
+account settings unless I explicitly authorize it.
+Configure this fork to use GA4 measurement ID [G-XXXXXXX]. Use the existing
+NEXT_PUBLIC_GA_TRACKING_ID integration. Put the local value in .env.local and
+keep that file untracked. Tell me which GitHub repository variable production
+needs.
+```
+
+## Reference map
+
+### Identity and contact details
+
+Identity data starts in shared files, but some text and links are hard-coded.
+
+| Content                                                        | Location                                                            |
+| -------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Name, role, employer, location, email, and personal statistics | `src/data/profile.json`                                             |
+| Canonical URL, social handle, descriptions, and image settings | `src/lib/utils.ts`                                                  |
+| Social links                                                   | `src/data/contact.ts`                                               |
+| Homepage biography and employer links                          | `src/components/Template/Hero.tsx`                                  |
+| Logo initials                                                  | `src/components/Template/Navigation.tsx`                            |
+| Footer source link                                             | `src/components/Template/Footer.tsx`                                |
+| Portrait and its alt text                                      | `public/images/me.jpg`, `src/components/Template/ThemePortrait.tsx` |
+| Favicon                                                        | `src/app/favicon.ico`                                               |
+| Sitemap URL for crawlers                                       | `public/robots.txt`                                                 |
+| RSS title and description                                      | `src/app/feed.xml/route.ts`                                         |
+| Repository statistics and GitHub API URL                       | `src/components/Stats/Site.tsx`, `src/data/stats/site.ts`           |
+| Countries map                                                  | `src/data/stats/personal.tsx`                                       |
+
+Page titles and descriptions also contain personal copy in `src/app/layout.tsx`
+and the `page.tsx` files under `src/app/`. Structured data is assembled in
+`src/lib/schema.ts`.
+
+Role and bio copy is duplicated by design across `src/components/Template/Hero.tsx`,
+`src/app/layout.tsx`, `src/data/about.ts`, and `src/data/resume/work.ts`. Update
+those together or the homepage, SEO, schema, and résumé disagree.
+
+### About, résumé, and projects
+
+| Content        | Location                     |
+| -------------- | ---------------------------- |
+| About page     | `src/data/about.ts`          |
+| Work history   | `src/data/resume/work.ts`    |
+| Education      | `src/data/resume/degrees.ts` |
+| Skills         | `src/data/resume/skills.ts`  |
+| Tools          | `src/data/resume/tools.ts`   |
+| Projects       | `src/data/projects.ts`       |
+| Project images | `public/images/projects/`    |
+
+About copy is Markdown, so links use `[text](url)`. The `target` and `rel`
+attributes are applied centrally in `src/components/About/Sections.tsx`.
+
+### Writing
+
+Writing comes from two places:
+
+- Markdown posts in `content/writing/`
+- External articles in `src/data/writing.ts`
+
+Both sources appear on `/writing/`. Dated entries can also appear on the
+homepage and in the RSS feed.
+
+Local posts are Markdown files. The filename becomes the URL slug, so
+`my-post.md` becomes `/writing/my-post/`. Valid filenames use lowercase letters
+and numbers separated by single hyphens.
 
 ```markdown
 ---
 title: 'Your Post Title'
 date: '2026-01-15'
-description: 'A brief description for previews and SEO.'
+description: 'A short description for previews and search results.'
 ---
 
-Your content here...
+Your content here.
 ```
 
-**To hide the blog**, set `enabled: false` on the Writing entry in
-`src/data/routes.ts`. The entry stays defined, so turning it back on is a
-one-word edit. That flag also drops the section and its children from
-`src/app/sitemap.ts` and makes `createPageMetadata` emit `robots: noindex`;
-those move together because `npm run verify-export` fails a page that is
-indexable but missing from the sitemap.
+The required fields are `title`, `date`, and `description`. `draft: true` shows
+a post during development without including it in the production export. An
+optional `image` must be a root-relative path under `public/` and must be paired
+with `imageAlt`.
 
-An empty `content/writing/` is fine on its own — `generateStaticParams()` falls
-back to a placeholder slug, and the homepage writing section is gated on
-`recentWriting.length > 0`, so it reappears by itself once you publish.
+Unlike upstream, this fork builds with no posts at all: `generateStaticParams()`
+falls back to a placeholder slug, and the homepage writing section is gated on
+`recentWriting.length > 0` rather than on a flag, so it appears by itself once
+an entry exists.
 
-**To remove it entirely**, expect more than deleting the routes. Find the
-consumers first:
+Whether the section is linked is a separate, deliberate switch. Set
+`enabled: false` on the Writing entry in `src/data/routes.ts` to hide it, which
+also drops it and its children from `src/app/sitemap.ts` and makes
+`createPageMetadata` emit `robots: noindex`. Those move together on purpose:
+`npm run verify-export` fails a page that is indexable but absent from the
+sitemap. Publishing the first post therefore means flipping `enabled` back to
+`true` as well.
+
+Full removal requires a consumer search before any files are deleted:
 
 ```bash
-rg -l -i "writing|feed\.xml|getWritingItems|getAllPosts|getPostSlugs" src scripts
+rg -n -i "writing|feed\\.xml|getWritingItems|getAllPosts" src scripts
 ```
 
-That currently reports 37 files, including the homepage, sitemap, RSS route,
-schema, the export verifier, styles, and tests. Run a production build and
-`npm run verify-export` after the refactor.
+A complete removal touches the writing routes, feed, content loaders, homepage
+section, sitemap, schema, export verifier, styles, and tests. Run a production
+build after the refactor.
 
-### Step 6: Branding & Theme
+### Visual identity
 
-| What to change      | File                                     |
-| ------------------- | ---------------------------------------- |
-| Colors (light/dark) | `src/app/styles/tokens/colors.css`       |
-| Type scale          | `src/app/styles/tokens/typography.css`   |
-| Font families       | `src/app/fonts.ts`                       |
-| Favicon             | `src/app/favicon.ico`                    |
-| Site metadata/SEO   | `src/app/layout.tsx`, `src/lib/utils.ts` |
-| Share card          | `scripts/generate-og.mjs`                |
+| Setting                    | Location                                    |
+| -------------------------- | ------------------------------------------- |
+| Light and dark colors      | `src/app/styles/tokens/colors.css`          |
+| Type scale                 | `src/app/styles/tokens/typography.css`      |
+| Font files and assignments | `src/app/fonts.ts`                          |
+| Favicon                    | `src/app/favicon.ico`                       |
+| Default metadata           | `src/app/layout.tsx`, `src/lib/metadata.ts` |
+| Share-card generator       | `scripts/generate-og.mjs`                   |
 
-After changing the profile or share-card design, run `npm run og` and commit
-both `public/og.png` and `public/og.meta.json`. The metadata file binds the
-committed image to the generator and profile inputs, so omitting either file
-will fail CI.
+Keep links on `--color-accent`, filled controls on `--color-accent-fill`, and
+reserve `--color-signal` for values that are live or in progress.
 
-### Step 7: Final Cleanup
-
-Search the authored files for the existing name and handle to find any remaining references:
+After changing profile fields on the share card or its design, run:
 
 ```bash
-rg -n "Sass|sassdavid" . \
-  -g '!node_modules/**' -g '!.next/**' -g '!out/**' \
-  -g '!coverage/**' -g '!.git/**'
+npm run og
+npm run og:check
 ```
 
-Then format and validate the finished site:
+`npm run og` updates `public/og.png` and `public/og.meta.json`. The image and
+metadata must stay in sync, and both are committed.
+
+## Audit the result
+
+Require the final search output and validation results, not only a completion
+claim. This search covers the current name, domain, handle, employer, and
+repository:
+
+```bash
+rg -n -i "David|Sass-Kovacs|sassdavid|sasskovacs\\.dev|Loxon" \
+  src content public scripts package.json README.md
+```
+
+Repeat it for anything still inherited from upstream:
+
+```bash
+rg -n -i "Michael|mldangelo|dangelosaurus|mldangelo\\.com" \
+  src content public scripts package.json README.md docs
+```
+
+This catches details in page descriptions, tests, images, and links that a
+checklist can miss. The second search is expected to keep matching the README's
+acknowledgment of the upstream template, which stays.
+
+Some tests assert the site's public content, so exact-text expectations may
+need updates. Do not weaken structural checks for metadata, canonical URLs,
+draft isolation, accessibility, or export integrity.
+
+The full validation suite is:
 
 ```bash
 npm run format
@@ -131,72 +257,79 @@ npm run build
 npm run verify-export
 ```
 
-## Deployment
+`mise run check` covers types, lint, formatting, and tests in one command; the
+share card, build, and export checks still run separately.
 
-### GitHub Pages (Recommended)
+## Deployment reference
 
-1. Update `SITE_URL` in `src/lib/utils.ts` and `homepage` in `package.json`
-2. Set your domain in `public/CNAME` (for example, `yoursite.com`)
-3. In your repo settings, enable GitHub Pages with source: GitHub Actions
-4. Push to `main`—it deploys automatically
+### Changes inside the repository
 
-### Custom Domain
+A coding agent can prepare and verify the repository:
 
-1. Purchase a domain from Squarespace Domains, Cloudflare, or Namecheap
-2. Add your domain to `public/CNAME`:
-   ```bash
-   echo "yourdomain.com" > public/CNAME
-   ```
-3. Configure DNS per [GitHub's documentation](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site)
+- Set `SITE_URL` in `src/lib/utils.ts` to the final public URL without a
+  trailing slash.
+- Set `homepage` in `package.json` to the same URL with a trailing slash.
+- Update `public/robots.txt` and other URL-bearing files.
+- Build the site and inspect `out/`.
 
-### Other Hosts
+The site works as written at a root URL, such as a custom domain. A GitHub user
+or organization site also has a root URL, but its repository must be named
+[`<owner>.github.io`](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages).
+A fork left under another repository name is a project site at
+`https://YOUR-USER.github.io/REPOSITORY/` and needs more work. The workflow
+injects Next's `basePath` through `actions/configure-pages`, but raw asset paths
+and absolute URLs created by the application still assume a root deployment.
+Updating `SITE_URL` and `homepage` alone is not enough for that case.
 
-Run `npm run build` and upload the `out/` directory to any static host (Vercel, Netlify, S3, etc.).
+### Actions outside the repository
 
-## Common Tasks
+GitHub settings, deployment accounts, and DNS changes require account access.
+An agent can perform them only with explicit authorization.
 
-### Remove a page
+For GitHub Pages:
 
-Delete its folder from `src/app/` and remove the link from `src/data/routes.ts`.
+1. In the fork's **Actions** tab, enable workflows. GitHub
+   [disables workflows in forks by default](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflows-in-forked-repositories).
+2. To use the default root URL without a custom domain, rename the fork to
+   `YOUR-USER.github.io` in **Settings > General**.
+3. In **Settings > Pages**, choose **GitHub Actions** as the source.
+4. For a custom domain,
+   [verify the domain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages)
+   in your profile or organization settings before attaching it to the
+   repository.
+5. Add the custom domain in **Settings > Pages** before changing its routing
+   records.
+6. Configure DNS using
+   [GitHub's custom-domain guide](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site).
+7. After reviewing the branch, push or merge it to `main` to deploy.
 
-```bash
-rm -rf src/app/stats  # removes the /stats page
-```
+Because a custom Actions workflow publishes this site, the custom domain comes
+from **Settings > Pages** rather than from `public/CNAME`. The committed file is
+inert under that setup; a fork should either point it at its own domain or
+delete it.
 
-### Add a social icon
+Analytics is configured the same way: `NEXT_PUBLIC_GA_TRACKING_ID` is read from
+a GitHub repository variable at build time, and from `.env.local` locally.
 
-In `src/data/contact.ts`, import from Font Awesome and add to the array:
-
-```typescript
-import { faYoutube } from '@fortawesome/free-brands-svg-icons/faYoutube';
-// Add to data array:
-{ link: 'https://youtube.com/@you', label: 'YouTube', icon: faYoutube },
-```
-
-### Change theme colors
-
-Edit `src/app/styles/tokens/colors.css`. Its `:root` and `[data-theme='dark']` blocks define the semantic `--color-*` variables used throughout the site. Keep links on `--color-accent`, filled controls on `--color-accent-fill`, and reserve `--color-signal` for live values.
-
-### Add Google Analytics
-
-1. Create `.env.local` from the example: `cp .env.example .env.local`
-2. Add your GA4 measurement ID: `NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXX`
+For another static host, the agent can build `out/` and prepare the deployment.
+Uploading it to the hosting account still requires explicit authorization. A
+subpath deployment also needs a matching Next `basePath` and an audit of raw
+assets and absolute URL construction.
 
 ## Troubleshooting
 
-| Problem                    | Solution                                                                                                              |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Port 3000 in use           | `npm run dev -- -p 3001`                                                                                              |
-| Styles not updating        | Hard refresh: Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows)                                                             |
-| Images not appearing       | Use `/images/...` not `public/images/...` in code                                                                     |
-| Build failing              | Run `npm run lint`, `npm run type-check`, and `npm test`                                                              |
-| CSS 404 on a project site  | `basePath` comes from `actions/configure-pages`, not `homepage`; a non-root deploy also needs raw asset paths audited |
-| `EBADENGINE` on install    | `mise install`, then retry `npm ci`                                                                                   |
-| Git line endings (Windows) | `git config core.autocrlf input`                                                                                      |
+| Problem                                 | Check                                                                                         |
+| --------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `EBADENGINE` warning or install failure | Run `mise install`, then retry `npm ci`                                                       |
+| Port 3000 is in use                     | Run `npm run dev -- -p 3001`                                                                  |
+| Images do not appear                    | Use a URL such as `/images/photo.jpg`, not `public/images/photo.jpg`                          |
+| A section is missing from the menus     | Check its `enabled` flag in `src/data/routes.ts`                                              |
+| Assets return 404 on a project site     | Review the repository subpath limitation in the [deployment reference](#deployment-reference) |
+| The export verifier fails               | Run `npm run build` first, then inspect the named file or route                               |
+| Git line endings on Windows             | Run `git config core.autocrlf input`                                                          |
 
-## Getting Help
+## Getting help
 
-- Open an issue: https://github.com/sassdavid/personal-site/issues
-- Email: hi@sasskovacs.dev
-
-If you find bugs or unclear instructions, please submit a PR—contributions help everyone.
+Open an [issue](https://github.com/sassdavid/personal-site/issues) when the
+instructions are unclear or appear to be wrong, or email
+[hi@sasskovacs.dev](mailto:hi@sasskovacs.dev).
