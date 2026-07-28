@@ -7,7 +7,7 @@ import localFont from 'next/font/local';
  * does not silently preload every script Fontsource ships.
  */
 export const bricolage = localFont({
-  src: '../../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2',
+  src: '../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2',
   variable: '--font-bricolage',
   weight: '200 800',
   style: 'normal',
@@ -17,7 +17,7 @@ export const bricolage = localFont({
 });
 
 export const newsreader = localFont({
-  src: '../../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2',
+  src: '../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2',
   variable: '--font-newsreader',
   weight: '200 800',
   style: 'normal',
@@ -27,7 +27,7 @@ export const newsreader = localFont({
 });
 
 export const jetbrainsMono = localFont({
-  src: '../../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2',
+  src: '../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2',
   variable: '--font-jetbrains',
   weight: '100 800',
   style: 'normal',
@@ -42,7 +42,7 @@ export const jetbrainsMono = localFont({
  * page while preserving a real italic rather than browser synthesis.
  */
 export const newsreaderItalic = localFont({
-  src: '../../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-italic.woff2',
+  src: '../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-italic.woff2',
   variable: '--font-newsreader-italic',
   weight: '200 800',
   style: 'italic',

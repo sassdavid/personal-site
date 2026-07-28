@@ -39,7 +39,7 @@ monospace type for labels and data. Hairlines and spacing establish structure.
 Ultramarine handles links, structure, and controls. Amber is reserved for live
 or in-progress values.
 
-The implementation lives in [`src/app/styles/tokens/`](../src/app/styles/tokens/).
+The implementation lives in [`app/styles/tokens/`](../app/styles/tokens/).
 
 ## References
 

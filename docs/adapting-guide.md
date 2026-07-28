@@ -114,18 +114,18 @@ Identity data starts in shared files, but some text and links are hard-coded.
 | Logo initials                                                  | `src/components/Template/Navigation.tsx`                            |
 | Footer source link                                             | `src/components/Template/Footer.tsx`                                |
 | Portrait and its alt text                                      | `public/images/me.jpg`, `src/components/Template/ThemePortrait.tsx` |
-| Favicon                                                        | `src/app/favicon.ico`                                               |
+| Favicon                                                        | `app/favicon.ico`                                                   |
 | Sitemap URL for crawlers                                       | `public/robots.txt`                                                 |
-| RSS title and description                                      | `src/app/feed.xml/route.ts`                                         |
+| RSS title and description                                      | `app/feed.xml/route.ts`                                             |
 | Repository statistics and GitHub API URL                       | `src/components/Stats/Site.tsx`, `src/data/stats/site.ts`           |
 | Countries map                                                  | `src/data/stats/personal.tsx`                                       |
 
-Page titles and descriptions also contain personal copy in `src/app/layout.tsx`
-and the `page.tsx` files under `src/app/`. Structured data is assembled in
+Page titles and descriptions also contain personal copy in `app/layout.tsx`
+and the `page.tsx` files under `app/`. Structured data is assembled in
 `src/lib/schema.ts`.
 
 Role and bio copy is duplicated by design across `src/components/Template/Hero.tsx`,
-`src/app/layout.tsx`, `src/data/about.ts`, and `src/data/resume/work.ts`. Update
+`app/layout.tsx`, `src/data/about.ts`, and `src/data/resume/work.ts`. Update
 those together or the homepage, SEO, schema, and résumé disagree.
 
 ### About, résumé, and projects
@@ -179,7 +179,7 @@ an entry exists.
 
 Whether the section is linked is a separate, deliberate switch. Set
 `enabled: false` on the Writing entry in `src/data/routes.ts` to hide it, which
-also drops it and its children from `src/app/sitemap.ts` and makes
+also drops it and its children from `app/sitemap.ts` and makes
 `createPageMetadata` emit `robots: noindex`. Those move together on purpose:
 `npm run verify-export` fails a page that is indexable but absent from the
 sitemap. Publishing the first post therefore means flipping `enabled` back to
@@ -197,14 +197,14 @@ build after the refactor.
 
 ### Visual identity
 
-| Setting                    | Location                                    |
-| -------------------------- | ------------------------------------------- |
-| Light and dark colors      | `src/app/styles/tokens/colors.css`          |
-| Type scale                 | `src/app/styles/tokens/typography.css`      |
-| Font files and assignments | `src/app/fonts.ts`                          |
-| Favicon                    | `src/app/favicon.ico`                       |
-| Default metadata           | `src/app/layout.tsx`, `src/lib/metadata.ts` |
-| Share-card generator       | `scripts/generate-og.mjs`                   |
+| Setting                    | Location                                |
+| -------------------------- | --------------------------------------- |
+| Light and dark colors      | `app/styles/tokens/colors.css`          |
+| Type scale                 | `app/styles/tokens/typography.css`      |
+| Font files and assignments | `app/fonts.ts`                          |
+| Favicon                    | `app/favicon.ico`                       |
+| Default metadata           | `app/layout.tsx`, `src/lib/metadata.ts` |
+| Share-card generator       | `scripts/generate-og.mjs`               |
 
 Keep links on `--color-accent`, filled controls on `--color-accent-fill`, and
 reserve `--color-signal` for values that are live or in progress.
