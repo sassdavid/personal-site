@@ -15,8 +15,8 @@ describe('about data', () => {
 
   it('contains the likes section', () => {
     expect(aboutMarkdown).toContain('# I Like');
-    expect(aboutMarkdown).toContain('baking');
-    expect(aboutMarkdown).toContain('cook');
+    expect(aboutMarkdown).toContain('Baking');
+    expect(aboutMarkdown).toContain('Cooking');
   });
 
   it('contains the travel section', () => {
@@ -30,7 +30,7 @@ describe('about data', () => {
 
   it('contains the dreams section', () => {
     expect(aboutMarkdown).toContain('# I Dream Of');
-    expect(aboutMarkdown).toContain('Continuously finding inspiration');
+    expect(aboutMarkdown).toContain('Building infrastructure');
   });
 
   it('contains valid markdown links', () => {

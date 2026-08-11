@@ -18,14 +18,15 @@ const work: Position[] = [
     url: 'https://loxon.eu/',
     startDate: '2025-07-01',
     summary:
-      'Leading AWS multi-region infrastructure initiatives and DevOps practices, maintaining multi-tenant environments serving multiple clients across Indonesia while mentoring team members and driving technical excellence.',
+      'Own the AWS platform behind the product: multi-account, multi-region environments for banking and fintech clients across Europe, the Middle East and Asia, plus the Terraform module library and GitOps tooling the delivery teams build on.',
     highlights: [
-      'Architecting and managing AWS multi-region, multi-tenant infrastructure for enterprise SaaS deployments',
-      'Maintaining multi-tenant AWS environments serving major clients including Grab across Indonesia',
-      'Leading Kubernetes infrastructure optimization and scaling initiatives across AWS regions',
-      'Designing advanced GitOps workflows and CI/CD pipelines for complex microservices architectures',
-      'Mentoring DevOps engineers and establishing best practices for infrastructure automation',
-      'Driving adoption of modern cloud-native technologies and infrastructure-as-code standards',
+      'Run multi-account, multi-region AWS environments for enterprise banking and fintech clients',
+      'Maintain a versioned Terraform module library (EKS, RDS, EFS, MSK, VPC, networking) and migrate live environments across breaking releases',
+      'Extend EKS clusters with Karpenter and dedicated CPU and GPU node groups for AI and analytics workloads',
+      'Harden platform security with customer-managed and cross-account KMS keys, External Secrets, and least-privilege IAM reviews',
+      'Automate release and environment tooling in Python and Bash, driven from Jenkins and Argo CD',
+      'Lead production incident investigation across Athena log analytics, EKS and Terraform state',
+      'Mentor engineers and review infrastructure changes against Terraform, Helm and Kubernetes standards',
     ],
   },
   {
@@ -35,9 +36,9 @@ const work: Position[] = [
     startDate: '2024-08-01',
     endDate: '2025-06-30',
     summary:
-      'Spearheaded cloud infrastructure design and Kubernetes migration, establishing robust DevOps practices and implementing comprehensive AWS architecture for enterprise-scale systems.',
+      'Led the move to cloud infrastructure and Kubernetes, establishing the DevOps practices and AWS architecture the platform still runs on.',
     highlights: [
-      'Designed AWS architecture utilizing VPC, EKS, S3, Lambda, RDS, MSK, Redshift, DynamoDB, Kinesis, and EventBridge',
+      'Designed the AWS architecture using VPC, EKS, S3, Lambda, RDS, MSK, Redshift, DynamoDB, Kinesis, and EventBridge',
       'Led migration from Docker Swarm to Kubernetes (Rancher on-prem, EKS on AWS)',
       'Implemented GitOps with Argo CD and maintained Helm charts for application deployments',
       'Built IaC automation using Terraform, CloudFormation, and Terragrunt',
@@ -69,11 +70,11 @@ const work: Position[] = [
     startDate: '2021-08-01',
     endDate: '2022-07-31',
     summary:
-      'Contributed to cloud-native system development for ING Spain, working across full-stack development with microservices architecture and leading ETL integration efforts.',
+      'Built cloud-native systems for a Western European retail bank, working across the full stack on a microservices architecture and leading the ETL integration effort.',
     highlights: [
       'Developed REST APIs for multiple projects using microservices architecture',
       'Implemented ETL pipelines with Talend for high-volume data transfers',
-      'Led technical development for ING Spain project as core developer',
+      'Led technical development on a European retail banking programme as core developer',
       'Built cloud-native Collection System on AWS with Spring Boot and Angular',
       'Delivered full-stack solutions across frontend and backend development',
     ],
@@ -90,7 +91,7 @@ const work: Position[] = [
       'Designed Oracle databases handling hundreds of millions of rows with advanced optimization',
       'Developed native SQL statements, stored procedures, and functions',
       'Implemented Keycloak for SSO authentication and authorization',
-      'Supported go-live launches at ING Bank Poland and other banking clients',
+      'Supported go-live launches at banking clients across Central and Western Europe',
       'Applied advanced indexing and optimization techniques for high-performance queries',
     ],
   },
@@ -117,10 +118,9 @@ const work: Position[] = [
     startDate: '2016-05-01',
     endDate: '2016-08-31',
     highlights: [
-      'Developed a monitoring software for a production line that assembles SMT components',
-      'Extracted data from a special database and integrated it into the monitoring application',
-      'Wrote the application in C#.',
-      'Implemented email and SMS notifications to alert relevant colleagues of defective components after a specified threshold.',
+      'Built monitoring software in C# for a production line assembling SMT components',
+      'Extracted data from a proprietary database and integrated it into the monitoring application',
+      'Implemented email and SMS alerts that notified the relevant colleagues once defect counts passed a threshold',
     ],
   },
 ];

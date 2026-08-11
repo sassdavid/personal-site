@@ -33,6 +33,7 @@ describe('createHeadingId', () => {
       ]),
     ).toEqual([
       ['Currently', 'currently'],
+      ['Hungary', 'hungary'],
       ['I Like', 'i-like'],
       ['Travel / Geography', 'travel-geography'],
       ['Fun Facts', 'fun-facts'],

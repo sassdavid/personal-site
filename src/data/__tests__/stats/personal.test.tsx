@@ -1,6 +1,8 @@
 import { act, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { COUNTRIES_VISITED } from '@/lib/telemetry';
+
 import data from '../../stats/personal';
 
 describe('personal stats data', () => {
@@ -39,7 +41,9 @@ describe('personal stats data', () => {
 
     expect(countriesStat).toBeDefined();
     expect(countriesStat!.label).toBe('Countries visited');
-    expect(countriesStat!.value).toBe(10);
+    // Read from the shared profile rather than repeating the figure: the
+    // hardcoded copy silently went stale the first time a country was added.
+    expect(countriesStat!.value).toBe(COUNTRIES_VISITED);
   });
 
   it('has a current location stat', () => {

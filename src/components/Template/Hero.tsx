@@ -25,7 +25,7 @@ export default function Hero() {
             >
               Loxon
             </a>
-            , building scalable solutions with Kubernetes, AWS.
+            , building and running platforms on AWS and Kubernetes.
           </p>
 
           <div className="hero-cta">
