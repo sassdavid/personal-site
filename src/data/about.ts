@@ -68,7 +68,7 @@ vineyards are worth the drive on their own.
   old now, which makes it older than most of the infrastructure I maintain.
 - The same starter turned into a Neapolitan pizza habit that has been going for years. It is a weekly ritual, the dough is a 72-hour cold ferment,
   and I am still adjusting it.
-- In 2023, I jumped out of a plane. Once was enough to be glad I did it, and enough to know I do not need to do it again.
+- In 2023, I jumped out of a plane on a tandem skydive. It was a great feeling, and I want to feel it again.
 
 # I Dream Of
 
