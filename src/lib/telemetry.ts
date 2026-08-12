@@ -13,7 +13,7 @@ import profile from '@/data/profile.json';
  *
  * Without one this parsed as local time, so the readout shifted by hours
  * depending on where the visitor was — the whole point of the figure is that
- * it is the same measurement for everyone. -05:00 is Buffalo, NY in February.
+ * it is the same measurement for everyone. +02:00 is Budapest in June.
  */
 export const BIRTH_DATE = profile.birthDate;
 

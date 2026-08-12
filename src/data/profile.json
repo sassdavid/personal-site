@@ -3,9 +3,9 @@
   "role": "Senior DevOps Engineer",
   "employer": "Loxon Solutions",
   "focus": "cloud infrastructure and automation",
-  "birthDate": "1993-06-16T09:30:00",
+  "birthDate": "1993-06-16T09:30:00+02:00",
   "computingSince": 2008,
-  "countriesVisited": 10,
+  "countriesVisited": 13,
   "currentCity": "Budapest, HU",
   "email": "hi@sasskovacs.dev"
 }

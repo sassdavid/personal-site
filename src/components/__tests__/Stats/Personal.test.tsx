@@ -1,6 +1,8 @@
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { COUNTRIES_VISITED } from '@/lib/telemetry';
+
 import Personal from '../../Stats/Personal';
 
 describe('Personal', () => {
@@ -28,7 +30,7 @@ describe('Personal', () => {
     render(<Personal />);
 
     expect(screen.getByText('Countries visited')).toBeInTheDocument();
-    expect(screen.getByText('10')).toBeInTheDocument();
+    expect(screen.getByText(String(COUNTRIES_VISITED))).toBeInTheDocument();
   });
 
   it('displays current city', () => {
