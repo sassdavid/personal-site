@@ -55,3 +55,6 @@ Thumbs.db
 .grunt/
 .lock-wscript
 nohup.out
+
+# mise generates this locally; it must not be committed — see AGENTS.md
+mise.lock
