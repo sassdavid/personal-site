@@ -21,6 +21,14 @@ updates:
       fontawesome:
         patterns:
           - '@fortawesome/*'
+      # The @vitest/* packages declare an *exact* peer on vitest
+      # (@vitest/coverage-v8@5.0.0 peers vitest@"5.0.0", not ^5). Bumped
+      # singly, npm ci dies with ERESOLVE before any gate runs — which is how
+      # #288 and #290 both failed at Install Dependencies.
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
     open-pull-requests-limit: 15
     labels:
       - "dependencies"
