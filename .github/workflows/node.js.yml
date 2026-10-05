@@ -35,16 +35,23 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: jdx/mise-action@v5.0.1
+        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
           experimental: true
+          # mise-action defaults this to the job token and exports it as
+          # MISE_GITHUB_TOKEN to every later step, which would hand it to npm
+          # install scripts and the build. Node comes from nodejs.org, so mise
+          # needs no token here.
+          github_token: ''
 
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'mise.toml') }}
@@ -63,12 +70,15 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: jdx/mise-action@v5.0.1
+        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
           experimental: true
+          github_token: ''
 
       # The install job's cache is a fast path, not a guarantee. Without the
       # fallback below, an evicted or not-yet-saved entry leaves node_modules
@@ -78,7 +88,7 @@ jobs:
       # the install job owns the save, so parallel jobs cannot race on the key.
       - name: Restore node_modules
         id: cache-node-modules
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'mise.toml') }}
@@ -107,17 +117,20 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: jdx/mise-action@v5.0.1
+        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
           experimental: true
+          github_token: ''
 
       # Restore-only with an install fallback, as in code-quality above.
       - name: Restore node_modules
         id: cache-node-modules
-        uses: actions/cache/restore@v6
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'mise.toml') }}
@@ -131,7 +144,7 @@ jobs:
 
       - name: Upload coverage reports
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: coverage
           path: coverage/
@@ -143,9 +156,11 @@ jobs:
     needs: install
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
+    # Configure Pages only reads the existing site metadata. Application and
+    # dependency code must never run with Pages write permissions.
     permissions:
       contents: read
-      pages: write
+      pages: read
     strategy:
       fail-fast: false
       matrix:
@@ -164,12 +179,15 @@ jobs:
       MISE_NODE_VERSION: ${{ matrix.node-version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: jdx/mise-action@v5.0.1
+        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
           experimental: true
+          github_token: ''
 
       - name: Install dependencies
         run: npm ci
@@ -199,14 +217,16 @@ jobs:
           matrix.os == 'ubuntu-latest' &&
           matrix.node-version == env.DEPLOY_NODE &&
           github.ref == 'refs/heads/main'
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
         with:
           static_site_generator: next
+          enablement: false
 
+      # Stats use the public API anonymously, with a labeled fallback on rate
+      # limits. Do not expose a job token to application/dependency code.
       - name: Build
         run: npm run build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_ENV: production
           NEXT_PUBLIC_GA_TRACKING_ID: ${{ vars.NEXT_PUBLIC_GA_TRACKING_ID }}
 
@@ -230,7 +250,7 @@ jobs:
           matrix.os == 'ubuntu-latest' &&
           matrix.node-version == env.DEPLOY_NODE &&
           github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: build-output
           path: out/
@@ -276,16 +296,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Download validated build
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: build-output
           path: out
 
       - name: Package GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: out
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5

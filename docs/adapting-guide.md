@@ -316,6 +316,43 @@ Uploading it to the hosting account still requires explicit authorization. A
 subpath deployment also needs a matching Next `basePath` and an audit of raw
 assets and absolute URL construction.
 
+### Security boundaries and hosting headers
+
+The résumé and About pages are intentionally public. Their content is authored
+in repository files, with the same review and publishing authority as the site
+code; the application has no CMS, résumé upload, or user-supplied Markdown path.
+The Markdown renderer's default sanitization remains enabled. Treat an external
+content source as a new trust boundary if you add one.
+
+Only the deployment job has Pages write permissions. Builds read existing Pages
+metadata to configure Next's base path, and fetch public GitHub statistics
+without a job token. If the anonymous API is rate limited, the page identifies
+its fallback readings rather than failing the export. Keep action references
+pinned to full commit SHAs; the GitHub Actions Dependabot configuration maintains
+those pins.
+
+This fork adds three constraints of its own. The build runs `configure-pages`
+with `enablement: false`, so Pages must already be set to **GitHub Actions**
+(step 3 above); the workflow will not switch it on. `jdx/mise-action` would
+otherwise export the job token to every later step as `MISE_GITHUB_TOKEN`, so
+each setup step passes `github_token: ''`. The Dependabot auto-approve and
+auto-merge workflows run on `pull_request_target` with a `PAT_TOKEN` secret,
+which is safe only because they never check out the pull request's code.
+
+GitHub Pages controls the HTTP response headers. The site remains on Pages;
+it does not currently provide `X-Frame-Options`, CSP `frame-ancestors`, or
+`X-Content-Type-Options: nosniff`. These are hosting limitations, not protections
+supplied by this repository. Next's `headers()` and Helmet require a running
+server, and a `_headers` file is not a GitHub Pages configuration mechanism.
+HTML meta tags cannot substitute for these protections; in particular,
+[`frame-ancestors` is unsupported in meta policies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/frame-ancestors).
+
+If anti-framing or MIME-sniffing headers become a requirement, use a separately
+approved proxy or host that supports response-header configuration, then verify
+the deployed responses. Do not add ineffective meta tags or frame-busting
+JavaScript to silence a scanner. The current site has no authenticated actions,
+and no concrete clickjacking or MIME-sniffing exploit has been established.
+
 ## Troubleshooting
 
 | Problem                                 | Check                                                                                         |
