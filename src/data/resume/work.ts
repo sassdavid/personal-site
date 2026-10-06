@@ -1,12 +1,16 @@
-/**
- * Conforms to https://jsonresume.org/schema/
- */
+/** Based on the JSON Resume work item, with a local `commitment` extension. */
 export interface Position {
   name: string;
   position: string;
   url: string;
   startDate: string;
   endDate?: string;
+  /**
+   * Marks an open-ended role that ran alongside the primary career. Omitted
+   * means full-time; `sortPositions` uses this to keep an enduring side role
+   * from outranking every later full-time position.
+   */
+  commitment?: 'part-time';
   summary?: string;
   highlights?: string[];
 }

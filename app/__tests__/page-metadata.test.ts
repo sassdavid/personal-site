@@ -2,13 +2,20 @@ import { describe, expect, it, vi } from 'vitest';
 
 import profile from '@/data/profile.json';
 import { allRoutes } from '@/data/routes';
-import { AUTHOR_NAME, SHARE_IMAGE_PATH, SITE_URL } from '@/lib/utils';
+import { sharedOpenGraph } from '@/lib/metadata';
+import { RESUME_JSON_URL } from '@/lib/resumeJson';
+import {
+  AUTHOR_NAME,
+  SHARE_IMAGE_DIMENSIONS,
+  SHARE_IMAGE_PATH,
+  SITE_URL,
+  TWITTER_HANDLE,
+} from '@/lib/utils';
 
 /**
  * One synthetic post stands in for `content/writing/`, so the blog-post cases
  * below describe the metadata rules rather than requiring this repository to
- * have published anything. The post deliberately carries no image, which is
- * what makes it exercise the fall back to the site share card.
+ * have published anything.
  */
 const { POST_SLUG } = vi.hoisted(() => ({ POST_SLUG: 'a-published-post' }));
 
@@ -25,6 +32,24 @@ vi.mock('@/lib/posts', () => {
     getPostSlugs: () => [post.slug],
     getPostBySlug: (slug: string) => (slug === post.slug ? post : null),
     getAllPosts: () => [post],
+  };
+});
+
+/**
+ * The synthetic post has no card in `public/og/writing/`, and the real reader
+ * would fail the build over that — which is the guard in production. Here the
+ * card is measured as the generator would have written it.
+ */
+vi.mock('@/lib/imageSize', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/imageSize')>();
+  const { SHARE_IMAGE_DIMENSIONS: card } = await import('@/lib/utils');
+
+  return {
+    ...actual,
+    readImageSize: (publicPath: string) =>
+      publicPath.startsWith('/og/writing/')
+        ? { width: card.width, height: card.height }
+        : actual.readImageSize(publicPath),
   };
 });
 
@@ -116,6 +141,13 @@ describe('page metadata', () => {
     });
   });
 
+  it('advertises the JSON Resume alongside the resume canonical', () => {
+    expect(resumeMetadata.alternates?.types).toEqual({
+      'application/json': RESUME_JSON_URL,
+    });
+    expect(resumeMetadata.alternates?.canonical).toBe(`${SITE_URL}/resume/`);
+  });
+
   it('declares a canonical url for blog posts', async () => {
     const metadata = await generatePostMetadata({
       params: Promise.resolve({ slug: POST_SLUG }),
@@ -126,17 +158,53 @@ describe('page metadata', () => {
     );
   });
 
-  it('declares the share card on blog posts', async () => {
+  /**
+   * Every post declares the card generated for it rather than the site card, so
+   * a shared essay does not look byte-identical to a shared homepage. The path
+   * is the convention `scripts/og-inputs.mjs` writes to, and the file has to
+   * exist: `generateMetadata` measures it, so a missing card fails the build.
+   * A post's own `image` is the article image for JSON-LD, not the share card,
+   * because it is not the shape `summary_large_image` wants.
+   */
+  it('declares a share card of its own on blog posts', async () => {
+    const metadata = await generatePostMetadata({
+      params: Promise.resolve({ slug: POST_SLUG }),
+    });
+    const card = `/og/writing/${POST_SLUG}.png`;
+
+    expect(metadata.openGraph?.images).toEqual([
+      {
+        url: `${SITE_URL}${card}`,
+        width: SHARE_IMAGE_DIMENSIONS.width,
+        height: SHARE_IMAGE_DIMENSIONS.height,
+        alt: `A Published Post — ${AUTHOR_NAME}`,
+      },
+    ]);
+    expect(metadata.twitter?.images).toEqual(metadata.openGraph?.images);
+    expect(JSON.stringify(metadata.openGraph?.images)).not.toContain(
+      `${SITE_URL}${SHARE_IMAGE_PATH}`,
+    );
+  });
+
+  /**
+   * The share blocks are spread, not rebuilt: a route-level `openGraph` or
+   * `twitter` object replaces the inherited one, and posts have already shipped
+   * twice missing something omitted here.
+   */
+  it('keeps the shared open graph and twitter fields on blog posts', async () => {
     const metadata = await generatePostMetadata({
       params: Promise.resolve({ slug: POST_SLUG }),
     });
 
-    expect(JSON.stringify(metadata.openGraph?.images)).toContain(
-      SHARE_IMAGE_PATH,
-    );
-    expect(JSON.stringify(metadata.twitter?.images)).toContain(
-      SHARE_IMAGE_PATH,
-    );
+    expect(metadata.openGraph?.siteName).toBe(sharedOpenGraph?.siteName);
+    expect(metadata.openGraph).toMatchObject({
+      locale: sharedOpenGraph?.locale,
+    });
+    expect(metadata.twitter).toMatchObject({
+      card: 'summary_large_image',
+      site: TWITTER_HANDLE,
+      creator: TWITTER_HANDLE,
+    });
   });
 
   it('overrides 404 share metadata without inventing a canonical url', () => {

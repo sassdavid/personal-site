@@ -3,6 +3,49 @@
     "width": 1200,
     "height": 630
   },
+  "fonts": [
+    {
+      "name": "Display",
+      "family": "Bricolage Grotesque",
+      "weight": 800,
+      "style": "normal",
+      "url": "https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9U6as8bTXq_nANBjzKo3IeZx8z6up5BeSl5jBNz_19PpbpMXuECpwUxJBOm_OJWiaaD30YfKfjZZoLvZvlyM0.ttf",
+      "sha256": "50fe1039eb3ff208d027a4867d3f53bd288bba76273a718578f7b3ec0feec388"
+    },
+    {
+      "name": "Mono",
+      "family": "JetBrains Mono",
+      "weight": 500,
+      "style": "normal",
+      "url": "https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8-qxjPQ.ttf",
+      "sha256": "3386a05f6ece969e4537de6be894170d20558e82f7d56c8c5d332972ef172160"
+    },
+    {
+      "name": "Body",
+      "family": "Newsreader",
+      "weight": 400,
+      "style": "normal",
+      "url": "https://fonts.gstatic.com/s/newsreader/v26/cY9qfjOCX1hbuyalUrK49dLac06G1ZGsZBtoBCzBDXXD9JVF438weI_ADA.ttf",
+      "sha256": "b8f5e0a8bdd6a12c722ca5635d9da87e77ccbb2d0172112e34e00c4e55f2cd5a"
+    }
+  ],
+  "renderer": [
+    {
+      "name": "next",
+      "version": "16.3.8",
+      "integrity": "sha512-U7QEZaTini6wKrb8A8hqLLqYQyCetegKjCpJOyxk642vWoMoU1x5PyZCJFvgYgiptA8xc5j/9xYlZFO7w9Sjmw=="
+    },
+    {
+      "name": "react",
+      "version": "19.3.0",
+      "integrity": "sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog=="
+    },
+    {
+      "name": "sharp",
+      "version": "0.35.5",
+      "integrity": "sha512-Ywn4OnzGukp7CDMrp08RQ50YKmuwG47brZgIVPTvBaaAfQlRlygrRqSrxdCiL9M+LlzLBiJ68IR1QqvzHyjC7g=="
+    }
+  ],
   "profile": {
     "name": "David Sass-Kovacs",
     "employer": "Loxon Solutions",
@@ -11,6 +54,15 @@
     "computingSince": 2008,
     "currentCity": "Budapest, HU"
   },
-  "generatorDigest": "567354084db067e466048401bf8ea57953939a40ff53943116c3d82c835f148e",
-  "imageDigest": "133d6288459e0484d52fdbaeea5cf9ac9f268281b66b9e8f0de9601ad2314d5e"
+  "colors": {
+    "ink": "#24282e",
+    "paper": "#fcfbf6",
+    "body": "#292d33",
+    "graphite": "#5d6269",
+    "accent": "#214dcc",
+    "hairline": "rgba(35, 39, 46, 0.14)"
+  },
+  "generatorDigest": "da6893cc8964e1a86c380cdcadd68ed9c1abf5fe425680e9aeef4405de18697b",
+  "imageDigest": "4f3cff6d5b992cba0d814251c0b750cefb1b5f70035c1417ab348581a28b87d9",
+  "posts": []
 }

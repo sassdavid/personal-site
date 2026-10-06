@@ -1,55 +1,99 @@
-import dayjs from 'dayjs';
+import type { StatDeclaration } from '@/lib/readings';
+import {
+  buildSourceFileUrl,
+  buildSourceTreeUrl,
+  builtCommitUrl,
+  SHORT_SHA_LENGTH,
+  utcDate,
+} from '@/lib/telemetry';
 
-import { StatData } from '../../components/Stats/types';
+const REPOSITORY = 'https://github.com/sassdavid/personal-site';
 
-/* Keys match keys returned by the github api. Fields without keys are
- * mostly jokes. To see everything returned by the github api, run:
- curl https://api.github.com/repos/sassdavid/personal-site
+/**
+ * Keys are filled by `src/components/Stats/Site.tsx`. GitHub rows describe the
+ * public upstream repository; measured rows describe this exact build and link
+ * to its repository and immutable revision when CI provides that identity.
  */
-const data: StatData[] = [
+const data: StatDeclaration[] = [
   {
     label: 'Stars this repository has on GitHub',
     key: 'stargazers_count',
-    link: 'https://github.com/sassdavid/personal-site/stargazers',
+    source: 'github',
+    link: `${REPOSITORY}/stargazers`,
   },
   {
     label: 'Number of people watching this repository',
     key: 'subscribers_count',
-    link: 'https://github.com/sassdavid/personal-site/watchers',
+    source: 'github',
+    link: `${REPOSITORY}/watchers`,
   },
   {
     label: 'Number of forks',
     key: 'forks',
-    link: 'https://github.com/sassdavid/personal-site/forks',
+    source: 'github',
+    link: `${REPOSITORY}/forks`,
   },
   {
-    label: 'Number of spoons',
-    value: '0',
-  },
-  {
-    label: 'Number of linter warnings',
-    value: '0', // enforced via github workflow
-  },
-  {
-    // GitHub's open_issues_count includes open pull requests, so the label
-    // says what the number actually counts rather than overstating issues.
+    // GitHub's open_issues_count includes open pull requests.
     label: 'Open GitHub issues and pull requests',
     key: 'open_issues_count',
-    link: 'https://github.com/sassdavid/personal-site/issues',
+    source: 'github',
+    link: `${REPOSITORY}/issues`,
   },
   {
-    label: 'Last updated at',
+    // `pushed_at` is repository activity, not deployment provenance.
+    label: 'Latest repository push (UTC)',
     key: 'pushed_at',
-    link: 'https://github.com/sassdavid/personal-site/commits',
-    format: (x: unknown) => dayjs(x as string).format('MMMM DD, YYYY'),
+    source: 'github',
+    link: `${REPOSITORY}/activity`,
+    format: (value: unknown) => utcDate(new Date(String(value)).getTime()),
   },
   {
-    // Counted from the working tree at build time by `Site.tsx`; see
-    // `src/lib/loc.ts`. Do not hardcode a number here — the previous one
-    // drifted by nearly 2,000 lines before anyone noticed.
+    label: 'Built from commit',
+    key: 'built_commit',
+    source: 'measured',
+    format: (value: unknown) => String(value).slice(0, SHORT_SHA_LENGTH),
+    link: builtCommitUrl,
+  },
+  {
+    label: 'Built on (UTC)',
+    key: 'built_at',
+    source: 'measured',
+  },
+  {
     label: 'Lines of TypeScript powering this website',
     key: 'source_lines',
-    link: 'https://github.com/sassdavid/personal-site/graphs/contributors',
+    source: 'measured',
+    link: buildSourceTreeUrl,
+  },
+  {
+    label: 'Dependencies declared directly',
+    key: 'direct_dependencies',
+    source: 'measured',
+    unit: 'packages',
+    link: () => buildSourceFileUrl('package.json'),
+  },
+  {
+    label: 'Installed non-development package locations',
+    key: 'installed_non_dev_packages',
+    source: 'measured',
+  },
+  {
+    label: 'Lockfile package locations',
+    key: 'locked_packages',
+    source: 'measured',
+    link: () => buildSourceFileUrl('package-lock.json'),
+  },
+  {
+    label: 'Biome lint rules enabled in CI',
+    key: 'lint_rules',
+    source: 'measured',
+    link: () => buildSourceFileUrl('biome.json'),
+  },
+  {
+    // The only row that measures nothing, so it has no provenance mark.
+    label: 'Number of spoons',
+    value: 0,
   },
 ];
 

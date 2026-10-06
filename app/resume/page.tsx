@@ -7,40 +7,93 @@ import ResumeNav from '@/components/Resume/ResumeNav';
 import Skills from '@/components/Resume/Skills';
 import Tools from '@/components/Resume/Tools';
 import PageWrapper from '@/components/Template/PageWrapper';
+import contact, { type ContactId } from '@/data/contact';
 import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
 import { categories, skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
 import { createPageMetadata } from '@/lib/metadata';
+import { RESUME_JSON_PATH, RESUME_JSON_URL } from '@/lib/resumeJson';
 import { AUTHOR_NAME, SITE_URL } from '@/lib/utils';
 
-export const metadata: Metadata = createPageMetadata({
+const resumeMetadata = createPageMetadata({
   title: 'Resume',
   description: `${AUTHOR_NAME}'s Resume. Currently at Loxon.`,
   path: '/resume/',
 });
 
+export const metadata: Metadata = {
+  ...resumeMetadata,
+  // The visible chip serves readers; the alternate lets tools discover the
+  // machine-readable document without scraping page copy. Keep the canonical
+  // that createPageMetadata already supplied when adding the new type.
+  alternates: {
+    ...resumeMetadata.alternates,
+    types: {
+      'application/json': RESUME_JSON_URL,
+    },
+  },
+};
+
+/** A URL as it should read on paper: no protocol, no `www.`, no trailing slash. */
+function displayUrl(url: string): string {
+  return url.replace(/^https?:\/\/(?:www\.)?/, '').replace(/\/$/, '');
+}
+
+/**
+ * Looks a destination up by its stable data key rather than its display label,
+ * so copy edits cannot break the printed header. Throws rather than falling
+ * back, because a silently empty `href` on a printed resume is worse than a
+ * failed build.
+ */
+function contactLink(id: ContactId): string {
+  const item = contact.find((entry) => entry.id === id);
+  if (!item) {
+    throw new Error(`No "${id}" entry in src/data/contact.ts`);
+  }
+  return item.link;
+}
+
 export default function ResumePage() {
+  // One read, shared by every tenure; baked at build time.
+  const now = Date.now();
+  const github = contactLink('github');
+  const linkedin = contactLink('linkedin');
+
   return (
     <PageWrapper>
       <section className="resume-page">
         <header className="resume-header">
-          <h1 className="resume-title">Resume</h1>
+          <div className="resume-header-row">
+            <h1 className="resume-title">Resume</h1>
+            {/* The same affordance as the RSS chip on /writing. The href is
+                document-relative on purpose: /resume/ may live below a
+                repository base path, while a root-relative href would escape
+                it. ../resume.json resolves correctly in both deployments. */}
+            <a
+              href={`..${RESUME_JSON_PATH}`}
+              className="resume-json-link"
+              title="JSON Resume"
+              aria-label="JSON Resume"
+            >
+              JSON
+            </a>
+          </div>
           <p className="resume-summary">
             I build reliable, scalable infrastructure using modern cloud
             technologies and automation. Focused on creating efficient workflows
             that drive technical excellence and operational success.
           </p>
           {/* Print-only, but real markup rather than CSS `content`, so it is
-              selectable, linkable, and reads from the shared profile. The
-              screen layout carries these in the footer, which print hides. */}
+              selectable and linkable. Destinations come from shared contact
+              data, while the location comes from the shared profile. */}
           <address className="resume-print-contact">
-            <a href={`${SITE_URL}/`}>{SITE_URL.replace(/^https?:\/\//, '')}</a>
-            <span aria-hidden="true"> · </span>
+            <span>{profile.currentCity}</span>
+            <a href={`${SITE_URL}/`}>{displayUrl(SITE_URL)}</a>
             <a href={`mailto:${profile.email}`}>{profile.email}</a>
-            <span aria-hidden="true"> · </span>
-            <a href="https://github.com/sassdavid">github.com/sassdavid</a>
+            <a href={github}>{displayUrl(github)}</a>
+            <a href={linkedin}>{displayUrl(linkedin)}</a>
           </address>
         </header>
 
@@ -48,7 +101,7 @@ export default function ResumePage() {
 
         <div className="resume-content">
           <section id="experience" className="resume-section">
-            <Experience data={work} />
+            <Experience data={work} now={now} />
           </section>
 
           <section id="education" className="resume-section">
