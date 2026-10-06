@@ -117,7 +117,12 @@ describe('share card inputs', () => {
       expect(card.path).toBe(postCardPath(card.slug));
       expect(existsSync(join(CARD_DIRECTORY, `${card.slug}.png`))).toBe(true);
     }
-    expect(readdirSync(CARD_DIRECTORY).sort()).toEqual(
+    // With nothing published the directory need not exist — git does not
+    // track an empty one — which `check-og.mjs` accepts the same way.
+    const committed = existsSync(CARD_DIRECTORY)
+      ? readdirSync(CARD_DIRECTORY)
+      : [];
+    expect(committed.sort()).toEqual(
       cards.map((card) => `${card.slug}.png`).sort(),
     );
   });

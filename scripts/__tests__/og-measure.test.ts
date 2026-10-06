@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { deflateSync } from 'node:zlib';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -16,7 +16,9 @@ const ROOT = process.cwd();
 const CARD_DIR = join(ROOT, 'public', 'og', 'writing');
 const CARDS = [
   join(ROOT, 'public', 'og.png'),
-  ...readdirSync(CARD_DIR)
+  // Absent rather than empty when nothing is published: git does not track an
+  // empty directory.
+  ...(existsSync(CARD_DIR) ? readdirSync(CARD_DIR) : [])
     .filter((name) => name.endsWith('.png'))
     .map((name) => join(CARD_DIR, name)),
 ];
