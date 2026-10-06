@@ -13,7 +13,6 @@ export default function Hero() {
           <h1 className="hero-title">
             <span className="hero-name">{profile.name}</span>
           </h1>
-
           {/* Role and focus come from the shared profile so this cannot drift
               from the metadata, schema and resume that read the same file. */}
           <p className="hero-tagline">
@@ -39,15 +38,12 @@ export default function Hero() {
             </Link>
             <Link href="/resume" className="hero-resume-link">
               View resume
-              <span aria-hidden="true">→</span>
             </Link>
           </div>
         </div>
 
         <figure className="hero-portrait">
-          <div className="hero-portrait-frame">
-            <ThemePortrait width={320} height={320} priority />
-          </div>
+          <ThemePortrait width={320} height={320} priority />
           <figcaption>{profile.currentCity}</figcaption>
         </figure>
       </div>
