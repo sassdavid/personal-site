@@ -13,7 +13,7 @@ import {
 } from '@/lib/theme';
 import { readColorToken } from '@/lib/tokens';
 import { AUTHOR_NAME, SITE_DESCRIPTION, SITE_URL } from '@/lib/utils';
-import { bricolage, jetbrainsMono, newsreader } from './fonts';
+import { inter, jetbrainsMono, newsreader } from './fonts';
 import './tailwind.css';
 
 /**
@@ -123,7 +123,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${newsreader.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
