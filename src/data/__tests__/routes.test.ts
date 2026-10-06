@@ -48,8 +48,8 @@ describe('routes', () => {
   it('keeps disabled routes defined but out of the rendered set', () => {
     const disabled = allRoutes.filter((route) => route.enabled === false);
     expect(disabled.map((route) => route.path)).toEqual([
-      '/writing',
       '/projects',
+      '/writing',
     ]);
 
     const rendered = routes.map((route) => route.path);
@@ -84,6 +84,21 @@ describe('routes', () => {
       .filter((route) => route.primary === false)
       .map((route) => route.path);
 
-    expect(secondaryPaths).toEqual(['/projects']);
+    expect(secondaryPaths).toEqual([]);
+  });
+
+  /**
+   * Pinned as a list, because `/projects` used to be secondary and so was
+   * reachable only through the footer — which `/contact` hides. A route
+   * dropping out of the primary nav now has to be a deliberate edit here.
+   * `/projects` and `/writing` are primary too, but disabled until they have
+   * content, so they are absent from the rendered set.
+   */
+  it('names every primary navigation destination', () => {
+    const primaryPaths = routes
+      .filter((route) => !route.index && route.primary !== false)
+      .map((route) => route.path);
+
+    expect(primaryPaths).toEqual(['/about', '/resume', '/stats', '/contact']);
   });
 });

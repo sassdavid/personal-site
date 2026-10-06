@@ -141,6 +141,52 @@ Lead paragraph.
     expect(hashLink).not.toContain('target="_blank"');
   });
 
+  it('renders only the travel markers stated by the prose', () => {
+    const { container } = render(<AboutContent markdown={aboutMarkdown} />);
+    const travel = container.querySelector('.about-section--log');
+    const entries = Array.from(
+      travel?.querySelectorAll('.log-entry') ?? [],
+    ) as HTMLElement[];
+
+    expect(entries).toHaveLength(11);
+    expect(
+      entries.map((entry) => ({
+        year: entry.querySelector('.log-entry-year')?.textContent ?? null,
+        age: entry.querySelector('.log-entry-age')?.textContent ?? null,
+      })),
+    ).toEqual([
+      { year: null, age: null },
+      ...['2016', '2018', '2019', '2020', '2021', '2022', '2023', '2024'].map(
+        (year) => ({ year, age: null }),
+      ),
+      { year: '2025', age: null },
+      { year: '2026', age: null },
+    ]);
+
+    // A leading marker is lifted out, leaving a sentence behind.
+    expect(entries[1].querySelector('.log-entry-body')?.textContent).toMatch(
+      /^I visited Austria/,
+    );
+    expect(entries[1].querySelector('.log-entry-marker')).not.toHaveAttribute(
+      'aria-hidden',
+    );
+  });
+
+  it('leaves an undated entry an empty gutter rather than a broken marker', () => {
+    const { container } = render(<AboutContent markdown={aboutMarkdown} />);
+    const markers = Array.from(
+      container.querySelectorAll('.about-section--log .log-entry-marker'),
+    );
+    const empty = markers.filter((marker) => marker.textContent === '');
+
+    expect(markers).toHaveLength(11);
+    expect(empty).toHaveLength(1);
+
+    for (const marker of empty) {
+      expect(marker.querySelector('.log-entry-year')).toBeNull();
+    }
+  });
+
   it('supports same-page hash navigation from section links', async () => {
     window.history.replaceState({}, '', '/about/');
 

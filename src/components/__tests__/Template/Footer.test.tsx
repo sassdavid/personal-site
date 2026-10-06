@@ -51,7 +51,7 @@ describe('Footer', () => {
     render(<Footer />);
 
     expect(
-      screen.queryByRole('link', { name: /archive/i }),
+      screen.queryByRole('link', { name: /projects/i }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('link', { name: /writing/i }),

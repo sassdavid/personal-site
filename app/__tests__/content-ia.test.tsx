@@ -47,6 +47,9 @@ const external = (title: string, date: string, source = 'Example') => ({
 
 const guide = (title: string) => ({ ...external(title, ''), source: 'Guides' });
 
+const stripTrailingSlash = (href: string | null | undefined) =>
+  href?.replace(/\/$/, '');
+
 describe('writing information architecture', () => {
   beforeEach(() => {
     state.items = [];
@@ -61,26 +64,28 @@ describe('writing information architecture', () => {
     ];
 
     const { container } = render(<HomePage />);
-    const section = screen.getByRole('region', { name: 'Latest writing' });
+    const section = screen.getByRole('region', { name: 'Notes & essays' });
     const cards = container.querySelectorAll('.home-writing-item');
+    const viewAll = within(section).getByRole('link', { name: 'All writing' });
 
     expect(cards).toHaveLength(3);
     expect(
       [...cards].map((card) => card.querySelector('h3')?.textContent),
     ).toEqual(['Newest', 'Second', 'Third']);
-    expect(
-      within(section).getByRole('link', { name: 'View all' }),
-    ).toHaveAttribute('href', '/writing');
+    // `next/link` drops the configured trailing slash in this environment, as
+    // `trailingSlash: true` is build-time config the unit-test environment
+    // never applies. Normalise rather than pin the shape.
+    expect(stripTrailingSlash(viewAll.getAttribute('href'))).toBe('/writing');
   });
 
-  // The section is gated on having something to list: a "Latest writing"
-  // heading over an empty list, above a "View all" link to an empty page, is
-  // worse than no section at all.
+  // The section is gated on having something to list: a "Notes & essays"
+  // heading over an empty list, above an "All writing" link to an empty page,
+  // is worse than no section at all.
   it('omits the homepage writing section entirely when nothing is published', () => {
     const { container } = render(<HomePage />);
 
     expect(
-      screen.queryByRole('region', { name: 'Latest writing' }),
+      screen.queryByRole('region', { name: 'Notes & essays' }),
     ).not.toBeInTheDocument();
     expect(container.querySelectorAll('.home-writing-item')).toHaveLength(0);
   });

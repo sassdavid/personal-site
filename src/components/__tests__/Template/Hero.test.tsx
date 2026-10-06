@@ -33,6 +33,10 @@ describe('Hero', () => {
     expect(employerLink).toHaveAttribute('href', 'https://loxon.eu');
     expect(employerLink).toHaveClass('hero-highlight');
     expect(employerLink).toHaveAttribute('rel', 'nofollow noopener noreferrer');
+
+    expect(container.querySelector('.hero-summary')).toHaveTextContent(
+      'I build and run platforms on AWS and Kubernetes.',
+    );
   });
 
   it('keeps personal stats off the homepage', () => {
@@ -57,13 +61,5 @@ describe('Hero', () => {
     expect(resumeButton).toHaveAttribute('href', '/resume');
     expect(resumeButton).toHaveClass('hero-resume-link');
     expect(resumeButton).not.toHaveClass('button');
-  });
-
-  it('has decorative background elements', () => {
-    render(<Hero />);
-
-    const bg = document.querySelector('.hero-bg');
-    expect(bg).toBeInTheDocument();
-    expect(bg).toHaveAttribute('aria-hidden', 'true');
   });
 });

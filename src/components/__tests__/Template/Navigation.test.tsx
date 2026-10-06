@@ -54,9 +54,9 @@ describe('Navigation', () => {
     expect(screen.getByRole('link', { name: /stats/i })).toBeInTheDocument();
   });
 
-  // Writing and Archive have no content yet and are `enabled: false` in
-  // src/data/routes.ts. Archive was already secondary; Writing was not, so
-  // this is the assertion that would catch it being surfaced empty.
+  // Writing and Projects have no content yet and are `enabled: false` in
+  // src/data/routes.ts. Both are primary destinations once enabled, so this
+  // is the assertion that would catch either being surfaced empty.
   it('omits routes disabled for lack of content', () => {
     render(<Navigation />);
 
@@ -64,7 +64,7 @@ describe('Navigation', () => {
       screen.queryByRole('link', { name: /writing/i }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('link', { name: /archive/i }),
+      screen.queryByRole('link', { name: /projects/i }),
     ).not.toBeInTheDocument();
   });
 

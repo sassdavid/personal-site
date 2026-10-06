@@ -31,6 +31,15 @@ export const allRoutes: Route[] = [
     label: 'Resume',
     path: '/resume',
   },
+  // Was labelled "Archive" and kept out of the nav, which left the register of
+  // shipped work reachable only through the footer — and `/contact` hides the
+  // footer, so from there it was unreachable entirely.
+  {
+    label: 'Projects',
+    // No entries in src/data/projects.ts yet.
+    enabled: false,
+    path: '/projects',
+  },
   {
     label: 'Writing',
     // No posts in content/writing/ and no entries in src/data/writing.ts yet.
@@ -44,13 +53,6 @@ export const allRoutes: Route[] = [
   {
     label: 'Contact',
     path: '/contact',
-  },
-  {
-    label: 'Archive',
-    // No entries in src/data/projects.ts yet.
-    enabled: false,
-    path: '/projects',
-    primary: false,
   },
 ];
 
