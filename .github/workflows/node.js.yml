@@ -40,7 +40,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node.js
-        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           experimental: true
           # mise-action defaults this to the job token and exports it as
@@ -75,7 +75,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node.js
-        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           experimental: true
           github_token: ''
@@ -128,7 +128,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node.js
-        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           experimental: true
           github_token: ''
@@ -190,7 +190,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           experimental: true
           github_token: ''
