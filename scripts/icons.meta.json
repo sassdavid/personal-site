@@ -22,8 +22,8 @@
       },
       {
         "name": "react",
-        "version": "19.3.0",
-        "integrity": "sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog=="
+        "version": "19.3.1",
+        "integrity": "sha512-QNhWdt7nrgVWWQG58QuGsAR3jv3Hbe4mb4vz7w2csnHavciZJgda1CPNaldF6eVxv90ud3jUXpKlHL69gO38yw=="
       },
       {
         "name": "sharp",
@@ -32,7 +32,7 @@
       }
     ]
   },
-  "generatorDigest": "711b718521e0b61416cd8c1c9affe79ecee772ece59f960d089a66d77de41403",
+  "generatorDigest": "1678582ed666aa9c865d57a9a899c03b7cd146e265fe2bd864c5888425b634ab",
   "files": {
     "app/favicon.ico": "e405d523836b75d60746229b17fd762559b8d8cd10ad70c0ecf70f2b7cca1d85",
     "app/icon.png": "27ba395e1b943efcc9fd3c5a99f740e855243630b94b4e7af110fa72992ef0c9",
