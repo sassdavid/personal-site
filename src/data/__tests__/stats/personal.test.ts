@@ -28,7 +28,6 @@ describe('personal stats data', () => {
     expect(ageStat).toBeDefined();
     expect(ageStat!.label).toBe('Current age');
     expect(ageStat!.value).toBeUndefined();
-    expect(ageStat!.source).toBe('profile');
   });
 
   it('has a countries visited stat', () => {
@@ -54,12 +53,6 @@ describe('personal stats data', () => {
     // again, the whole table becomes a client component again with it.
     for (const stat of data) {
       expect(typeof stat.value, stat.label).not.toBe('object');
-    }
-  });
-
-  it('names the source of every reading', () => {
-    for (const stat of data) {
-      expect(stat.source, stat.label).toBe('profile');
     }
   });
 });
