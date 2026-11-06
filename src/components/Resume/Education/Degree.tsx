@@ -1,4 +1,5 @@
 import type { Degree as DegreeType } from '@/data/resume/degrees';
+import { smartQuotes } from '@/lib/typography';
 
 interface DegreeProps {
   data: DegreeType;
@@ -8,10 +9,10 @@ export default function Degree({ data }: DegreeProps) {
   return (
     <article className="degree-container">
       <header>
-        <h3 className="degree">{data.degree}</h3>
-        {data.thesis && <p className="thesis">{data.thesis}</p>}
+        <h3 className="degree">{smartQuotes(data.degree)}</h3>
+        {data.thesis && <p className="thesis">{smartQuotes(data.thesis)}</p>}
         <p className="school">
-          <a href={data.link}>{data.school}</a>,{' '}
+          <a href={data.link}>{smartQuotes(data.school)}</a>,{' '}
           <time dateTime={String(data.year)}>{data.year}</time>
         </p>
       </header>

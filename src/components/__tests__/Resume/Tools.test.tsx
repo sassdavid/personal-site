@@ -20,12 +20,15 @@ const mockTools = [
 ];
 
 describe('Tools', () => {
-  it('renders the tools section with heading', () => {
+  it('opens with the shared section heading, in sentence case', () => {
     render(<Tools data={mockTools} />);
 
-    expect(
-      screen.getByRole('heading', { name: /Tools & Technologies/i }),
-    ).toBeInTheDocument();
+    const heading = screen.getByRole('heading', {
+      level: 2,
+      name: 'Tools & technologies',
+    });
+    expect(heading).toHaveClass('section-heading');
+    expect(heading.parentElement).toHaveClass('section-header');
   });
 
   it('renders all tools', () => {
@@ -99,5 +102,13 @@ describe('Tool', () => {
 
     const tag = container.querySelector('.tool-tag');
     expect(tag).toBeInTheDocument();
+  });
+
+  it('sets typographic quotes in the name', () => {
+    render(<Tool data={{ name: "Let's Encrypt", link: '' }} />);
+
+    expect(document.querySelector('.tool-tag-name')?.textContent).toBe(
+      'Let’s Encrypt',
+    );
   });
 });

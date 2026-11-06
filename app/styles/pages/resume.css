@@ -2,63 +2,57 @@
    RESUME PAGE STYLES
    ======================================== */
 
-/* Section headers sit left, under a heavy rule — the same device
-   that opens the readout strip on the home page. */
-.resume-page .education .title,
-.resume-page .experience .title,
-.resume-page .skills .title,
-.resume-page .tools .title,
-.resume-page .references .title {
-  margin-bottom: 2.5rem;
-  text-align: left;
-}
+/* Every section opens with the shared header in components/section-header.css,
+   and the gap on `.resume-content` is the only space between sections. This
+   file used to draw the headings itself, as an 11px tracked label under the
+   rule, and skills, courses, and references each added a margin of their own,
+   so five sections stood four different distances apart. */
 
-.resume-page .education .title h2,
-.resume-page .experience .title h2,
-.resume-page .skills .title h2,
-.resume-page .tools .title h2,
-.resume-page .references .title h2 {
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+/* A sentence that belongs to a section rather than to an entry in it: the key
+   under Skills, the line under References. Supporting copy, so the reading
+   face on a bounded measure, a tone back from the entries. The references
+   line was centred on a left-aligned page, in utility classes of its own. */
+.resume-note {
+  max-width: 53ch;
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 1.5;
   color: var(--color-fg-light);
-  display: block;
-  margin: 0;
-  padding-top: 0.875rem;
-  border-top: var(--rule) solid var(--color-fg-bold);
 }
 
-.resume-page .skills {
-  margin-top: 2em;
-}
-
-.resume-page .skills .title p {
-  font-size: var(--text-md);
-}
-
-.resume-page .tools {
-  padding-top: 1em;
-}
-
-.resume-page .tools .tool-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 3rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-@media (max-width: 735px) {
-  .resume-page .tools .tool-list {
-    grid-template-columns: 1fr;
+/* On paper the page is set in points, and this would otherwise print larger
+   than the summaries above it. */
+@media print {
+  .resume-note {
+    font-size: 10pt;
   }
 }
 
-.resume-page .references {
-  margin: var(--spacing-8) 0;
+/* Links in running text look like links. The citations inside a role summary
+   were ink over a faint line, which read as emphasis. `background-image` is
+   restated under the pointer because the dark theme's `p a:hover` would
+   otherwise out-specify the first rule and draw a second underline. */
+.resume-content .summary a,
+.resume-content .resume-note a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent-underline);
+  text-underline-offset: 2px;
+  background-image: none;
+}
+
+.resume-content .summary a:hover,
+.resume-content .resume-note a:hover {
+  color: var(--color-accent-hover);
+  text-decoration-color: var(--color-accent);
+  background-image: none;
+}
+
+/* The reading face has no arrow, so this one was drawn by whichever fallback
+   came first with the glyph. The system UI face has it, and setting every
+   arrow on the site in that one face is what lets them match. */
+.resume-note-arrow {
+  font-family: system-ui, sans-serif;
 }
 
 /* Resume page specific */
@@ -223,6 +217,11 @@
 }
 
 .resume-content {
+  /* The dated gutter, and the gap the spine runs down. Experience entries in
+     cards.css and skills rows in tags.css both read this pair, so the two
+     sections cannot drift onto different rails. */
+  --resume-gutter: 11rem;
+  --resume-gap: 2.5rem;
   display: flex;
   flex-direction: column;
   gap: 4rem;

@@ -22,8 +22,8 @@ export default function Tools({ data }: ToolProps) {
       {/* No `link-to` marker here: the page already wraps this in
           `<section id="tools">`, and emitting the id twice made `#tools`
           ambiguous. Sections are h2 so the page does not jump h1 → h3. */}
-      <div className="title">
-        <h2>Tools &amp; Technologies</h2>
+      <div className="section-header">
+        <h2 className="section-heading">Tools &amp; technologies</h2>
       </div>
       <div className="tool-tags">{getRows(data)}</div>
     </div>
