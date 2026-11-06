@@ -48,7 +48,7 @@ vineyards are worth the drive on their own.
 
 # Travel / geography
 
-- Thirteen countries so far, Hungary included. Only two of them are outside Europe, which I would like to fix.
+- Fourteen countries so far, Hungary included. Only three of them are outside Europe, which I would like to fix.
 - In 2016, I visited Austria.
 - In 2018, I travelled to Poland and to Sardinia.
 - In 2019, I saw Mallorca in the spring and Rome in the autumn.
@@ -58,7 +58,7 @@ vineyards are worth the drive on their own.
 - In 2023, I made it to Pisa, the High Tatras, Stuttgart and Strasbourg.
 - In 2024, I spent March in Alicante and the end of the summer around Naples. We got married in October, and went back to the Mátra afterwards.
 - In 2025, the Maldives in February, Athens in July, and Mád in the Tokaj wine region in October.
-- In 2026, the Dolomites, out of Ortisei. The Seychelles is the plan for later this year.
+- In 2026, the Dolomites, out of Ortisei, and the Seychelles from late October into early November.
 
 # Fun facts
 
