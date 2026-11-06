@@ -89,11 +89,11 @@ describe('routes', () => {
   });
 
   /**
-   * Pinned as a list, because `/projects` used to be secondary and so was
-   * reachable only through the footer — which `/contact` hides. A route
-   * dropping out of the primary nav now has to be a deliberate edit here.
-   * `/projects` and `/writing` are primary too, but disabled until they have
-   * content, so they are absent from the rendered set.
+   * Pinned as a list because a secondary route is reachable only through the
+   * footer, which `/contact` hides. Dropping a route from the primary nav has to
+   * be a deliberate edit here.
+   * `/projects`, `/writing` and `/speaking` are primary too, but disabled
+   * until they have content, so they are absent from the rendered set.
    */
   it('names every primary navigation destination', () => {
     const primaryPaths = routes
