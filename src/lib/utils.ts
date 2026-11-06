@@ -23,8 +23,7 @@ export const SITE_IMAGE_DIMENSIONS = {
  *
  * Every page points at this one path explicitly. Next's `opengraph-image`
  * file convention is not used: a route-level `openGraph` object replaces the
- * inherited one wholesale, which left every subpage with no image at all, and
- * the metadata route emits an extensionless file that GitHub Pages serves as
+ * inherited one wholesale, and the metadata route emits an extensionless file that GitHub Pages serves as
  * application/octet-stream.
  */
 export const SHARE_IMAGE_PATH = '/og.png';
@@ -37,26 +36,28 @@ export const SHARE_IMAGE_DIMENSIONS = {
 export const SITE_DESCRIPTION =
   'Senior DevOps Engineer specializing in cloud infrastructure and automation, currently at Loxon Solutions.';
 
-// Image dimension constants
-export const PROJECT_IMAGE = {
-  width: 600,
-  height: 400,
-} as const;
-
 // Skill competency
 export const MAX_COMPETENCY = 5;
 
-/**
- * Formats a date string to a human-readable format.
- * Parses as UTC to avoid timezone shifts.
- */
+/** A `YYYY-MM-DD` day at local noon, which no time zone offset moves to another day. */
+function localNoon(dateStr: string): Date {
+  return new Date(`${dateStr}T12:00:00`);
+}
+
+/** `July 1, 2024`. */
 export function formatDate(dateStr: string): string {
   if (!dateStr) return '';
-  // Parse as UTC to avoid timezone shifts
-  const date = new Date(`${dateStr}T12:00:00`);
-  return date.toLocaleDateString('en-US', {
+  return localNoon(dateStr).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+  });
+}
+
+/** `Jul 2024`. */
+export function formatMonthYear(dateStr: string): string {
+  return localNoon(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
   });
 }

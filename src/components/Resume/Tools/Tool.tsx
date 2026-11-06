@@ -1,11 +1,14 @@
 import type { Tool as ToolType } from '@/data/resume/tools';
+import { smartQuotes } from '@/lib/typography';
 
 interface ToolProps {
   data: ToolType;
 }
 
 export default function Tool({ data }: ToolProps) {
-  const content = <span className="tool-tag-name">{data.name}</span>;
+  const content = (
+    <span className="tool-tag-name">{smartQuotes(data.name)}</span>
+  );
 
   if (data.link) {
     return (

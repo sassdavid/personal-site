@@ -1,59 +1,62 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { afterEach, describe, expect, it } from 'vitest';
 
+import { SMOOTH_SCROLL_ATTRIBUTE } from '@/lib/smoothScroll';
 import ResumeNav from '../../Resume/ResumeNav';
 
+// Which section is current is `useActiveSection`'s job and is tested there.
 describe('ResumeNav', () => {
-  it('renders navigation element', () => {
-    render(<ResumeNav />);
-
-    const nav = screen.getByRole('navigation');
-    expect(nav).toBeInTheDocument();
+  afterEach(() => {
+    // A click arms smooth scrolling; let it go before the next test.
+    fireEvent(window, new Event('scrollend'));
   });
 
-  it('renders links to all resume sections', () => {
+  it('links to every resume section in page order, under a named landmark', () => {
     render(<ResumeNav />);
 
-    expect(screen.getByRole('link', { name: /experience/i })).toHaveAttribute(
-      'href',
-      '#experience',
+    const nav = screen.getByRole('navigation', { name: 'Resume sections' });
+
+    const hrefs = [...nav.querySelectorAll('a')].map((link) =>
+      link.getAttribute('href'),
     );
-    expect(screen.getByRole('link', { name: /education/i })).toHaveAttribute(
-      'href',
-      '#education',
-    );
-    expect(screen.getByRole('link', { name: /skills/i })).toHaveAttribute(
-      'href',
-      '#skills',
-    );
-    expect(screen.getByRole('link', { name: /tools/i })).toHaveAttribute(
-      'href',
-      '#tools',
-    );
-    expect(screen.getByRole('link', { name: /references/i })).toHaveAttribute(
-      'href',
-      '#references',
+
+    expect(hrefs.join(' ')).toBe(
+      '#experience #education #skills #tools #references',
     );
   });
 
-  it('renders 5 navigation links', () => {
-    render(<ResumeNav />);
+  it('marks only the first section as current in the static markup', () => {
+    const html = renderToStaticMarkup(<ResumeNav />);
 
-    const links = screen.getAllByRole('link');
-    expect(links.length).toBe(5);
+    expect(html).toMatch(/href="#experience"[^>]*aria-current="location"/);
+    expect(html.match(/aria-current/g)).toHaveLength(1);
   });
 
-  it('has correct CSS class', () => {
+  it('tells a row inside the bar how far it has scrolled, for its leading fade', () => {
     render(<ResumeNav />);
 
-    const nav = document.querySelector('.resume-nav');
-    expect(nav).toBeInTheDocument();
+    const row = screen.getByRole('link', { name: 'Skills' }).parentElement;
+
+    if (!row) {
+      throw new Error('The links have no row');
+    }
+
+    // The bar is opaque and the row scrolls and fades. On one element, the fade
+    // would let the page show through the bar.
+    expect(row).not.toBe(screen.getByRole('navigation'));
+
+    row.scrollLeft = 41;
+    fireEvent.scroll(row);
+
+    expect(row.style.getPropertyValue('--scrolled')).toBe('41px');
   });
 
-  it('experience link is active by default', () => {
+  it('arms smooth scrolling for a click', () => {
     render(<ResumeNav />);
 
-    const experienceLink = screen.getByRole('link', { name: /experience/i });
-    expect(experienceLink).toHaveClass('active');
+    fireEvent.click(screen.getByRole('link', { name: 'Skills' }));
+
+    expect(document.documentElement).toHaveAttribute(SMOOTH_SCROLL_ATTRIBUTE);
   });
 });

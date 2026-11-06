@@ -9,9 +9,9 @@
  *
  * Run with `npm run verify-export` after `npm run build`.
  */
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { basename, extname, join, relative, resolve } from 'node:path';
-import matter from 'gray-matter';
+import { parseFrontmatter } from '../src/lib/frontmatter.mjs';
 import {
   parseSrcset,
   readMarkdownReferences,
@@ -25,7 +25,12 @@ import {
   metaValues,
   tags,
 } from './lib/html.mjs';
-import { exportLayout, readSiteConfig, toUrlPath } from './lib/site.mjs';
+import {
+  exportLayout,
+  readSiteConfig,
+  toUrlPath,
+  walkFiles,
+} from './lib/site.mjs';
 import { POST_CARD_DIRECTORY } from './og-inputs.mjs';
 
 const ROOT = process.cwd();
@@ -35,19 +40,14 @@ const CONTENT = resolve(ROOT, 'content/writing');
 const failures = [];
 const fail = (page, message) => failures.push({ page, message });
 
-function walk(dir, match) {
-  const found = [];
-  if (!existsSync(dir)) return found;
-
-  for (const entry of readdirSync(dir)) {
-    const path = join(dir, entry);
-    if (statSync(path).isDirectory()) {
-      found.push(...walk(path, match));
-    } else if (match(entry)) {
-      found.push(path);
-    }
-  }
-  return found;
+/** Reports a same-origin URL outside the configured base path; true if it is. */
+function isOutsideBasePath(url, page, label, raw) {
+  if (routeForPublicPath(url.pathname) !== undefined) return false;
+  fail(
+    page,
+    `${label} points outside configured base path ${SITE_BASE_PATH}/: ${raw}`,
+  );
+  return true;
 }
 
 const {
@@ -63,16 +63,17 @@ const {
   ...readSiteConfig(ROOT, 'verify-export'),
 });
 
-const pages = walk(OUT, (name) => name.endsWith('.html'));
+const pages = walkFiles(OUT).filter((path) => path.endsWith('.html'));
 
 if (pages.length === 0) {
   console.error('verify-export: no HTML found in out/. Did the build run?');
   process.exit(1);
 }
 
-const posts = walk(CONTENT, (name) => name.endsWith('.md')).map((path) => {
+const mdFiles = walkFiles(CONTENT).filter((path) => path.endsWith('.md'));
+const posts = mdFiles.map((path) => {
   const source = toUrlPath(relative(ROOT, path));
-  const { data, content } = matter(readFileSync(path, 'utf8'));
+  const { data, content } = parseFrontmatter(readFileSync(path, 'utf8'));
   const frontmatter = validatePostFrontmatterData(data, source);
 
   return {
@@ -128,7 +129,7 @@ function isDraftDerivedPath(path) {
 }
 
 if (draftSlugs.length > 0) {
-  for (const file of walk(OUT, () => true)) {
+  for (const file of walkFiles(OUT)) {
     const path = toUrlPath(relative(OUT, file));
     // Draft-route HTML is skipped only because `isDraftPath` reports it below,
     // with the route it exposes rather than the file that carries it.
@@ -273,13 +274,7 @@ for (const draft of drafts) {
 
     if (!['http:', 'https:'].includes(url.protocol)) continue;
     if (url.origin !== SITE_ORIGIN) continue;
-    if (routeForPublicPath(url.pathname) === undefined) {
-      fail(
-        draft.source,
-        `draft ${kind} points outside configured base path ${SITE_BASE_PATH}/: ${target}`,
-      );
-      continue;
-    }
+    if (isOutsideBasePath(url, draft.source, `draft ${kind}`, target)) continue;
     if (kind === 'link' && pageAt(url.pathname)) continue;
     if (
       exportedFileExists(url.pathname) &&
@@ -320,13 +315,7 @@ function validateInternalTarget(raw, source, label) {
   const url = parseHttpUrl(raw, source.route, source.relativePath, label);
   if (!url || url.origin !== SITE_ORIGIN) return;
 
-  if (routeForPublicPath(url.pathname) === undefined) {
-    fail(
-      source.relativePath,
-      `${label} points outside configured base path ${SITE_BASE_PATH}/: ${raw}`,
-    );
-    return;
-  }
+  if (isOutsideBasePath(url, source.relativePath, label, raw)) return;
 
   if (isDraftPath(url.pathname)) {
     fail(
@@ -374,13 +363,7 @@ function validateExportedHeadAsset(raw, source, label) {
     );
     return url;
   }
-  if (routeForPublicPath(url.pathname) === undefined) {
-    fail(
-      source.relativePath,
-      `${label} points outside configured base path ${SITE_BASE_PATH}/: ${raw}`,
-    );
-    return url;
-  }
+  if (isOutsideBasePath(url, source.relativePath, label, raw)) return url;
   if (!exportedFileExists(url.pathname)) {
     fail(source.relativePath, `${label} points at missing export: ${raw}`);
   }
@@ -402,12 +385,7 @@ function validateAbsoluteMetadataUrl(raw, source, label) {
       `${label} uses ${url.origin}; expected ${SITE_ORIGIN}`,
     );
   }
-  if (routeForPublicPath(url.pathname) === undefined) {
-    fail(
-      source.relativePath,
-      `${label} points outside configured base path ${SITE_BASE_PATH}/: ${raw}`,
-    );
-  }
+  isOutsideBasePath(url, source.relativePath, label, raw);
   if (!hasCanonicalPathFormat(raw, url)) {
     fail(
       source.relativePath,
@@ -479,18 +457,22 @@ for (const record of records) {
     fail(relativePath, `duplicate ids: ${duplicateIds.join(', ')}`);
   }
 
+  const checkUrlCount = (values, noun) => {
+    if (isIndexable && values.length !== 1) {
+      fail(
+        relativePath,
+        `indexable page has ${values.length} ${noun}; expected 1`,
+      );
+    } else if (!isIndexable && values.length > 1) {
+      fail(
+        relativePath,
+        `non-indexable page has ${values.length} ${noun}; expected at most 1`,
+      );
+    }
+  };
+
   const canonicals = canonicalValues(html);
-  if (isIndexable && canonicals.length !== 1) {
-    fail(
-      relativePath,
-      `indexable page has ${canonicals.length} canonical links; expected 1`,
-    );
-  } else if (!isIndexable && canonicals.length > 1) {
-    fail(
-      relativePath,
-      `non-indexable page has ${canonicals.length} canonical links; expected at most 1`,
-    );
-  }
+  checkUrlCount(canonicals, 'canonical links');
 
   const canonicalUrl = canonicals[0]
     ? validateAbsoluteMetadataUrl(canonicals[0], record, 'canonical')
@@ -517,17 +499,7 @@ for (const record of records) {
   }
 
   const ogUrls = metaValues(html, 'property', 'og:url');
-  if (isIndexable && ogUrls.length !== 1) {
-    fail(
-      relativePath,
-      `indexable page has ${ogUrls.length} og:url tags; expected 1`,
-    );
-  } else if (!isIndexable && ogUrls.length > 1) {
-    fail(
-      relativePath,
-      `non-indexable page has ${ogUrls.length} og:url tags; expected at most 1`,
-    );
-  }
+  checkUrlCount(ogUrls, 'og:url tags');
 
   const ogUrl = ogUrls[0]
     ? validateAbsoluteMetadataUrl(ogUrls[0], record, 'og:url')
@@ -539,36 +511,21 @@ for (const record of records) {
     );
   }
 
-  const ogImages = metaValues(html, 'property', 'og:image');
-  if (isIndexable && ogImages.length !== 1) {
-    fail(
-      relativePath,
-      `indexable page has ${ogImages.length} og:image tags; expected 1`,
-    );
-  }
-  for (const image of ogImages) {
-    const imageUrl = parseHttpUrl(image, route, relativePath, 'og:image');
-    if (
-      imageUrl?.origin === SITE_ORIGIN &&
-      !exportedFileExists(imageUrl.pathname)
-    ) {
-      fail(
-        relativePath,
-        `og:image file missing from export: ${imageUrl.pathname}`,
-      );
-    }
-  }
-
-  for (const image of metaValues(html, 'name', 'twitter:image')) {
-    const imageUrl = parseHttpUrl(image, route, relativePath, 'twitter:image');
-    if (
-      imageUrl?.origin === SITE_ORIGIN &&
-      !exportedFileExists(imageUrl.pathname)
-    ) {
-      fail(
-        relativePath,
-        `twitter:image file missing from export: ${imageUrl.pathname}`,
-      );
+  for (const [key, name] of [
+    ['property', 'og:image'],
+    ['name', 'twitter:image'],
+  ]) {
+    for (const image of metaValues(html, key, name)) {
+      const imageUrl = parseHttpUrl(image, route, relativePath, name);
+      if (
+        imageUrl?.origin === SITE_ORIGIN &&
+        !exportedFileExists(imageUrl.pathname)
+      ) {
+        fail(
+          relativePath,
+          `${name} file missing from export: ${imageUrl.pathname}`,
+        );
+      }
     }
   }
 
@@ -667,8 +624,7 @@ if (!home) {
       fail('manifest.json', `is not valid JSON: ${error.message}`);
     }
 
-    const memberUrl = (name) => {
-      const raw = manifest?.[name];
+    const memberUrl = (raw, name) => {
       if (typeof raw !== 'string' || !raw.trim()) {
         fail('manifest.json', `${name} must be a non-empty URL string`);
         return undefined;
@@ -684,17 +640,14 @@ if (!home) {
 
       if (url.origin !== SITE_ORIGIN) {
         fail('manifest.json', `${name} uses a foreign origin: ${url.origin}`);
-      } else if (routeForPublicPath(url.pathname) === undefined) {
-        fail(
-          'manifest.json',
-          `${name} points outside configured base path ${SITE_BASE_PATH}/: ${raw}`,
-        );
+      } else {
+        isOutsideBasePath(url, 'manifest.json', name, raw);
       }
       return url;
     };
 
-    const startUrl = memberUrl('start_url');
-    const scopeUrl = memberUrl('scope');
+    const startUrl = memberUrl(manifest?.start_url, 'start_url');
+    const scopeUrl = memberUrl(manifest?.scope, 'scope');
 
     if (
       startUrl &&
@@ -725,39 +678,17 @@ if (!home) {
       fail('manifest.json', 'icons must contain at least one entry');
     } else {
       for (const [index, icon] of manifest.icons.entries()) {
-        if (typeof icon?.src !== 'string' || !icon.src.trim()) {
-          fail(
-            'manifest.json',
-            `icons[${index}].src must be a non-empty URL string`,
-          );
-          continue;
-        }
+        const name = `icons[${index}].src`;
+        const iconUrl = memberUrl(icon?.src, name);
 
-        let iconUrl;
-        try {
-          iconUrl = new URL(icon.src, manifestUrl);
-        } catch {
+        if (
+          iconUrl?.origin === SITE_ORIGIN &&
+          routeForPublicPath(iconUrl.pathname) !== undefined &&
+          !exportedFileExists(iconUrl.pathname)
+        ) {
           fail(
             'manifest.json',
-            `icons[${index}].src is not a valid URL: ${icon.src}`,
-          );
-          continue;
-        }
-
-        if (iconUrl.origin !== SITE_ORIGIN) {
-          fail(
-            'manifest.json',
-            `icons[${index}].src uses a foreign origin: ${iconUrl.origin}`,
-          );
-        } else if (routeForPublicPath(iconUrl.pathname) === undefined) {
-          fail(
-            'manifest.json',
-            `icons[${index}].src points outside configured base path ${SITE_BASE_PATH}/: ${icon.src}`,
-          );
-        } else if (!exportedFileExists(iconUrl.pathname)) {
-          fail(
-            'manifest.json',
-            `icons[${index}].src points at missing export: ${icon.src}`,
+            `${name} points at missing export: ${icon.src}`,
           );
         }
       }
@@ -783,13 +714,7 @@ function validateXmlUrl(raw, documentName, options = {}) {
   }
 
   if (url.origin === SITE_ORIGIN) {
-    if (routeForPublicPath(url.pathname) === undefined) {
-      fail(
-        documentName,
-        `URL points outside configured base path ${SITE_BASE_PATH}/: ${raw.trim()}`,
-      );
-      return url;
-    }
+    if (isOutsideBasePath(url, documentName, 'URL', raw.trim())) return url;
     if (isDraftPath(url.pathname)) {
       fail(documentName, `exposes draft route: ${url.pathname}`);
     }
@@ -1007,52 +932,38 @@ if (!existsSync(resumeJsonPath)) {
   const resumePage = pageAt(publicPathForRoute('/resume/'));
   if (!resumePage) {
     fail('resume.json', 'no exported /resume/ page to link the artifact');
-  } else if (
-    !tags(resumePage.html, 'a').some((tag) => {
+  } else {
+    const pointsAtResumeJson = (tag, label) => {
       const href = attribute(tag, 'href');
       const url = href
-        ? parseHttpUrl(
-            href,
-            resumePage.route,
-            resumePage.relativePath,
-            'resume JSON link',
-          )
+        ? parseHttpUrl(href, resumePage.route, resumePage.relativePath, label)
         : undefined;
       return url?.href === siteUrlForRoute('/resume.json');
-    })
-  ) {
-    fail(
-      'resume.json',
-      '/resume/ does not link to the machine-readable resume',
-    );
-  }
+    };
 
-  if (
-    resumePage &&
-    !tags(resumePage.html, 'link').some((tag) => {
-      const rel = (attribute(tag, 'rel') ?? '').toLowerCase().split(/\s+/);
-      if (
-        !rel.includes('alternate') ||
-        attribute(tag, 'type')?.toLowerCase() !== 'application/json'
-      ) {
-        return false;
-      }
-      const href = attribute(tag, 'href');
-      const url = href
-        ? parseHttpUrl(
-            href,
-            resumePage.route,
-            resumePage.relativePath,
-            'resume JSON alternate',
-          )
-        : undefined;
-      return url?.href === siteUrlForRoute('/resume.json');
-    })
-  ) {
-    fail(
-      'resume.json',
-      '/resume/ does not advertise the machine-readable resume',
-    );
+    if (
+      !tags(resumePage.html, 'a').some((tag) =>
+        pointsAtResumeJson(tag, 'resume JSON link'),
+      )
+    ) {
+      fail(
+        'resume.json',
+        '/resume/ does not link to the machine-readable resume',
+      );
+    }
+
+    if (
+      !linkTagsForRel(resumePage.html, 'alternate').some(
+        (tag) =>
+          attribute(tag, 'type')?.toLowerCase() === 'application/json' &&
+          pointsAtResumeJson(tag, 'resume JSON alternate'),
+      )
+    ) {
+      fail(
+        'resume.json',
+        '/resume/ does not advertise the machine-readable resume',
+      );
+    }
   }
 }
 

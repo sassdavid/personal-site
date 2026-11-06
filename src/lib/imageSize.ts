@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { isAbsolute, relative, resolve, sep } from 'node:path';
+import { resolve } from 'node:path';
 
 import { readMarkdownImageSources } from './markdown-assets.mjs';
 
@@ -55,8 +55,7 @@ export function parseImageSize(buffer: Buffer): ImageSize | null {
 /**
  * Intrinsic dimensions of a root-local image in `public/`.
  *
- * Unlike the old nullable API, failures are explicit. A Markdown typo should
- * stop the static build instead of producing a broken image with invented
+ * Failures are explicit. A Markdown typo should stop the static build instead of producing a broken image with invented
  * dimensions. Paths are normalized within `public/`, which prevents traversal
  * through `..` and encoded separators.
  *
@@ -135,27 +134,8 @@ function resolvePublicImage(publicPath: string): string {
       `Local image resolves outside public/: ${publicPath}`,
     );
   }
-  const unresolvedPath = resolve(publicDirectory, `.${pathname}`);
 
-  if (!isWithin(publicDirectory, unresolvedPath)) {
-    throw new ImageSizeError(
-      'OUTSIDE_PUBLIC',
-      publicPath,
-      `Local image resolves outside public/: ${publicPath}`,
-    );
-  }
-
-  return unresolvedPath;
-}
-
-function isWithin(directory: string, candidate: string): boolean {
-  const pathFromDirectory = relative(directory, candidate);
-  return (
-    pathFromDirectory === '' ||
-    (!pathFromDirectory.startsWith(`..${sep}`) &&
-      pathFromDirectory !== '..' &&
-      !isAbsolute(pathFromDirectory))
-  );
+  return resolve(publicDirectory, `.${pathname}`);
 }
 
 function getNodeErrorCode(error: unknown): string | undefined {
@@ -347,7 +327,7 @@ export function readPostImageSizes(
   return sizes;
 }
 
-export function isRootLocalImage(src: string): boolean {
+function isRootLocalImage(src: string): boolean {
   return src.startsWith('/') && !src.startsWith('//');
 }
 

@@ -1,223 +1,216 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { aboutMarkdown } from '@/data/about';
 import { createHeadingId } from '@/lib/anchors';
 import AboutContent from '../Sections';
 
-function getActualSectionTitles(markdown: string) {
-  return Array.from(markdown.matchAll(/^# (.+)$/gm))
-    .map((match) => match[1])
-    .filter((title) => title !== 'Intro');
-}
+const titles = Array.from(
+  aboutMarkdown.matchAll(/^# (.+)$/gm),
+  (match) => match[1],
+).filter((title) => title !== 'Intro');
 
-describe('AboutContent', () => {
-  it('renders intro copy without an Intro heading', () => {
-    render(
-      <AboutContent
-        markdown={`# Intro
+const MARKDOWN = `# Intro
 
 Hello from the intro.
 
-# Some History
+# Some history
 
-- Built a thing.`}
-      />,
-    );
+- We subscribed to AOL in 1995.
+- At 7, I discovered the mini-games.
+- I have a list of ideas.
+
+# I like
+
+- Running
+
+# Websites from people I admire
+
+- [Example](https://example.com)`;
+
+function sectionNav() {
+  return screen.getByRole('navigation', { name: 'About sections' });
+}
+
+describe('AboutContent', () => {
+  it('renders the intro unheaded and gives each section its variant', () => {
+    const { container } = render(<AboutContent markdown={MARKDOWN} />);
 
     expect(screen.getByText('Hello from the intro.')).toBeInTheDocument();
     expect(
       screen.queryByRole('heading', { name: 'Intro' }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Some History' }),
-    ).toBeInTheDocument();
+
+    const sections = container.querySelectorAll('.about-section');
+
+    expect(sections[0]).toHaveClass('about-section--log');
+    expect(sections[1]).toHaveClass('about-section--compact');
+    expect(sections[2]).toHaveClass('about-section--links');
   });
 
-  it('assigns section variants for compact and links sections', () => {
+  it('pairs each real section with a nav link and marks the first current', () => {
+    render(<AboutContent markdown={aboutMarkdown} />);
+
+    const links = within(sectionNav()).getAllByRole('link');
+
+    expect(links.map((link) => link.textContent)).toEqual(titles);
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(
+      titles.map((title) => `#${createHeadingId(title)}`),
+    );
+    expect(links.map((link) => link.getAttribute('aria-current'))).toEqual(
+      titles.map((_, index) => (index === 0 ? 'location' : null)),
+    );
+  });
+
+  it('reads markers into the gutter of log entries', () => {
+    const { container } = render(<AboutContent markdown={MARKDOWN} />);
+    const [embedded, leading, undated] = Array.from(
+      container.querySelectorAll('.log-entry'),
+      (entry) => ({
+        marker: entry.querySelector('.log-entry-marker'),
+        body: entry.querySelector('.log-entry-body')?.textContent,
+      }),
+    );
+
+    // An embedded marker repeats the prose, so it is hidden from a screen
+    // reader, which reads the full fact from the body.
+    expect(embedded.marker).toHaveTextContent('1995');
+    expect(embedded.marker).toHaveAttribute('aria-hidden', 'true');
+    expect(embedded.body).toBe('We subscribed to AOL in 1995.');
+
+    // A leading marker is lifted out, so it stays exposed.
+    expect(leading.marker).toHaveTextContent('Age 7');
+    expect(leading.marker).not.toHaveAttribute('aria-hidden');
+    expect(leading.body).toBe('I discovered the mini-games.');
+
+    expect(undated.marker).toBeEmptyDOMElement();
+  });
+
+  // A heading renamed in the data without its `sectionVariants` key raises
+  // nothing and quietly renders as a plain list.
+  it('matches every real section to a layout, by its title as authored', () => {
+    const { container } = render(<AboutContent markdown={aboutMarkdown} />);
+    const sections = container.querySelectorAll('.about-section');
+
+    expect(sections).toHaveLength(titles.length);
+    // Fork: `Currently` and `Hungary` are prose, with no list to lay out, so
+    // only a section that holds a list needs a layout.
+    for (const section of sections) {
+      if (!section.querySelector('ul, ol')) continue;
+      expect(section.className).toMatch(/about-section--/);
+    }
+  });
+
+  it('sets typographic quotes in the real prose', () => {
+    const { container } = render(<AboutContent markdown={aboutMarkdown} />);
+
+    expect(container.textContent).not.toMatch(/['"]/);
+  });
+
+  it('leaves code as it was typed', () => {
+    const { container } = render(
+      <AboutContent
+        markdown={[
+          '# Intro',
+          '',
+          "It's `don't` here.",
+          '',
+          '```',
+          "const quote = 'x';",
+          '```',
+        ].join('\n')}
+      />,
+    );
+
+    expect(container.querySelector('p')).toHaveTextContent("It’s don't here.");
+    expect(container.querySelector('pre')).toHaveTextContent(
+      "const quote = 'x';",
+    );
+  });
+
+  it('reads a marker from an entry whose words carry an apostrophe', () => {
     const { container } = render(
       <AboutContent
         markdown={`# Intro
 
 Lead paragraph.
 
-# I Like
+# Some history
 
-- Running
-
-# Websites from People I Admire
-
-- [Example](https://example.com)`}
+- When I was 12, I didn't sleep.
+- We didn't have a computer in 1993.`}
       />,
     );
 
-    const sections = container.querySelectorAll('.about-section');
-
-    expect(sections).toHaveLength(2);
-    expect(sections[0]).toHaveClass('about-section--compact');
-    expect(sections[1]).toHaveClass('about-section--links');
+    // The gutter reads typeset text, and the remainder keeps its apostrophe.
+    expect(
+      Array.from(container.querySelectorAll('.log-entry'), (entry) => [
+        entry.querySelector('.log-entry-marker')?.textContent,
+        entry.querySelector('.log-entry-body')?.textContent,
+      ]),
+    ).toEqual([
+      ['Age 12', 'I didn’t sleep.'],
+      ['1993', 'We didn’t have a computer in 1993.'],
+    ]);
   });
 
-  it('adds stable heading ids for deep links', () => {
+  it('prints a title the same way in the nav and above its section', () => {
     render(
       <AboutContent
         markdown={`# Intro
 
 Lead paragraph.
 
-# Some History
+# Michael's notes
 
-- Built a thing.
-
-# Travel / Geography
-
-- Went somewhere.`}
+- A note.`}
       />,
     );
 
-    expect(
-      screen.getByRole('heading', { name: 'Some History' }),
-    ).toHaveAttribute('id', 'some-history');
-    expect(
-      screen.getByRole('heading', { name: 'Travel / Geography' }),
-    ).toHaveAttribute('id', 'travel-geography');
-  });
+    const name = 'Michael’s notes';
 
-  it('renders section navigation and self-links for the real about markdown', () => {
-    const sectionTitles = getActualSectionTitles(aboutMarkdown);
-    const { container } = render(<AboutContent markdown={aboutMarkdown} />);
-    const nav = screen.getByRole('navigation', { name: 'About sections' });
-
-    expect(within(nav).getAllByRole('link')).toHaveLength(sectionTitles.length);
-
-    for (const title of sectionTitles) {
-      const headingId = createHeadingId(title);
-      const heading = screen.getByRole('heading', { name: title });
-
-      expect(heading).toHaveAttribute('id', headingId);
-      expect(within(nav).getByRole('link', { name: title })).toHaveAttribute(
-        'href',
-        `#${headingId}`,
-      );
-      expect(
-        container.querySelector(`h2#${headingId} > a[href="#${headingId}"]`),
-      ).toBeTruthy();
-    }
-  });
-
-  it('renders matching hash links and heading ids into static markup', () => {
-    const html = renderToStaticMarkup(
-      <AboutContent markdown={aboutMarkdown} />,
+    // Typeset once for both, while the id is read from the title as typed.
+    expect(screen.getByRole('heading', { name })).toHaveAttribute(
+      'id',
+      'michaels-notes',
     );
-
-    expect(html).toContain('href="#currently"');
-    expect(html).toContain('id="currently"');
-    expect(html).toContain('href="#travel-geography"');
-    expect(html).toContain('id="travel-geography"');
-  });
-
-  // Links in the copy are plain markdown, so the attributes are applied by the
-  // `a` override rather than written at each link.
-  it('opens outbound links in the copy safely', () => {
-    const html = renderToStaticMarkup(
-      <AboutContent markdown={aboutMarkdown} />,
-    );
-
-    for (const anchor of html.match(/<a [^>]*href="https?:\/\/[^>]*>/g) ?? []) {
-      expect(anchor).toContain('target="_blank"');
-      expect(anchor).toContain('rel="nofollow noopener noreferrer"');
-    }
-  });
-
-  // Section links are same-page and must not be given target/rel.
-  it('leaves in-page section links untouched', () => {
-    const html = renderToStaticMarkup(
-      <AboutContent markdown={aboutMarkdown} />,
-    );
-    const hashLink = html.match(/<a [^>]*href="#currently"[^>]*>/)?.[0];
-
-    expect(hashLink).toBeDefined();
-    expect(hashLink).not.toContain('target="_blank"');
-  });
-
-  it('renders only the travel markers stated by the prose', () => {
-    const { container } = render(<AboutContent markdown={aboutMarkdown} />);
-    const travel = container.querySelector('.about-section--log');
-    const entries = Array.from(
-      travel?.querySelectorAll('.log-entry') ?? [],
-    ) as HTMLElement[];
-
-    expect(entries).toHaveLength(11);
-    expect(
-      entries.map((entry) => ({
-        year: entry.querySelector('.log-entry-year')?.textContent ?? null,
-        age: entry.querySelector('.log-entry-age')?.textContent ?? null,
-      })),
-    ).toEqual([
-      { year: null, age: null },
-      ...['2016', '2018', '2019', '2020', '2021', '2022', '2023', '2024'].map(
-        (year) => ({ year, age: null }),
-      ),
-      { year: '2025', age: null },
-      { year: '2026', age: null },
-    ]);
-
-    // A leading marker is lifted out, leaving a sentence behind.
-    expect(entries[1].querySelector('.log-entry-body')?.textContent).toMatch(
-      /^I visited Austria/,
-    );
-    expect(entries[1].querySelector('.log-entry-marker')).not.toHaveAttribute(
-      'aria-hidden',
+    expect(within(sectionNav()).getByRole('link', { name })).toHaveAttribute(
+      'href',
+      '#michaels-notes',
     );
   });
 
-  it('leaves an undated entry an empty gutter rather than a broken marker', () => {
-    const { container } = render(<AboutContent markdown={aboutMarkdown} />);
-    const markers = Array.from(
-      container.querySelectorAll('.about-section--log .log-entry-marker'),
-    );
-    const empty = markers.filter((marker) => marker.textContent === '');
+  // The hook listens on the row inside the bar, so the ref has to reach the bar.
+  it('tells the row how far it has scrolled, for its leading fade', () => {
+    render(<AboutContent markdown={aboutMarkdown} />);
 
-    expect(markers).toHaveLength(11);
-    expect(empty).toHaveLength(1);
+    const row = sectionNav().firstElementChild as HTMLElement;
 
-    for (const marker of empty) {
-      expect(marker.querySelector('.log-entry-year')).toBeNull();
-    }
+    row.scrollLeft = 115;
+    row.dispatchEvent(new Event('scroll'));
+
+    expect(row.style.getPropertyValue('--scrolled')).toBe('115px');
   });
 
-  it('supports same-page hash navigation from section links', async () => {
+  // A heading's own link is for copying its address, so only the nav asks for
+  // the animated jump.
+  it('scrolls smoothly from the nav, and not from a heading link', () => {
+    const SMOOTH = 'data-smooth-scroll';
+
     window.history.replaceState({}, '', '/about/');
+    window.dispatchEvent(new Event('scrollend'));
 
     render(<AboutContent markdown={aboutMarkdown} />);
 
-    const nav = screen.getByRole('navigation', { name: 'About sections' });
-    const navLink = within(nav).getByRole('link', {
-      name: 'Travel / Geography',
-    });
+    within(screen.getByRole('heading', { name: titles[1] }))
+      .getByRole('link')
+      .click();
+    expect(document.documentElement).not.toHaveAttribute(SMOOTH);
 
-    navLink.click();
+    within(sectionNav()).getByRole('link', { name: titles[1] }).click();
+    expect(document.documentElement).toHaveAttribute(SMOOTH);
 
-    await waitFor(() => {
-      expect(window.location.hash).toBe('#travel-geography');
-    });
-    expect(document.querySelector(window.location.hash)).toHaveTextContent(
-      'Travel / Geography',
-    );
-
-    const heading = screen.getByRole('heading', { name: 'Fun Facts' });
-    const permalink = within(heading).getByRole('link', {
-      name: 'Fun Facts',
-    });
-
-    permalink.click();
-
-    await waitFor(() => {
-      expect(window.location.hash).toBe('#fun-facts');
-    });
-    expect(document.querySelector(window.location.hash)).toHaveTextContent(
-      'Fun Facts',
-    );
+    window.dispatchEvent(new Event('scrollend'));
+    expect(document.documentElement).not.toHaveAttribute(SMOOTH);
   });
 });

@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 
 import type { Project } from '@/data/projects';
 import Entry from '../../Projects/Entry';
-import { NEW_TAB_SUFFIX, NO_LINK_LABEL } from '../../Projects/shared';
 
 const base: Project = {
   title: 'Test Platform',
@@ -11,89 +10,104 @@ const base: Project = {
   link: 'https://example.com',
   date: '2024-07-01',
   desc: 'A description of the shipped work.',
-  tech: ['TypeScript', 'AWS Lambda'],
+  tech: ['TypeScript'],
   status: 'shipped',
 };
 
+const archived: Project = {
+  title: 'Weekend Hack',
+  subtitle: 'Hackathon',
+  image: '/images/test.jpg',
+  date: '2015-11-20',
+  desc: 'A student project kept for the record.',
+  status: 'archive',
+};
+
+/** The one element `Entry` renders: the row itself. */
+function row(container: HTMLElement): HTMLElement {
+  return container.firstElementChild as HTMLElement;
+}
+
 describe('Entry', () => {
-  it('renders the whole row as one outbound link', () => {
-    render(<Entry data={base} />);
+  it('renders the whole row as one outbound link with a decorative arrow', () => {
+    const { container } = render(<Entry data={base} />);
 
     const link = screen.getByRole('link', {
-      name: `${base.title} ${NEW_TAB_SUFFIX}`,
+      name: 'Test Platform (opens in a new tab)',
     });
-    expect(link).toHaveAttribute('href', base.link);
+
+    expect(link).toBe(row(container));
+    expect(link).toHaveAttribute('href', 'https://example.com');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    expect(link).toHaveClass('project-entry--linked');
-    expect(link.querySelector('.project-entry-external')).toHaveTextContent(
-      '↗',
-    );
+    expect(link).toContainElement(screen.getByText(base.desc));
+    expect(link).toContainElement(screen.getByText('TypeScript'));
+    expect(screen.getByText('↗')).toHaveAttribute('aria-hidden', 'true');
   });
 
-  /** No screenshots exist for this work; the row must not want one. */
-  it('renders no image', () => {
-    render(<Entry data={base} />);
-
-    expect(document.querySelector('img')).not.toBeInTheDocument();
-  });
-
-  it('renders the title, role, description, and tech', () => {
-    render(<Entry data={base} />);
+  // The link's name has to keep containing the text that is visible.
+  it('sets display strings with typographic quotes, including the link name', () => {
+    render(<Entry data={{ ...base, title: "Ada's", desc: "It didn't." }} />);
 
     expect(
-      screen.getByRole('heading', { level: 3, name: /Test Platform/ }),
+      screen.getByRole('link', { name: 'Ada’s (opens in a new tab)' }),
     ).toBeInTheDocument();
-    expect(screen.getByText(base.subtitle as string)).toBeInTheDocument();
-    expect(screen.getByText(base.desc)).toBeInTheDocument();
-    expect(screen.getByText('TypeScript')).toBeInTheDocument();
-    expect(screen.getByText('AWS Lambda')).toBeInTheDocument();
+    expect(screen.getByText('It didn’t.')).toBeInTheDocument();
   });
 
-  /** Amber is reserved for a value that is live. */
-  it('marks live work as present and gives it the size step', () => {
-    render(<Entry data={{ ...base, ongoing: true }} />);
+  // Amber is reserved for live values, and the archive sits below selected work
+  // whatever its dates say, so an ongoing archive entry still takes no size step.
+  it.each([
+    ['live work', { ...base, ongoing: true }, ' project-entry--live', true],
+    ['finished work', { ...base, endDate: '2026-03-09' }, '', false],
+    ['an archive entry', archived, ' project-entry--archive', false],
+    [
+      'an ongoing archive entry',
+      { ...archived, ongoing: true },
+      ' project-entry--archive',
+      true,
+    ],
+  ])('places %s in its tier', (_, data, tier, present) => {
+    const { container } = render(<Entry data={data} />);
 
-    const dates = document.querySelector('.project-dates');
-    expect(dates).toHaveTextContent('Jul 2024');
-    expect(dates?.querySelector('.daterange-present')).toHaveTextContent(
-      'Present',
+    expect(row(container).className).toBe(`project-entry${tier}`);
+    expect(screen.queryByText('Present') !== null).toBe(present);
+  });
+
+  // The heading beside it names the project, and the attributes reserve the
+  // 16:10 frame the stylesheet crops to rather than describe the file.
+  it('treats a screenshot as lazy decoration in its frame', () => {
+    const { container } = render(<Entry data={archived} />);
+
+    const image = container.querySelector('img');
+
+    // A row with no screenshot reserves no frame for one.
+    expect(
+      render(<Entry data={base} />).container.querySelector('img'),
+    ).toBeNull();
+    expect(image).toHaveAttribute('src', '/images/test.jpg');
+    expect(image).toHaveAttribute('alt', '');
+    expect(image).toHaveAttribute('loading', 'lazy');
+    expect(
+      Number(image?.getAttribute('width')) /
+        Number(image?.getAttribute('height')),
+    ).toBe(16 / 10);
+  });
+
+  // The absence of the link is the only thing an unlinked row says about itself.
+  it('differs without a link only by the anchor and its arrow', () => {
+    const linked = row(
+      render(<Entry data={{ ...archived, link: 'https://example.com/hack' }} />)
+        .container,
     );
-    expect(document.querySelector('.project-entry--live')).toBeInTheDocument();
-  });
+    const unlinked = row(render(<Entry data={archived} />).container);
 
-  it('renders a closed range and no live styling once work has ended', () => {
-    render(<Entry data={{ ...base, endDate: '2026-03-09' }} />);
+    expect(linked.tagName).toBe('A');
+    expect(unlinked.tagName).toBe('DIV');
+    expect(unlinked.className).toBe(linked.className);
+    expect(unlinked).not.toHaveTextContent('↗');
 
-    const dates = document.querySelector('.project-dates');
-    expect(dates).toHaveTextContent('Jul 2024');
-    expect(dates).toHaveTextContent('Mar 2026');
-    expect(dates?.querySelector('.daterange-present')).not.toBeInTheDocument();
-    expect(
-      document.querySelector('.project-entry--live'),
-    ).not.toBeInTheDocument();
-  });
-
-  it('speaks the range rather than running the two dates together', () => {
-    render(<Entry data={{ ...base, endDate: '2026-03-09' }} />);
-
-    expect(screen.getByText('to')).toHaveClass('sr-only');
-    expect(document.querySelector('.daterange-sep')).toHaveAttribute(
-      'aria-hidden',
-      'true',
-    );
-  });
-
-  it('renders an entry with no destination as inert and says so', () => {
-    render(<Entry data={{ ...base, link: undefined }} />);
-
-    expect(screen.queryByRole('link')).not.toBeInTheDocument();
-    expect(
-      document.querySelector('.project-entry--static'),
-    ).toBeInTheDocument();
-    expect(
-      document.querySelector('.project-entry-external'),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText(NO_LINK_LABEL)).toBeInTheDocument();
+    linked.querySelector('.project-entry-external')?.remove();
+    expect(unlinked.innerHTML).toBe(linked.innerHTML);
   });
 });

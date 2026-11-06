@@ -1,20 +1,12 @@
 import type { Metadata } from 'next';
 
-import Cell from '@/components/Projects/Cell';
 import Entry from '@/components/Projects/Entry';
 import { SchemaGraph } from '@/components/Schema';
 import PageWrapper from '@/components/Template/PageWrapper';
 import { archive, shipped } from '@/data/projects';
 import { createPageMetadata } from '@/lib/metadata';
-import {
-  breadcrumbNode,
-  collectionPageNode,
-  HOME_URL,
-  SITE_URL,
-} from '@/lib/schema';
+import { collectionPageNode, sectionPageNodes } from '@/lib/schema';
 import { AUTHOR_NAME } from '@/lib/utils';
-
-const PROJECTS_URL = `${SITE_URL}/projects/`;
 
 const PAGE_TITLE = 'Projects';
 
@@ -46,18 +38,12 @@ export default function ProjectsPage() {
   return (
     <PageWrapper>
       <SchemaGraph
-        nodes={[
-          collectionPageNode({
-            url: PROJECTS_URL,
-            name: PAGE_TITLE,
-            description: PROJECTS_DESCRIPTION,
-            hasBreadcrumb: true,
-          }),
-          breadcrumbNode(PROJECTS_URL, [
-            { name: 'Home', url: HOME_URL },
-            { name: PAGE_TITLE, url: PROJECTS_URL },
-          ]),
-        ]}
+        nodes={sectionPageNodes(
+          collectionPageNode,
+          '/projects/',
+          PAGE_TITLE,
+          PROJECTS_DESCRIPTION,
+        )}
       />
       <div className="projects-page">
         <header className="projects-header">
@@ -76,14 +62,14 @@ export default function ProjectsPage() {
             className="projects-group"
             aria-labelledby="projects-selected"
           >
-            <div className="projects-group-header">
-              <h2 id="projects-selected" className="projects-section-title">
+            <div className="section-header">
+              <h2 id="projects-selected" className="section-heading">
                 Selected work
               </h2>
               {/* Counted, never typed. */}
-              <span className="projects-section-count">
+              <p className="section-header-meta">
                 {projectCountLabel(shipped.length)}
-              </span>
+              </p>
             </div>
             <ol className="projects-register">
               {shipped.map((project) => (
@@ -95,27 +81,29 @@ export default function ProjectsPage() {
           </section>
         )}
 
+        {/* The same list and the same row as the work above: the archive is
+            a quieter part of one register, not a second kind of page. */}
         {archive.length > 0 && (
           <section
             className="projects-group"
             aria-labelledby="projects-archive"
           >
-            <div className="projects-group-header">
-              <h2 id="projects-archive" className="projects-section-title">
+            <div className="section-header">
+              <h2 id="projects-archive" className="section-heading">
                 Archive
               </h2>
-              <span className="projects-section-count">
+              <p className="section-header-meta">
                 {projectCountLabel(archive.length)}
-              </span>
+              </p>
             </div>
             <p className="projects-group-note">
               Student projects, hackathons, and experiments, kept for the
               record.
             </p>
-            <ol className="projects-grid">
+            <ol className="projects-register">
               {archive.map((project) => (
                 <li key={project.title}>
-                  <Cell data={project} />
+                  <Entry data={project} />
                 </li>
               ))}
             </ol>

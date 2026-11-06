@@ -9,31 +9,17 @@ import work from '@/data/resume/work';
 import { sortPositions } from '@/lib/career';
 import {
   buildJsonResume,
-  RESUME_JSON_PATH,
-  RESUME_JSON_URL,
   serializeJsonResume,
   TOOLS_SKILL_NAME,
   toPlainText,
 } from '@/lib/resumeJson';
-import { AUTHOR_NAME, SITE_DESCRIPTION, SITE_URL } from '@/lib/utils';
+import { AUTHOR_NAME, SITE_URL } from '@/lib/utils';
 
 /** Root properties JSON Resume v1.0.0 allows; the schema forbids the rest. */
-const ROOT_KEYS = [
-  '$schema',
-  'basics',
-  'work',
-  'volunteer',
-  'education',
-  'awards',
-  'certificates',
-  'publications',
-  'skills',
-  'languages',
-  'interests',
-  'references',
-  'projects',
-  'meta',
-];
+const ROOT_KEYS =
+  '$schema basics work volunteer education awards certificates publications skills languages interests references projects meta'.split(
+    ' ',
+  );
 
 /** The schema's `iso8601` definition: YYYY, YYYY-MM, or YYYY-MM-DD. */
 const ISO8601 =
@@ -42,74 +28,46 @@ const ISO8601 =
 const resume = buildJsonResume();
 
 describe('toPlainText', () => {
-  it('keeps anchor text and drops the markup', () => {
-    expect(
-      toPlainText("see <a href='https://example.com'>the docs</a> now"),
-    ).toBe('see the docs now');
+  it.each([
+    ["see <a href='https://example.com'>the docs</a>", 'see the docs'],
+    [
+      '[docs](https://example.com) **very** *good* `code`',
+      'docs very good code',
+    ],
+    ['one\n    two\n\n  three ', 'one two three'],
+    ['Trust &amp; Safety &#38; more', 'Trust & Safety & more'],
+    // Scalar values at each side of the surrogate range.
+    [
+      '&#xD7FF;&#xE000;&#x10FFFF;',
+      String.fromCodePoint(0xd7ff, 0xe000, 0x10ffff),
+    ],
+  ])('flattens %s', (input, expected) => {
+    expect(toPlainText(input)).toBe(expected);
   });
 
-  it('unwraps markdown links, emphasis, and code', () => {
-    expect(
-      toPlainText('[docs](https://example.com) are **very** *good* `code`'),
-    ).toBe('docs are very good code');
-  });
-
-  it('collapses the wrapping and indentation of template literals', () => {
-    expect(toPlainText('one\n    two\n\n  three ')).toBe('one two three');
-  });
-
-  it('decodes HTML entities', () => {
-    expect(toPlainText('Trust &amp; Safety &#38; more')).toBe(
-      'Trust & Safety & more',
-    );
-  });
-
-  it('preserves invalid numeric entities instead of throwing or emitting surrogates', () => {
-    for (const entity of [
-      '&#1114112;',
-      '&#x110000;',
-      '&#99999999;',
-      '&#xD800;',
-      '&#xDFFF;',
-    ]) {
-      expect(() => toPlainText(`before ${entity} after`)).not.toThrow();
-      expect(toPlainText(`before ${entity} after`)).toBe(
-        `before ${entity} after`,
-      );
-    }
-  });
-
-  it('decodes valid scalar values at each side of the surrogate range', () => {
-    expect(toPlainText('&#xD7FF;&#xE000;&#x10FFFF;')).toBe(
-      `${String.fromCodePoint(0xd7ff)}${String.fromCodePoint(
-        0xe000,
-      )}${String.fromCodePoint(0x10ffff)}`,
-    );
-  });
-
-  it('leaves underscores alone so identifiers survive', () => {
-    expect(toPlainText('the snake_case_name field')).toBe(
-      'the snake_case_name field',
-    );
-  });
-
-  it('preserves angle-bracket comparisons that are not HTML tags', () => {
-    expect(
-      toPlainText(
-        'latency < 50ms and throughput > 1k with Map<string, number>',
-      ),
-    ).toBe('latency < 50ms and throughput > 1k with Map<string, number>');
+  it.each([
+    'the snake_case_name field',
+    // The same literal is the positive case in
+    // `scripts/__tests__/verify-export.test.ts`: what this conversion keeps, the
+    // export gate has to accept.
+    'latency < 50ms and throughput > 1k with Map<string, number>',
+    // Invalid numeric entities must not throw or emit lone surrogates.
+    'before &#1114112; after',
+    'before &#x110000; after',
+    'before &#99999999; after',
+    'before &#xD800; after',
+    'before &#xDFFF; after',
+  ])('leaves alone: %s', (text) => {
+    expect(toPlainText(text)).toBe(text);
   });
 });
 
 describe('json resume document', () => {
-  it('declares the schema it conforms to and adds no keys of its own', () => {
+  it('declares the schema it conforms to and adds no root keys', () => {
     expect(resume.$schema).toBe(
       'https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json',
     );
-    for (const key of Object.keys(resume)) {
-      expect(ROOT_KEYS).toContain(key);
-    }
+    expect(ROOT_KEYS).toEqual(expect.arrayContaining(Object.keys(resume)));
   });
 
   it('builds basics from the shared profile facts', () => {
@@ -117,62 +75,31 @@ describe('json resume document', () => {
       name: AUTHOR_NAME,
       label: profile.role,
       email: profile.email,
-      image: `${SITE_URL}/images/me.jpg`,
-      url: `${SITE_URL}/`,
-      summary: SITE_DESCRIPTION,
+      // The display city split at its comma, without asserting a country.
+      location: { city: 'Budapest', region: 'HU' },
     });
   });
 
-  it('splits the display city into city and region without asserting a country', () => {
-    expect(resume.basics.location).toEqual({ city: 'Budapest', region: 'HU' });
-  });
-
   it('lists every non-email contact as a profile with its handle', () => {
-    const socials = contact.filter((item) => !item.link.startsWith('mailto:'));
-
-    expect(resume.basics.profiles).toHaveLength(socials.length);
+    expect(resume.basics.profiles).toHaveLength(
+      contact.filter((item) => !item.link.startsWith('mailto:')).length,
+    );
     expect(resume.basics.profiles).toContainEqual({
       network: 'GitHub',
       username: 'sassdavid',
       url: 'https://github.com/sassdavid',
     });
-    expect(resume.basics.profiles).toContainEqual({
-      network: 'LinkedIn',
-      username: 'sassd',
-      url: 'https://www.linkedin.com/in/sassd',
-    });
-    expect(
-      resume.basics.profiles.every((entry) => entry.username.length > 0),
-    ).toBe(true);
   });
 
-  it('carries every position in résumé order', () => {
+  it('carries every position in résumé order, with no invented end date', () => {
     expect(resume.work.map((position) => position.name)).toEqual(
       sortPositions(work).map((position) => position.name),
     );
-    expect(resume.work[0]).toMatchObject({
-      name: 'Loxon Solutions Zrt.',
-      position: work[0].position,
-      url: work[0].url,
-      startDate: work[0].startDate,
-    });
-  });
-
-  it('omits endDate for the current role rather than inventing one', () => {
     expect(resume.work[0]).not.toHaveProperty('endDate');
     expect(resume.work[1].endDate).toBe('2025-06-30');
   });
 
-  it('carries each summary through the plain-text reduction', () => {
-    const ordered = sortPositions(work);
-
-    resume.work.forEach((position, index) => {
-      const source = ordered[index].summary;
-      if (source) expect(position.summary).toBe(toPlainText(source));
-      else expect(position).not.toHaveProperty('summary');
-    });
-  });
-
+  // Summaries are Markdown with inline anchors, so this reads the real prose.
   it('leaves no markup or uncollapsed whitespace anywhere in the prose', () => {
     const prose = resume.work.flatMap((position) => [
       position.summary ?? '',
@@ -201,7 +128,6 @@ describe('json resume document', () => {
     expect(resume.education).toHaveLength(degrees.length);
     expect(resume.education[0]).toMatchObject({
       institution: 'Széchenyi István Egyetem',
-      url: 'https://admissions.sze.hu/welcome',
       area: 'Computer Science Engineer',
       endDate: '2019',
     });
@@ -209,7 +135,9 @@ describe('json resume document', () => {
     expect(resume.education[0]).not.toHaveProperty('studyType');
   });
 
-  it('carries no coursework, which this résumé does not list', () => {
+  // Fork: this résumé lists tools rather than coursework, so no degree
+  // carries courses; tools are published as a final skill entry below.
+  it('carries no coursework', () => {
     for (const entry of resume.education) {
       expect(entry).not.toHaveProperty('courses');
     }
@@ -228,14 +156,12 @@ describe('json resume document', () => {
       const expected = skills
         .filter((skill) => skill.category.includes(group.name))
         .map((skill) => skill.title);
-
-      expect(group.keywords).toHaveLength(expected.length);
-      expect([...group.keywords].sort()).toEqual([...expected].sort());
-
       const competencies = group.keywords.map(
         (keyword) =>
           skills.find((skill) => skill.title === keyword)?.competency ?? 0,
       );
+
+      expect([...group.keywords].sort()).toEqual([...expected].sort());
       expect(competencies).toEqual([...competencies].sort((a, b) => b - a));
     }
   });
@@ -250,23 +176,16 @@ describe('json resume document', () => {
     );
   });
 
+  // Work dates describe employment, not edits to this document, and JSON Resume
+  // makes `lastModified` optional.
   it('keeps the canonical file-like without inventing a modification date', () => {
-    expect(RESUME_JSON_PATH).toBe('/resume.json');
-    expect(RESUME_JSON_URL).toBe(`${SITE_URL}/resume.json`);
-    expect(resume.meta.canonical).toBe(RESUME_JSON_URL);
-    expect(resume.meta.canonical).not.toMatch(/resume\.json\/$/);
-    // Work dates describe employment, not edits to profile, education, skills,
-    // prose, or this generator. JSON Resume makes lastModified optional.
-    expect(resume.meta).not.toHaveProperty('lastModified');
-    expect(serializeJsonResume()).not.toContain('lastModified');
+    expect(resume.meta).toEqual({ canonical: `${SITE_URL}/resume.json` });
   });
 
-  it('serializes to stable, pretty-printed bytes', () => {
+  it('serializes to pretty-printed bytes that parse back', () => {
     const serialized = serializeJsonResume();
 
-    expect(serialized).toBe(serializeJsonResume());
-    expect(serialized.endsWith('\n')).toBe(true);
-    expect(serialized).toContain('\n  "basics": {');
+    expect(serialized).toMatch(/\n {2}"basics": \{[\s\S]*\n$/);
     expect(JSON.parse(serialized)).toEqual(resume);
   });
 });

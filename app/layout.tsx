@@ -34,9 +34,8 @@ const CHROME_COLORS: ThemeColors = {
  * Safari toolbar — and cannot be styled, so it can only be scoped by
  * `prefers-color-scheme`. That is the *device* preference, and no stylesheet
  * here reacts to it: dark is reached only through `<html data-theme='dark'>`,
- * which the bootstrap below sets. So a scoped pair painted dark chrome over a
- * light page for a no-JavaScript visitor on a dark-preferring device — it
- * described a dark theme they were never served.
+ * which the bootstrap below sets. So a scoped pair would paint dark chrome over
+ * a light page for a no-JavaScript visitor on a dark-preferring device.
  * `app/__tests__/theme-color.test.ts` re-derives that premise from the
  * stylesheets rather than trusting this comment.
  *
@@ -103,9 +102,8 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
   },
   // Only the snippet/preview hints are declared globally. `index, follow` is
-  // already the default, and emitting it here meant every page that sets
-  // `noindex` — the 404, the legacy post route — shipped with contradictory
-  // robots tags that a crawler is free to resolve either way.
+  // already the default, and emitting it here would contradict every page that
+  // sets `noindex`.
   robots: {
     googleBot: {
       'max-video-preview': -1,
@@ -155,10 +153,8 @@ export default function RootLayout({
           Skip to content
         </a>
         <ScrollToTop />
-        <div className="site-wrapper">
-          <Navigation />
-          {children}
-        </div>
+        <Navigation />
+        {children}
         <GoogleAnalytics />
       </body>
     </html>

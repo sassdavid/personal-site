@@ -1,227 +1,112 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+
+import { categories, skills } from '@/data/resume/skills';
+import { buildJsonResume, TOOLS_SKILL_NAME } from '@/lib/resumeJson';
 
 import Skills from '../../Resume/Skills';
 
-const mockCategories = [
-  { name: 'Languages' },
-  { name: 'ML Engineering' },
-  { name: 'Web Development' },
-];
+const mockCategories = [{ name: 'Lang' }, { name: 'ML' }, { name: 'Web' }];
 
+// Out of order, so a list that merely echoed its input could not pass for one
+// that sorts.
 const mockSkills = [
-  { title: 'Python', competency: 5, category: ['Languages', 'ML Engineering'] },
-  {
-    title: 'TypeScript',
-    competency: 5,
-    category: ['Languages', 'Web Development'],
-  },
-  {
-    title: 'JavaScript',
-    competency: 4,
-    category: ['Languages', 'Web Development'],
-  },
-  { title: 'PyTorch', competency: 4, category: ['ML Engineering'] },
-  { title: 'React', competency: 3, category: ['Web Development'] },
+  { title: 'React', competency: 3, category: ['Web'] },
+  { title: 'JavaScript', competency: 4, category: ['Lang', 'Web'] },
+  { title: 'PyTorch', competency: 4, category: ['ML'] },
+  { title: 'TypeScript', competency: 5, category: ['Lang', 'Web'] },
+  { title: 'Python', competency: 5, category: ['Lang', 'ML'] },
 ];
 
-/**
- * Filtering hides groups rather than unmounting them, so presence in the DOM
- * no longer implies visibility. jsdom here has no `checkVisibility`, so this
- * walks for a `hidden` ancestor instead.
- */
-function isShown(el: HTMLElement) {
-  return el.closest('[hidden]') === null;
+/** Each group's heading, then its skills. The tier in a tag is visually hidden. */
+function groupsIn(container: HTMLElement) {
+  return [...container.querySelectorAll('.skill-group')].map((group) => ({
+    name: group.querySelector('h3')?.textContent,
+    skills: [...group.querySelectorAll('.skill-tag')].map(
+      (tag) => tag.firstChild?.textContent,
+    ),
+  }));
 }
 
 describe('Skills', () => {
-  it('renders the skills section with title', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    expect(
-      screen.getByRole('heading', { name: /skills/i }),
-    ).toBeInTheDocument();
-  });
-
-  it('renders category filter buttons including All', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    expect(screen.getByRole('button', { name: 'All' })).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Languages' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'ML Engineering' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Web Development' }),
-    ).toBeInTheDocument();
-  });
-
-  it('shows all skills by default', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    // Skills may appear in multiple groups if they belong to multiple categories
-    expect(screen.getAllByText('Python').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('TypeScript').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('JavaScript').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('PyTorch').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('React').length).toBeGreaterThanOrEqual(1);
-  });
-
-  it('filters skills when category button is clicked', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    fireEvent.click(screen.getByRole('button', { name: 'ML Engineering' }));
-
-    // Groups stay in the DOM and are hidden, so assert on visibility.
-    expect(screen.getAllByText('Python').some(isShown)).toBe(true);
-    expect(isShown(screen.getByText('PyTorch'))).toBe(true);
-    expect(screen.getAllByText('React').some(isShown)).toBe(false);
-  });
-
-  it('keeps filtered-out groups in the DOM so they can still be printed', () => {
+  it('lists each skill under its categories, deepest first, and skips empty ones', () => {
     const { container } = render(
-      <Skills skills={mockSkills} categories={mockCategories} />,
+      <Skills
+        skills={mockSkills}
+        categories={[...mockCategories, { name: 'Databases' }]}
+      />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'ML Engineering' }));
+    expect(groupsIn(container)).toEqual([
+      { name: 'Lang', skills: ['Python', 'TypeScript', 'JavaScript'] },
+      { name: 'ML', skills: ['Python', 'PyTorch'] },
+      { name: 'Web', skills: ['TypeScript', 'JavaScript', 'React'] },
+    ]);
+  });
 
-    // print.css un-hides these; removing them from the DOM would mean a
-    // printed resume silently reflected whatever filter was selected.
-    expect(container.querySelectorAll('.skill-group')).toHaveLength(
-      mockCategories.length,
+  it('sorts a copy, leaving the skills it was given as they were', () => {
+    const given = [...mockSkills];
+
+    render(<Skills skills={given} categories={mockCategories} />);
+
+    expect(given).toEqual(mockSkills);
+  });
+
+  it('states the tier of every tag as text', () => {
+    const { container } = render(
+      <Skills skills={mockSkills} categories={[{ name: 'Web' }]} />,
     );
-    expect(container.querySelectorAll('.skill-group[hidden]')).toHaveLength(
-      mockCategories.length - 1,
-    );
+
+    expect(
+      [...container.querySelectorAll('.skill-tag')].map(
+        (tag) => tag.textContent,
+      ),
+    ).toEqual([
+      'TypeScript, deep knowledge',
+      'JavaScript, working knowledge',
+      'React, familiarity',
+    ]);
   });
 
-  it('marks All as pressed on first paint, when everything is showing', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    expect(screen.getByRole('button', { name: 'All' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
-  });
-
-  it('keeps All pressed after it is clicked', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    const allButton = screen.getByRole('button', { name: 'All' });
-    fireEvent.click(screen.getByRole('button', { name: 'Languages' }));
-    fireEvent.click(allButton);
-
-    expect(allButton).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'Languages' })).toHaveAttribute(
-      'aria-pressed',
-      'false',
-    );
-  });
-
-  it('shows all skills when clicking category again (toggle off)', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    const mlButton = screen.getByRole('button', { name: 'ML Engineering' });
-    fireEvent.click(mlButton);
-    fireEvent.click(mlButton);
-
-    expect(screen.getAllByText('React').some(isShown)).toBe(true);
-    expect(screen.getByRole('button', { name: 'All' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
-  });
-
-  it('sets aria-pressed on active category button', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    const languagesButton = screen.getByRole('button', { name: 'Languages' });
-    expect(languagesButton).toHaveAttribute('aria-pressed', 'false');
-
-    fireEvent.click(languagesButton);
-    expect(languagesButton).toHaveAttribute('aria-pressed', 'true');
-  });
-
-  it('displays skills grouped by category', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    // Should have group titles
-    const groupTitles = document.querySelectorAll('.skill-group-title');
-    expect(groupTitles.length).toBeGreaterThan(0);
-  });
-
-  it('explains competency tiers once instead of repeating them on every tag', () => {
+  // The order holds for everyone; the tone is described only on screen, and
+  // only when a tag is set in it.
+  it('explains a fainter tone once, to those who can see it', () => {
     const { container } = render(
       <Skills skills={mockSkills} categories={mockCategories} />,
     );
 
     expect(container.querySelectorAll('.skill-tier-legend')).toHaveLength(1);
-    expect(container.querySelector('.skill-tier-legend')).toHaveTextContent(
-      /Knowledge\s*Deep\s*·\s*Working\s*·\s*Familiar/,
+    expect(container.querySelector('.skill-tier-legend-tone')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+
+    const strong = mockSkills.filter((skill) => skill.competency > 3);
+    const { container: strongOnly } = render(
+      <Skills skills={strong} categories={mockCategories} />,
+    );
+
+    expect(strongOnly.querySelector('.skill-tier-legend')?.textContent).toBe(
+      'Strongest first.',
     );
   });
 
-  // `aria-pressed` reports the control, not the outcome, and pressing a filter
-  // hides most of the section.
-  describe('filter status', () => {
-    it('counts each skill once even when it renders in multiple groups', () => {
-      const { container } = render(
-        <Skills skills={mockSkills} categories={mockCategories} />,
-      );
+  // `/resume.json` publishes the same list, and the résumé must not disagree
+  // with itself.
+  it('lists the real data in the groups and order /resume.json publishes', () => {
+    const { container } = render(
+      <Skills skills={skills} categories={categories} />,
+    );
 
-      // Five distinct skills render as eight tags across the categories.
-      const tags = container.querySelectorAll('.skill-tag');
-      expect(tags).toHaveLength(8);
-      expect(screen.getByRole('status')).toHaveTextContent(
-        'Showing all 5 skills.',
-      );
-    });
-
-    it('announces the result of filtering, not the state of the button', () => {
-      const { container } = render(
-        <Skills skills={mockSkills} categories={mockCategories} />,
-      );
-
-      fireEvent.click(screen.getByRole('button', { name: 'Languages' }));
-
-      const tags = Array.from(
-        container.querySelectorAll<HTMLElement>('.skill-tag'),
-      );
-      const shown = tags.filter(isShown);
-      expect(shown).toHaveLength(3);
-      expect(screen.getByRole('status')).toHaveTextContent(
-        'Showing 3 of 5 skills in Languages.',
-      );
-    });
-
-    it('keeps the noun singular for a one-skill set', () => {
-      render(
-        <Skills
-          skills={[{ title: 'Python', competency: 5, category: ['Languages'] }]}
-          categories={[{ name: 'Languages' }]}
-        />,
-      );
-
-      expect(screen.getByRole('status')).toHaveTextContent(
-        'Showing all 1 skill.',
-      );
-    });
-  });
-
-  it('sorts skills by competency (highest first)', () => {
-    render(<Skills skills={mockSkills} categories={mockCategories} />);
-
-    // Filter to Languages to check sorting
-    fireEvent.click(screen.getByRole('button', { name: 'Languages' }));
-
-    const skillTags = document.querySelectorAll('.skill-tag-name');
-    const skillNames = Array.from(skillTags).map((el) => el.textContent);
-
-    // Python (5) and TypeScript (5) should come before JavaScript (4)
-    const jsIndex = skillNames.indexOf('JavaScript');
-    const pythonIndex = skillNames.indexOf('Python');
-    expect(pythonIndex).toBeLessThan(jsIndex);
+    // The JSON also publishes this fork's tools as a final `Tools` entry,
+    // which the page renders in its own section rather than as a skill group.
+    expect(groupsIn(container)).toEqual(
+      buildJsonResume()
+        .skills.filter((group) => group.name !== TOOLS_SKILL_NAME)
+        .map((group) => ({
+          name: group.name,
+          skills: group.keywords,
+        })),
+    );
   });
 });

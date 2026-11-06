@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import matter from 'gray-matter';
+import { parseFrontmatter } from './frontmatter.mjs';
 
 import { validatePostFrontmatterData } from './post-frontmatter.mjs';
 
@@ -22,15 +22,9 @@ export interface PostFrontmatter {
   imageAlt?: string;
 }
 
-export interface Post {
+export interface Post extends PostFrontmatter {
   slug: string;
-  title: string;
-  date: string;
-  description: string;
   content: string;
-  draft?: boolean;
-  image?: string;
-  imageAlt?: string;
 }
 
 const postsDirectory = path.join(process.cwd(), 'content/writing');
@@ -39,9 +33,8 @@ const postsDirectory = path.join(process.cwd(), 'content/writing');
  * Drafts are visible while running `next dev` and never anywhere else.
  *
  * Every reader of a post — static params, lookup, metadata, RSS, sitemap, and
- * the index — must go through this. Filtering in the list helpers alone is
- * what previously exported a full draft with `robots: index, follow`, because
- * `generateStaticParams` was reading filenames directly.
+ * the index — must go through this. Filtering in the list helpers alone would
+ * still export a draft through `generateStaticParams`.
  */
 function isPublished(post: Post): boolean {
   return !post.draft || process.env.NODE_ENV === 'development';
@@ -65,28 +58,14 @@ function readPost(slug: string): Post | null {
   }
 
   const fullPath = path.join(postsDirectory, `${slug}.md`);
-
-  if (!fs.existsSync(fullPath)) {
-    return null;
-  }
-
   const fileContents = fs.readFileSync(fullPath, 'utf8');
-  const { data, content } = matter(fileContents);
+  const { data, content } = parseFrontmatter(fileContents);
   const frontmatter = validatePostFrontmatter(
     data,
     path.relative(process.cwd(), fullPath),
   );
 
-  return {
-    slug,
-    title: frontmatter.title,
-    date: frontmatter.date,
-    description: frontmatter.description,
-    content,
-    draft: frontmatter.draft,
-    image: frontmatter.image,
-    imageAlt: frontmatter.imageAlt,
-  };
+  return { ...frontmatter, slug, content };
 }
 
 function isSafeSlug(slug: string): boolean {
@@ -96,7 +75,7 @@ function isSafeSlug(slug: string): boolean {
 /**
  * Runtime validation at the filesystem boundary.
  *
- * A TypeScript assertion on gray-matter data does not protect a static build:
+ * A TypeScript assertion on parsed YAML does not protect a static build:
  * malformed YAML otherwise becomes `undefined` metadata, an invalid sort key,
  * or a truthy string masquerading as `draft`. Keep this dependency-free and
  * fail with the source filename so editorial mistakes are easy to locate.
@@ -127,10 +106,6 @@ export function getPostSlugs(): string[] {
  * reaches the filesystem.
  */
 export function getPostBySlug(slug: string): Post | null {
-  if (!isSafeSlug(slug)) {
-    return null;
-  }
-
   return getAllPosts().find((post) => post.slug === slug) ?? null;
 }
 
@@ -162,7 +137,6 @@ export function getAllPosts(): Post[] {
 
   cachedPosts ??= readPublishedPosts();
 
-  // Copy: callers have historically sorted the array they were handed, and a
-  // shared reference would make that reorder everyone else's view.
+  // Copy: a caller sorting a shared reference would reorder everyone's view.
   return [...cachedPosts];
 }
