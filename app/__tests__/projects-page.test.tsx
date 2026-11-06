@@ -26,6 +26,7 @@ vi.mock('@/data/projects', () => ({
   },
 }));
 
+import { smartQuotes } from '@/lib/typography';
 import ProjectsPage from '../projects/page';
 
 const SHIPPED: Project[] = [
@@ -67,6 +68,39 @@ const ARCHIVE: Project[] = [
   },
 ];
 
+/**
+ * The two parts of the register, read through the mock so each test sees the
+ * fixtures `beforeEach` installed rather than whatever was there at import.
+ */
+function sections(): [name: string, group: Project[]][] {
+  return [
+    ['Selected work', state.shipped],
+    ['Archive', state.archive],
+  ];
+}
+
+/** The rows of one part of the register, in the order the page draws them. */
+function rowsIn(name: string): HTMLElement[] {
+  const section = screen.getByRole('region', { name });
+
+  return within(section)
+    .getAllByRole('listitem')
+    .map((item) => {
+      // One row per list item, and nothing else beside it.
+      expect(item.children).toHaveLength(1);
+      return item.firstElementChild as HTMLElement;
+    });
+}
+
+/** Each project in the data paired with the row the page drew for it. */
+function projectRows(): [project: Project, row: HTMLElement][] {
+  const projects = [...state.shipped, ...state.archive];
+  const rows = sections().flatMap(([name]) => rowsIn(name));
+
+  expect(rows).toHaveLength(projects.length);
+  return projects.map((project, index) => [project, rows[index]]);
+}
+
 describe('projects page', () => {
   beforeEach(() => {
     state.shipped = SHIPPED;
@@ -97,11 +131,23 @@ describe('projects page', () => {
     );
   });
 
+  /** One header for a section on every page: a heading, then its annotation. */
+  it('opens each group with the shared section header', () => {
+    render(<ProjectsPage />);
+
+    for (const [name] of sections()) {
+      const heading = screen.getByRole('heading', { level: 2, name });
+
+      expect(heading).toHaveClass('section-heading');
+      expect(heading.parentElement).toHaveClass('section-header');
+    }
+  });
+
   it('counts each group rather than stating a number', () => {
     const { container } = render(<ProjectsPage />);
-    const counts = [
-      ...container.querySelectorAll('.projects-section-count'),
-    ].map((node) => node.textContent);
+    const counts = [...container.querySelectorAll('.section-header-meta')].map(
+      (node) => node.textContent,
+    );
 
     expect(counts).toEqual([
       `${SHIPPED.length} projects`,
@@ -109,45 +155,95 @@ describe('projects page', () => {
     ]);
   });
 
-  it('leads with the newest shipped work', () => {
-    const { container } = render(<ProjectsPage />);
-    const titles = [...container.querySelectorAll('.project-entry-title')].map(
-      (node) => node.textContent?.replace('↗', ''),
+  it.each([
+    ['Selected work', SHIPPED],
+    ['Archive', ARCHIVE],
+  ] as const)('lists %s in the order the data gives', (name, group) => {
+    render(<ProjectsPage />);
+    const titles = rowsIn(name).map((row) =>
+      within(row)
+        .getByRole('heading', { level: 3 })
+        .textContent?.replace('↗', ''),
     );
 
-    expect(titles).toEqual(SHIPPED.map((project) => project.title));
+    // Compared in display form: the row sets its title with typographic
+    // quotes, which `Entry`'s own tests pin against literals.
+    expect(titles).toEqual(group.map((project) => smartQuotes(project.title)));
   });
 
   /**
-   * The register has no artwork, and inventing some would be worse than going
-   * without: only archive entries that actually have a committed screenshot
-   * may render an image.
+   * The archive used to be picture cards under a list of plain rows, so five
+   * student projects out-weighed the work above them. It is the same list and
+   * the same row now, a size step down.
    */
-  it('renders an image only where one exists', () => {
+  it('draws the archive with the same row as the work above it', () => {
     const { container } = render(<ProjectsPage />);
 
-    expect(container.querySelectorAll('.project-entry img')).toHaveLength(0);
-    expect(container.querySelectorAll('.project-card img')).toHaveLength(
-      ARCHIVE.filter((project) => project.image).length,
-    );
+    for (const [name] of sections()) {
+      const section = screen.getByRole('region', { name });
+
+      expect(within(section).getByRole('list')).toHaveClass(
+        'projects-register',
+      );
+    }
+    for (const row of rowsIn('Selected work')) {
+      expect(row).toHaveClass('project-entry');
+      expect(row).not.toHaveClass('project-entry--archive');
+    }
+    for (const row of rowsIn('Archive')) {
+      expect(row).toHaveClass('project-entry', 'project-entry--archive');
+    }
+    // The cards are gone, not restyled.
+    expect(
+      container.querySelector('[class*="project-card"], .projects-grid'),
+    ).not.toBeInTheDocument();
   });
 
-  it('never renders a card that looks clickable but is not', () => {
+  /**
+   * No artwork is invented: a row shows a thumbnail only when its entry has a
+   * committed screenshot, and then exactly that file.
+   */
+  it('renders an image only where one exists', () => {
+    render(<ProjectsPage />);
+
+    for (const [project, row] of projectRows()) {
+      const images = row.querySelectorAll('img');
+
+      expect(images, project.title).toHaveLength(project.image ? 1 : 0);
+      if (project.image) {
+        expect(images[0]).toHaveAttribute('src', project.image);
+        expect(images[0]).toHaveAttribute('alt', '');
+      }
+    }
+  });
+
+  /**
+   * An entry with nowhere to go is a plain record. It is told apart from a
+   * linked one by what is missing — the link and its arrow — and by nothing
+   * added: the "No public link" label three archive cards used to carry is
+   * not there to apologise for it.
+   */
+  it('links a row only where the project has a destination', () => {
     const { container } = render(<ProjectsPage />);
 
-    for (const card of container.querySelectorAll(
-      '.project-card, .project-entry',
-    )) {
-      const linked = card.matches('a') || card.querySelector('a') !== null;
+    for (const [project, row] of projectRows()) {
+      const arrow = row.querySelector('.project-entry-external');
 
-      expect(card.classList.contains('project-card--linked')).toBe(
-        linked && card.classList.contains('project-card'),
-      );
-      expect(
-        card.querySelector('.project-note') !== null,
-        `${card.querySelector('h3')?.textContent}: inert cards must say so`,
-      ).toBe(!linked);
+      if (project.link) {
+        expect(row.tagName, project.title).toBe('A');
+        expect(row).toHaveAttribute('href', project.link);
+        expect(row).toHaveAttribute('target', '_blank');
+        expect(row.getAttribute('aria-label')).toMatch(
+          /\(opens in a new tab\)$/,
+        );
+        expect(arrow).toHaveTextContent('↗');
+      } else {
+        expect(row.tagName, project.title).toBe('DIV');
+        expect(row.querySelector('a')).not.toBeInTheDocument();
+        expect(arrow).not.toBeInTheDocument();
+      }
     }
+    expect(container).not.toHaveTextContent(/no public link/i);
   });
 
   // An empty group is omitted rather than rendering a heading over an empty
@@ -161,9 +257,7 @@ describe('projects page', () => {
       screen.queryByRole('region', { name: 'Selected work' }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Archive' })).toBeInTheDocument();
-    expect(container.querySelectorAll('.projects-section-count')).toHaveLength(
-      1,
-    );
+    expect(container.querySelectorAll('.section-header-meta')).toHaveLength(1);
   });
 
   it('renders only the header when the register is empty', () => {

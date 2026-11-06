@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 
-import Cell from '@/components/Projects/Cell';
 import Entry from '@/components/Projects/Entry';
 import { SchemaGraph } from '@/components/Schema';
 import PageWrapper from '@/components/Template/PageWrapper';
@@ -76,14 +75,14 @@ export default function ProjectsPage() {
             className="projects-group"
             aria-labelledby="projects-selected"
           >
-            <div className="projects-group-header">
-              <h2 id="projects-selected" className="projects-section-title">
+            <div className="section-header">
+              <h2 id="projects-selected" className="section-heading">
                 Selected work
               </h2>
               {/* Counted, never typed. */}
-              <span className="projects-section-count">
+              <p className="section-header-meta">
                 {projectCountLabel(shipped.length)}
-              </span>
+              </p>
             </div>
             <ol className="projects-register">
               {shipped.map((project) => (
@@ -95,27 +94,29 @@ export default function ProjectsPage() {
           </section>
         )}
 
+        {/* The same list and the same row as the work above: the archive is
+            a quieter part of one register, not a second kind of page. */}
         {archive.length > 0 && (
           <section
             className="projects-group"
             aria-labelledby="projects-archive"
           >
-            <div className="projects-group-header">
-              <h2 id="projects-archive" className="projects-section-title">
+            <div className="section-header">
+              <h2 id="projects-archive" className="section-heading">
                 Archive
               </h2>
-              <span className="projects-section-count">
+              <p className="section-header-meta">
                 {projectCountLabel(archive.length)}
-              </span>
+              </p>
             </div>
             <p className="projects-group-note">
               Student projects, hackathons, and experiments, kept for the
               record.
             </p>
-            <ol className="projects-grid">
+            <ol className="projects-register">
               {archive.map((project) => (
                 <li key={project.title}>
-                  <Cell data={project} />
+                  <Entry data={project} />
                 </li>
               ))}
             </ol>

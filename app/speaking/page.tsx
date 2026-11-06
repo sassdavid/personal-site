@@ -51,8 +51,8 @@ export default function SpeakingPage() {
           <h1 className="page-title">{PAGE_TITLE}</h1>
           <p className="page-subtitle page-prose">
             I talk about cloud infrastructure: AWS, Kubernetes, and automating
-            the operations work around them. If you&apos;re organizing an event
-            or working on the same problems,{' '}
+            the operations work around them. If you’re organizing an event or
+            working on the same problems,{' '}
             <Link href="/contact/">get in touch</Link>.
           </p>
         </header>
@@ -61,8 +61,8 @@ export default function SpeakingPage() {
             disabled in src/data/routes.ts until then. */}
         {appearances.length > 0 && (
           <section className="projects-group" aria-labelledby="speaking-public">
-            <div className="projects-group-header">
-              <h2 id="speaking-public" className="projects-section-title">
+            <div className="section-header">
+              <h2 id="speaking-public" className="section-heading">
                 Public sessions
               </h2>
             </div>
