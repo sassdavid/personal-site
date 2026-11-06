@@ -50,10 +50,17 @@ vi.mock('@/lib/imageSize', async (importOriginal) => {
 
   return {
     ...actual,
-    readImageSize: (publicPath: string) =>
-      publicPath.startsWith('/og/writing/')
-        ? { width: card.width, height: card.height }
-        : { width: 1117, height: 812 },
+    readImageSize: (publicPath: string) => {
+      if (publicPath.startsWith('/og/writing/')) {
+        return { width: card.width, height: card.height };
+      }
+      // A draft's not-yet-committed image fails as the real reader would, so
+      // removing the draft check in `getArticleImage` fails the render below.
+      if (publicPath.includes('/absent')) {
+        return actual.readImageSize(publicPath);
+      }
+      return { width: 1117, height: 812 };
+    },
   };
 });
 
@@ -227,8 +234,10 @@ describe('writing post structured data', () => {
       [DRAFT_SLUG]: post(DRAFT_SLUG, {
         title: DRAFT_TITLE,
         draft: true,
-        // Deliberately absent from `public/`: a draft may reference an image
-        // that has not been committed yet, and the page must still render.
+        // Both images are absent from `public/`: a draft may name images that
+        // have not been committed yet, and the page must still render.
+        image: `/images/writing/${DRAFT_SLUG}/absent.png`,
+        imageAlt: 'A screenshot not yet committed',
         content: `Body copy.\n\n![Screenshot](/images/writing/${DRAFT_SLUG}/absent.png)\n`,
       }),
     };
