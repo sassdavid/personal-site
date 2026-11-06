@@ -1,12 +1,11 @@
 /**
  * The machine-readable résumé served at `/resume.json`.
  *
- * `src/data/resume/work.ts` has opened with `Conforms to
- * https://jsonresume.org/schema/` since it was written, and nothing emitted or
- * validated that. This module publishes the document the comment promises. It
- * reuses the rendered résumé's profile, work, education, skill, and tool
- * sources so those facts do not need a second maintained copy; explicit
- * mapping tests pin the places where the two representations differ.
+ * This module publishes the JSON Resume document that `src/data/resume/work.ts`
+ * says it conforms to. It reuses the rendered résumé's profile, work,
+ * education, skill, and tool sources so those facts do not need a second
+ * maintained copy; explicit mapping tests pin the places where the two
+ * representations differ.
  *
  * Deliberately a subset of the schema: sections this résumé has no data for
  * (`volunteer`, `awards`, `certificates`, `publications`, `languages`,

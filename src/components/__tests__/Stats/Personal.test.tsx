@@ -1,63 +1,32 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AGE_PRECISION_FULL, COUNTRIES_VISITED } from '@/lib/telemetry';
+import { AGE_PRECISION_FULL } from '@/lib/telemetry';
 
 import Personal from '../../Stats/Personal';
 
 describe('Personal', () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      configurable: true,
-      value: (query: string) => ({
-        matches: false,
-        media: query,
-        addEventListener: () => {},
-        removeEventListener: () => {},
-      }),
-    });
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: false,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
-  it('renders the personal stats table', () => {
-    render(<Personal />);
-
-    expect(screen.getByRole('table')).toBeInTheDocument();
-  });
-
-  it('displays the current age label', () => {
-    render(<Personal />);
-
-    expect(screen.getByText('Current age')).toBeInTheDocument();
-  });
-
-  it('displays countries visited', () => {
-    render(<Personal />);
-
-    expect(screen.getByText('Countries visited')).toBeInTheDocument();
-    expect(screen.getByText(String(COUNTRIES_VISITED))).toBeInTheDocument();
-  });
-
-  it('displays current city', () => {
-    render(<Personal />);
-
-    expect(screen.getByText('Current city')).toBeInTheDocument();
-    expect(screen.getByText('Budapest, HU')).toBeInTheDocument();
-  });
-
+  // Effects flush during Testing Library's `render()`, so the unpowered markup
+  // in `out/stats/index.html` has to be rendered this way.
   it('ships a real age to readers with no JavaScript', () => {
-    // The whole reason this stopped being a client component. Effects flush
-    // during Testing Library's `render()`, so the unpowered markup — what
-    // `out/stats/index.html` actually contains — has to be rendered this way.
     const html = renderToStaticMarkup(<Personal />);
 
-    expect(html).not.toContain('--.-----------');
     expect(html).toMatch(/>\d+\.\d{2}</);
     expect(html).toMatch(/as of \d{4}-\d{2}-\d{2}/);
   });

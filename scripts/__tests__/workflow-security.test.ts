@@ -6,7 +6,6 @@ import { parseFrontmatter } from '../../src/lib/frontmatter.mjs';
 interface Step {
   uses?: string;
   run?: string;
-  env?: Record<string, string>;
   with?: Record<string, unknown>;
 }
 
@@ -50,23 +49,20 @@ it('finds the workflows it is meant to check', () => {
   expect(workflows.map(({ name }) => name)).toContain('node.js.yml');
 });
 
+const stepsOf = (workflow: Workflow) =>
+  Object.values(workflow.jobs).flatMap((job) => job.steps ?? []);
+
 describe.each(workflows)('$name credential boundaries', ({ workflow }) => {
   it('pins every external action to a full commit SHA', () => {
-    for (const job of Object.values(workflow.jobs)) {
-      for (const step of job.steps ?? []) {
-        if (step.uses) {
-          expect(step.uses).toMatch(/^[\w./-]+@[a-f0-9]{40}$/);
-        }
-      }
+    for (const { uses } of stepsOf(workflow)) {
+      if (uses) expect(uses).toMatch(/^[\w./-]+@[a-f0-9]{40}$/);
     }
   });
 
   it('removes checkout authentication before repository code executes', () => {
-    for (const job of Object.values(workflow.jobs)) {
-      for (const step of job.steps ?? []) {
-        if (step.uses?.startsWith('actions/checkout@')) {
-          expect(step.with?.['persist-credentials']).toBe(false);
-        }
+    for (const step of stepsOf(workflow)) {
+      if (step.uses?.startsWith('actions/checkout@')) {
+        expect(step.with?.['persist-credentials']).toBe(false);
       }
     }
   });
