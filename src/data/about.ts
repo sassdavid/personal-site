@@ -37,7 +37,7 @@ Hungarian is my first language, and most of what I cook comes from that side of 
 weekends. When I need to leave the city, it is usually the Mátra hills to the north, Lake Balaton in the summer, or Tokaj in the autumn, when the
 vineyards are worth the drive on their own.
 
-# I Like
+# I like
 
 - Lifting at the gym, three or four times a week.
 - Running, mostly to have an excuse to learn a new route.
@@ -46,7 +46,7 @@ vineyards are worth the drive on their own.
 - Baking. Sourdough first, then everything else.
 - Cooking for family and friends, ideally with them in the kitchen.
 
-# Travel / Geography
+# Travel / geography
 
 - Thirteen countries so far, Hungary included. Only two of them are outside Europe, which I would like to fix.
 - In 2016, I visited Austria.
@@ -60,7 +60,7 @@ vineyards are worth the drive on their own.
 - In 2025, the Maldives in February, Athens in July, and Mád in the Tokaj wine region in October.
 - In 2026, the Dolomites, out of Ortisei. The Seychelles is the plan for later this year.
 
-# Fun Facts
+# Fun facts
 
 - I have done [Advent of Code](https://adventofcode.com/) every December since the first one in 2015. Some years I finish; every year I learn
   something about how I actually think under time pressure.
@@ -70,7 +70,7 @@ vineyards are worth the drive on their own.
   and I am still adjusting it.
 - In 2023, I jumped out of a plane on a tandem skydive. It was a great feeling, and I want to feel it again.
 
-# I Dream Of
+# I dream of
 
 - Building infrastructure a colleague can pick up and run without me in the room.
 - Getting a little better each year at the parts of this job that are not code.

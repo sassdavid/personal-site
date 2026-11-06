@@ -83,7 +83,7 @@ describe('the about page log', () => {
   // Fork: upstream also pins its "Some History" section here; this fork's
   // about page has no history log, only travel.
   it('leaves undated travel entries empty and derives no travel ages', () => {
-    const markers = sectionEntries('Travel / Geography').map(extractLogMarker);
+    const markers = sectionEntries('Travel / geography').map(extractLogMarker);
     const dated = markers.filter((marker) => marker !== null);
 
     expect(markers.length - dated.length).toBe(1);
