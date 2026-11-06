@@ -47,6 +47,12 @@ export const allRoutes: Route[] = [
     path: '/writing',
   },
   {
+    label: 'Speaking',
+    // No entries in src/data/speaking.ts yet.
+    enabled: false,
+    path: '/speaking',
+  },
+  {
     label: 'Stats',
     path: '/stats',
   },

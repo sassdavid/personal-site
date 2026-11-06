@@ -50,6 +50,7 @@ describe('routes', () => {
     expect(disabled.map((route) => route.path)).toEqual([
       '/projects',
       '/writing',
+      '/speaking',
     ]);
 
     const rendered = routes.map((route) => route.path);

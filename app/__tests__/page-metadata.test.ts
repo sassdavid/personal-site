@@ -58,6 +58,7 @@ import { metadata as contactMetadata } from '../contact/page';
 import { metadata as notFoundMetadata } from '../not-found';
 import { metadata as projectsMetadata } from '../projects/page';
 import { metadata as resumeMetadata } from '../resume/page';
+import { metadata as speakingMetadata } from '../speaking/page';
 import { metadata as statsMetadata } from '../stats/page';
 import { generateMetadata as generatePostMetadata } from '../writing/[slug]/page';
 import { metadata as writingMetadata } from '../writing/page';
@@ -72,6 +73,7 @@ describe('page metadata', () => {
     ['contact', contactMetadata, `${SITE_URL}/contact/`],
     ['archive', projectsMetadata, `${SITE_URL}/projects/`],
     ['resume', resumeMetadata, `${SITE_URL}/resume/`],
+    ['speaking', speakingMetadata, `${SITE_URL}/speaking/`],
     ['stats', statsMetadata, `${SITE_URL}/stats/`],
     ['writing', writingMetadata, `${SITE_URL}/writing/`],
   ])('sets page-specific open graph metadata for %s', (_, metadata, url) => {
@@ -87,6 +89,7 @@ describe('page metadata', () => {
     ['contact', contactMetadata],
     ['archive', projectsMetadata],
     ['resume', resumeMetadata],
+    ['speaking', speakingMetadata],
     ['stats', statsMetadata],
     ['writing', writingMetadata],
   ])('sets page-specific twitter metadata for %s', (_, metadata) => {
@@ -104,6 +107,7 @@ describe('page metadata', () => {
     ['contact', contactMetadata],
     ['archive', projectsMetadata],
     ['resume', resumeMetadata],
+    ['speaking', speakingMetadata],
     ['stats', statsMetadata],
     ['writing', writingMetadata],
     ['404', notFoundMetadata],
@@ -125,6 +129,7 @@ describe('page metadata', () => {
     ['contact', contactMetadata, `${SITE_URL}/contact/`],
     ['archive', projectsMetadata, `${SITE_URL}/projects/`],
     ['resume', resumeMetadata, `${SITE_URL}/resume/`],
+    ['speaking', speakingMetadata, `${SITE_URL}/speaking/`],
     ['stats', statsMetadata, `${SITE_URL}/stats/`],
     ['writing', writingMetadata, `${SITE_URL}/writing/`],
   ])('declares a canonical url for %s', (_, metadata, url) => {
