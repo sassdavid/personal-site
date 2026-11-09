@@ -5,10 +5,9 @@
 /* Every section opens with the shared header in components/section-header.css,
    and the gap on `.resume-content` is the only space between sections. */
 
-/* A sentence that belongs to a section rather than to an entry in it: the key
-   under Skills, the line under References. Supporting copy, so the reading
-   face on a bounded measure, a tone back from the entries. The references
-   line was centred on a left-aligned page, in utility classes of its own. */
+/* A sentence that belongs to a section rather than to an entry in it, such as
+   the key under Skills. Supporting copy, so the reading face on a bounded
+   measure, a tone back from the entries. */
 .resume-note {
   max-width: 53ch;
   margin: 0;
@@ -25,82 +24,54 @@
   }
 }
 
-/* Links in running text look like links. The citations inside a role summary
-   were ink over a faint line, which read as emphasis. `background-image` is
-   restated under the pointer because the dark theme's `p a:hover` would
-   otherwise out-specify the first rule and draw a second underline. */
-.resume-content .summary a,
-.resume-content .resume-note a {
+/* Citations in a role summary are links in running text, and look like it. */
+.resume-content .summary a {
   color: var(--color-accent);
   text-decoration: underline;
   text-decoration-color: var(--color-accent-underline);
   text-underline-offset: 2px;
-  background-image: none;
 }
 
-.resume-content .summary a:hover,
-.resume-content .resume-note a:hover {
+.resume-content .summary a:hover {
   color: var(--color-accent-hover);
   text-decoration-color: var(--color-accent);
-  background-image: none;
-}
-
-/* The reading face has no arrow. The system UI face has it, and setting every
-   arrow on the site in that one face is what lets them match. */
-.resume-note-arrow {
-  font-family: system-ui, sans-serif;
 }
 
 /* Resume page specific */
-.resume-page {
-  max-width: var(--measure-page);
-  margin: 0 auto;
-}
-
 .resume-header {
-  text-align: left;
   margin-bottom: 2rem;
 }
 
-/* The title keeps its own bottom margin, so the row leaves the space below the
-   heading exactly where it was and only parks the JSON chip on its baseline. */
+/* The title and the chips keep the same bottom margin, so the summary sits
+   where it did whether the chips share the title's baseline or wrap under it. */
 .resume-header-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  column-gap: 1rem;
 }
 
-/* Mono chip linking to the machine-readable résumé. Deliberately the same
-   affordance as `.writing-rss-link`: a label-sized control that opts out of the
-   accent underline `base/links.css` paints on prose links. `--text-ui`, not
-   `--text-2xs`, because it is interactive rather than annotation. */
-.resume-json-link {
-  font-family: var(--font-mono);
-  font-size: var(--text-ui);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-fg-light);
-  text-decoration: none;
-  background-image: none;
-  padding: 0.35rem 0.6rem;
-  border: var(--rule) solid var(--color-control-border);
-  border-radius: var(--radius-sm);
-  transition:
-    color var(--duration-instant) var(--ease-out),
-    border-color var(--duration-instant) var(--ease-out);
+.resume-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.resume-json-link:hover {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
+.resume-print-name {
+  display: none;
+}
+
+/* Printing takes a script, so the button waits for the bootstrap's mark, as
+   the theme toggle does. */
+:root:not([data-theme-choice]) .resume-print-button {
+  display: none;
 }
 
 .resume-title {
   font-family: var(--font-display);
   font-size: var(--text-3xl);
-  font-weight: var(--font-weight-black);
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-display);
   margin-bottom: 1.25rem;
   color: var(--color-fg-bold);
@@ -151,10 +122,9 @@
 
 /* The focus ring is drawn inside the target. The default one sits outside it,
    where the scrolling row clips it and the header covers what is left. The
-   colour change eases through the transition every link already has. About's
-   link takes two classes to stay ahead of `.about-content a` and its hover. */
+   colour change eases through the transition every link already has. */
 .resume-nav-link,
-.about-content .about-section-nav-link {
+.about-section-nav-link {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -164,7 +134,6 @@
   font-size: var(--text-ui);
   font-weight: var(--font-weight-medium);
   color: var(--color-fg-light);
-  background-image: none;
   text-decoration: none;
   white-space: nowrap;
   outline-offset: -4px;
@@ -172,13 +141,13 @@
 
 .resume-nav-link:hover,
 .resume-nav-link:focus-visible,
-.about-content .about-section-nav-link:hover,
-.about-content .about-section-nav-link:focus-visible {
+.about-section-nav-link:hover,
+.about-section-nav-link:focus-visible {
   color: var(--color-fg-bold);
 }
 
 .resume-nav-link.active,
-.about-content .about-section-nav-link.active {
+.about-section-nav-link.active {
   color: var(--color-accent);
 }
 

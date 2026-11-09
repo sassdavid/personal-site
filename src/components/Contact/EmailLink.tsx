@@ -104,13 +104,6 @@ export default function EmailLink() {
     isActive: true,
   });
 
-  // If user prefers reduced motion, show static email immediately
-  useEffect(() => {
-    if (reducedMotion) {
-      dispatch({ type: 'PAUSE' });
-    }
-  }, [reducedMotion]);
-
   const animating = state.isActive && !reducedMotion;
 
   useEffect(() => {
@@ -125,11 +118,7 @@ export default function EmailLink() {
   const displayMessage = reducedMotion ? CONTACT_LOCAL_PART : state.message;
 
   const handlePause = () => dispatch({ type: 'PAUSE' });
-  const handleResume = () => {
-    if (!reducedMotion) {
-      dispatch({ type: 'RESUME' });
-    }
-  };
+  const handleResume = () => dispatch({ type: 'RESUME' });
 
   return (
     <div
@@ -148,7 +137,7 @@ export default function EmailLink() {
       >
         <span className="sr-only">Email {CONTACT_ADDRESS}</span>
         <span className="contact-email-prefix" aria-hidden="true">
-          {displayMessage}
+          <span dir="ltr">{displayMessage}</span>
         </span>
         <span className="contact-email-domain" aria-hidden="true">
           @{CONTACT_DOMAIN}

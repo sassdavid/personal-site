@@ -1,6 +1,6 @@
 # David Sass-Kovacs — Personal Site
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/sassdavid/personal-site/node.js.yml?branch=main)](https://github.com/sassdavid/personal-site/actions)
+[![CI status](https://github.com/sassdavid/personal-site/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/sassdavid/personal-site/actions/workflows/node.js.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/sassdavid/personal-site?style=social)](https://github.com/sassdavid/personal-site/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sassdavid/personal-site?style=social)](https://github.com/sassdavid/personal-site/network/members)
@@ -103,6 +103,7 @@ npm run measure-export  # Weigh the export against scripts/budget.json
 npm run og              # Regenerate the site and per-post share cards
 npm run og:check        # Verify the card ledger and a fresh byte-for-byte render
 npm run og:check:ledger # Verify the ledger alone, with no network access
+npm run icons           # Regenerate the favicon, app icon, and touch icon
 ```
 
 CI checks formatting, linting, types, the share cards, tests, the production

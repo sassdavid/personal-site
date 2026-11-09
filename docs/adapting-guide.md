@@ -84,9 +84,9 @@ modify DNS. Report the exact external steps that remain.
 Read AGENTS.md and work on a topic branch. Do not commit, push, merge, or change
 account settings unless I explicitly authorize it.
 Add my [PLATFORM] profile at [URL]. Follow the existing src/data/contact.ts
-pattern and reuse the installed Font Awesome packages, bumping those packages
-only in lockstep. Update affected tests, run the relevant checks, and show me
-the diff.
+pattern, copying the icon's viewBox and path from a freely licensed set and
+crediting it in the attribution comment. Update affected tests, run the
+relevant checks, and show me the diff.
 ```
 
 ### Add Google Analytics
@@ -120,6 +120,7 @@ Identity data starts in shared files, but some text and links are hard-coded.
 | RSS title and description                                      | `app/feed.xml/route.ts`                                             |
 | Repository statistics and GitHub API URL                       | `SOURCE_REPOSITORY` in `src/lib/telemetry.ts`                       |
 | Countries map                                                  | `src/components/Stats/Personal.tsx`                                 |
+| Vulnerability reporting contact                                | `SECURITY.md`                                                       |
 
 Page titles and descriptions also contain personal copy in `app/layout.tsx` and
 the `page.tsx` files under `app/`. Structured data is assembled in

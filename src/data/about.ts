@@ -1,3 +1,5 @@
+import profile from './profile.json';
+
 export const aboutMarkdown = `# Intro
 
 I am a Senior DevOps Engineer at [Loxon](https://loxon.eu/), where I look after the cloud infrastructure and delivery pipelines behind our
@@ -48,7 +50,7 @@ vineyards are worth the drive on their own.
 
 # Travel / geography
 
-- Fourteen countries so far, Hungary included. Only three of them are outside Europe, which I would like to fix.
+- I have been to ${profile.countriesVisited} countries so far, Hungary included. Only three of them are outside Europe, which I would like to fix.
 - In 2016, I visited Austria.
 - In 2018, I travelled to Poland and to Sardinia.
 - In 2019, I saw Mallorca in the spring and Rome in the autumn.

@@ -3,7 +3,6 @@
     "accent": "#36559a",
     "onAccent": "#ffffff",
     "backgroundLight": "#f6f3ed",
-    "backgroundDark": "#222329",
     "monogram": "DS",
     "name": "David Sass-Kovacs",
     "font": {
@@ -32,7 +31,7 @@
       }
     ]
   },
-  "generatorDigest": "400a358164b0b1cb584514cc0e980a13383b1874c8148cae4d3eefec2462d959",
+  "generatorDigest": "169984de259e7bd99a1f2fa645c70e6e73a3a51ecb20a2489ed46cbfc7d5069f",
   "files": {
     "app/favicon.ico": "e405d523836b75d60746229b17fd762559b8d8cd10ad70c0ecf70f2b7cca1d85",
     "app/icon.png": "27ba395e1b943efcc9fd3c5a99f740e855243630b94b4e7af110fa72992ef0c9",

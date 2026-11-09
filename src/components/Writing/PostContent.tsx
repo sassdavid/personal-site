@@ -19,11 +19,8 @@ import {
 } from 'react';
 
 import { planMarkdownHeadingAnchors } from '@/lib/anchors';
-
-interface ImageSize {
-  width: number;
-  height: number;
-}
+import type { ImageSize } from '@/lib/imageSize';
+import { isRootLocalImage, smartQuotesRule } from '@/lib/markdown';
 
 interface PostContentProps {
   content: string;
@@ -96,10 +93,6 @@ function headingOverrides(aliases: ReadonlyMap<string, string>) {
   );
 
   return Object.fromEntries(entries);
-}
-
-function isRootLocalImage(src: string): boolean {
-  return src.startsWith('/') && !src.startsWith('//');
 }
 
 /**
@@ -338,6 +331,8 @@ export default function PostContent({
         // One unique slug scheme for the whole site, plus safe aliases for the
         // published ids that differ from it.
         slugify: headingPlan.slugify,
+        // Typographic quotes in text a reader sees; code is a different node.
+        renderRule: smartQuotesRule,
         overrides: {
           ...headingOverrides(headingPlan.aliases),
           p: {

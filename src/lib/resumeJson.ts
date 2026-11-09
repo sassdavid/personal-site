@@ -9,15 +9,18 @@
  *
  * Deliberately a subset of the schema: sections this résumé has no data for
  * (`volunteer`, `awards`, `certificates`, `publications`, `languages`,
- * `interests`, `projects`, `references`) are omitted rather than stubbed. The
- * printed page says references are available on request, which is not a
- * `references` entry — the schema wants a name and a quote.
+ * `interests`, `projects`, `references`) are omitted rather than stubbed.
  */
 
 import contact from '@/data/contact';
 import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
-import { categories, skills } from '@/data/resume/skills';
+import {
+  type Category,
+  categories,
+  type Skill,
+  skills,
+} from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
 import { sortPositions } from '@/lib/career';
@@ -88,7 +91,7 @@ interface ResumeSkill {
   keywords: string[];
 }
 
-export interface JsonResume {
+interface JsonResume {
   $schema: string;
   basics: ResumeBasics;
   work: ResumeWork[];
@@ -99,65 +102,25 @@ export interface JsonResume {
   };
 }
 
-const NAMED_ENTITIES: Record<string, string> = {
-  amp: '&',
-  apos: "'",
-  gt: '>',
-  lt: '<',
-  nbsp: ' ',
-  quot: '"',
-};
-
-/** Unicode scalar values exclude surrogates and stop at U+10FFFF. */
-function isUnicodeScalarValue(codePoint: number): boolean {
-  return (
-    Number.isInteger(codePoint) &&
-    codePoint >= 0 &&
-    codePoint <= 0x10ffff &&
-    (codePoint < 0xd800 || codePoint > 0xdfff)
-  );
-}
-
-function decodeEntity(entity: string): string {
-  const literal = `&${entity};`;
-  const numeric = entity.match(/^#(x)?([0-9a-f]+)$/i);
-  if (numeric) {
-    const codePoint = Number.parseInt(numeric[2], numeric[1] ? 16 : 10);
-    return isUnicodeScalarValue(codePoint)
-      ? String.fromCodePoint(codePoint)
-      : literal;
-  }
-  return NAMED_ENTITIES[entity.toLowerCase()] ?? literal;
-}
-
 /**
  * Reduces résumé prose to the plain text JSON Resume expects.
  *
  * The `summary` strings in `src/data/resume/work.ts` are Markdown with inline
- * HTML — `JobSummary` renders them through `markdown-to-jsx`, and three of them
- * carry real `<a href>` anchors. The rendered page depends on that markup, so
- * this strips it for the artifact rather than flattening the source data and
- * costing the page its links. Anchor text survives, but inline destinations do
- * not: JSON Resume summaries are plain strings. Each employer's own URL remains
- * available separately on the work entry.
+ * `<a href>` anchors, which `JobSummary` renders through `markdown-to-jsx`.
+ * The rendered page depends on that markup, so this strips it for the artifact
+ * rather than flattening the source data and costing the page its links.
+ * Anchor text survives, but inline destinations do not: JSON Resume summaries
+ * are plain strings. Each employer's own URL remains available separately on
+ * the work entry.
  *
- * Underscore emphasis is intentionally left alone: `_x_` would eat the
- * underscores out of an identifier like `snake_case_name`.
+ * Only the anchor tags are stripped, so technical prose such as comparisons
+ * and `Map<K, V>` survives; any other markup stays visible to the export
+ * verifier.
  */
 export function toPlainText(value: string): string {
   return (
     value
-      .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1') // [text](url)
-      // The maintained source contains anchors. Strip only those known tags so
-      // technical prose such as comparisons and `Map<K, V>` survives; any new
-      // HTML construct stays visible to the export verifier until supported.
       .replace(/<\/?a(?:\s[^>]*)?>/gi, '')
-      .replace(/\*\*([^*]+)\*\*/g, '$1') // **strong**
-      .replace(/\*([^*]+)\*/g, '$1') // *emphasis*
-      .replace(/`([^`]+)`/g, '$1') // `code`
-      .replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (_match, entity: string) =>
-        decodeEntity(entity),
-      )
       // Template literals in the data files wrap across lines and indent.
       .replace(/\s+/g, ' ')
       .trim()
@@ -245,23 +208,32 @@ function buildEducation(): ResumeEducation[] {
 export const TOOLS_SKILL_NAME = 'Tools';
 
 /**
- * One entry per category, keywords ordered by competency. The 1–5 competency
- * scale has no counterpart in the schema's free-text `level`, so it shapes the
- * ordering rather than being translated into a word the data never claimed.
- *
- * The résumé's Tools section carries no category or competency, so it becomes
- * one more skill entry, keeping the order the data file gives it.
+ * One group per category, its skills ordered by competency: the order the
+ * résumé page and this document share. The 1–5 competency scale has no
+ * counterpart in the schema's free-text `level`, so it shapes the ordering
+ * rather than being translated into a word the data never claimed.
  */
-function buildSkills(): ResumeSkill[] {
-  const byCategory = categories.map((category) => ({
+export function groupSkills(all: Skill[], categoryList: Category[]) {
+  return categoryList.map((category) => ({
     name: category.name,
-    keywords: skills
+    skills: all
       .filter((skill) => skill.category.includes(category.name))
       .sort(
         (a, b) =>
           b.competency - a.competency || a.title.localeCompare(b.title, 'en'),
-      )
-      .map((skill) => skill.title),
+      ),
+  }));
+}
+
+/**
+ * The résumé's Tools section carries no category or competency, so it becomes
+ * one more skill entry after the category groups, keeping the order the data
+ * file gives it.
+ */
+function buildSkills(): ResumeSkill[] {
+  const byCategory = groupSkills(skills, categories).map((group) => ({
+    name: group.name,
+    keywords: group.skills.map((skill) => skill.title),
   }));
 
   return tools.length > 0

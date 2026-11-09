@@ -17,7 +17,13 @@ import {
   HOME_URL,
   webPageNode,
 } from '@/lib/schema';
-import { AUTHOR_NAME, formatDate, SITE_URL } from '@/lib/utils';
+import { smartQuotes } from '@/lib/typography';
+import {
+  AUTHOR_NAME,
+  canonicalPostUrl,
+  formatDate,
+  SITE_URL,
+} from '@/lib/utils';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -95,7 +101,7 @@ export async function generateMetadata({
     };
   }
 
-  const url = `${SITE_URL}/writing/${post.slug}/`;
+  const url = canonicalPostUrl(post.slug);
   const image = getShareImage(post);
 
   // Built once and spread into both cards, so the two can never disagree about
@@ -162,7 +168,7 @@ export default async function PostPage({ params }: PageProps) {
     notFound();
   }
 
-  const postUrl = `${SITE_URL}/writing/${post.slug}/`;
+  const postUrl = canonicalPostUrl(post.slug);
   const writingUrl = `${SITE_URL}/writing/`;
   const allowMissingLocalImages = post.draft === true;
   const imageSizes = readPostImageSizes(post.content, {
@@ -194,8 +200,8 @@ export default async function PostPage({ params }: PageProps) {
           <time className="post-date" dateTime={post.date}>
             {formatDate(post.date)}
           </time>
-          <h1 className="post-title">{post.title}</h1>
-          <p className="post-description">{post.description}</p>
+          <h1 className="post-title">{smartQuotes(post.title)}</h1>
+          <p className="post-description">{smartQuotes(post.description)}</p>
         </header>
         <div className="post-content prose">
           <PostContent

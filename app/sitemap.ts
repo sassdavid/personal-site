@@ -1,82 +1,46 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 
-import { allRoutes } from '@/data/routes';
+import routes from '@/data/routes';
+import { isDisabledPath } from '@/lib/metadata';
 import { getAllPosts } from '@/lib/posts';
-import { SITE_URL } from '@/lib/utils';
+import { canonicalPostUrl, SITE_URL } from '@/lib/utils';
 
 export const dynamic = 'force-static';
 
-/**
- * URL prefixes belonging to routes disabled in `src/data/routes.ts`.
- *
- * A disabled section is linked from nowhere, so advertising it here would
- * invite search engines to index a page with no content on it. Matching by
- * prefix also drops that section's children — posts under a disabled
- * `/writing/`, say — rather than leaving them orphaned in the sitemap.
- */
-function disabledPrefixes(): string[] {
-  return allRoutes
-    .filter((route) => route.enabled === false)
-    .map((route) => `${SITE_URL}${route.path}/`);
-}
+type CrawlHints = Pick<
+  MetadataRoute.Sitemap[number],
+  'changeFrequency' | 'priority'
+>;
+
+/** A page is monthly at 0.8 unless it is listed here. */
+const CRAWL_HINTS: Record<string, CrawlHints> = {
+  '/': { priority: 1 },
+  '/writing': { changeFrequency: 'weekly' },
+  '/speaking': { priority: 0.7 },
+  '/stats': { changeFrequency: 'weekly', priority: 0.5 },
+  '/contact': { changeFrequency: 'yearly', priority: 0.5 },
+};
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // Generate entries for blog posts
-  const posts = getAllPosts();
-  const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${SITE_URL}/writing/${post.slug}/`,
-    lastModified: new Date(post.date),
+  // Fork: the default `routes` export already leaves out sections disabled in
+  // `src/data/routes.ts`, and their children (posts under a disabled
+  // `/writing/`) are dropped with them: a disabled section is linked from
+  // nowhere and emits `noindex`, so advertising it here would contradict both.
+  const pages: MetadataRoute.Sitemap = routes.map(({ path }) => ({
+    // `trailingSlash: true` exports every page as a directory.
+    url: `${SITE_URL}${path.endsWith('/') ? path : `${path}/`}`,
     changeFrequency: 'monthly',
-    priority: 0.6,
+    priority: 0.8,
+    ...CRAWL_HINTS[path],
   }));
+  const posts: MetadataRoute.Sitemap = getAllPosts()
+    .filter((post) => !isDisabledPath(`/writing/${post.slug}`))
+    .map((post) => ({
+      url: canonicalPostUrl(post.slug),
+      lastModified: new Date(post.date),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    }));
 
-  const excluded = disabledPrefixes();
-
-  const entries: MetadataRoute.Sitemap = [
-    {
-      url: `${SITE_URL}/`,
-      changeFrequency: 'monthly',
-      priority: 1,
-    },
-    {
-      url: `${SITE_URL}/about/`,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/resume/`,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/projects/`,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/writing/`,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/speaking/`,
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${SITE_URL}/stats/`,
-      changeFrequency: 'weekly',
-      priority: 0.5,
-    },
-    {
-      url: `${SITE_URL}/contact/`,
-      changeFrequency: 'yearly',
-      priority: 0.5,
-    },
-    ...postEntries,
-  ];
-
-  return entries.filter(
-    (entry) => !excluded.some((prefix) => entry.url.startsWith(prefix)),
-  );
+  return [...pages, ...posts];
 }

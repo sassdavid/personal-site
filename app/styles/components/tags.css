@@ -82,10 +82,6 @@
 
 /* Only the linked ones respond: the hover is what distinguishes a tool with
    somewhere to go from one that is just a name. */
-a.tool-tag {
-  background-image: none;
-}
-
 a.tool-tag:hover,
 a.tool-tag:focus-visible {
   border-color: var(--color-accent);

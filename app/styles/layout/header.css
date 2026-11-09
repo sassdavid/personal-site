@@ -12,12 +12,10 @@
   padding: 0.75rem 1.25rem;
   background: var(--color-accent-fill);
   color: var(--color-on-accent);
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: var(--text-ui);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
   text-decoration: none;
-  background-image: none;
   border-radius: var(--radius-sm);
   transform: translateY(-200%);
   transition: transform var(--duration-fast) var(--ease-out);
@@ -48,7 +46,7 @@
   justify-content: space-between;
   left: 0;
   line-height: 1;
-  padding: 0 max(1.5rem, calc((100% - var(--measure-wide)) / 2 + 2rem));
+  padding: 0 max(2rem, calc((100% - var(--measure-page)) / 2 + 2rem));
   position: fixed;
   top: 0;
   width: 100%;
@@ -61,7 +59,7 @@
   .site-header {
     height: var(--header-height-mobile);
     line-height: var(--header-height-mobile);
-    padding: 0 1rem;
+    padding: 0 1.5rem;
   }
 }
 
@@ -87,7 +85,6 @@
 
 /* Slide menu panel */
 .slide-menu {
-  -webkit-overflow-scrolling: touch;
   background-color: var(--color-bg-alt);
   border-left: var(--rule) solid var(--color-fg-bold);
   bottom: 0;
@@ -105,12 +102,6 @@
 
 .slide-menu--open {
   transform: translateX(0);
-}
-
-.slide-menu ul {
-  color: var(--color-fg-bold);
-  margin-top: 0;
-  padding: 0;
 }
 
 /* Hamburger container */
@@ -153,7 +144,6 @@
   align-items: center;
   background: transparent;
   border: 0;
-  box-shadow: none;
   cursor: pointer;
   display: flex;
   min-width: 44px;
@@ -163,7 +153,6 @@
 }
 
 .hamburger-button:hover {
-  box-shadow: none;
   opacity: 0.5;
 }
 
@@ -269,16 +258,11 @@
   border-top: var(--rule) solid var(--color-border);
 }
 
-/* Base `li a` paints an accent underline across the full width.
-   The desktop nav opts out the same way; without this the menu is
-   the only place on the site showing that rule. */
 .hamburger-ul li a {
   display: block;
   text-decoration: none;
-  background-image: none;
   padding: 0.9rem 0;
   border-radius: 0;
-  transition: background-color var(--duration-fast) var(--ease-out);
 }
 
 /* `outline: none` here removed the only keyboard affordance inside a
@@ -288,19 +272,12 @@
   outline-offset: -2px;
 }
 
-.hamburger-ul li a:hover {
-  background-color: transparent;
-}
-
 /* Where you are, in the mobile menu. */
 .hamburger-ul li a.active span {
   color: var(--color-accent);
 }
 
 .hamburger-ul li a span {
-  margin: 0;
-  padding: 0;
-  border: none;
   font-family: var(--font-display);
   font-size: var(--text-ui);
   font-weight: var(--font-weight-medium);
@@ -314,8 +291,8 @@
   color: var(--color-fg-bold);
 }
 
-/* The index entry is the person's name, not a section label,
-   so it is set in display type and sits above the rule. */
+/* The index entry is the person's name, not a section label, so it is set
+   like the header's wordmark and sits above the rule. */
 .hamburger-ul li:has(.index-li) {
   border-bottom-color: var(--color-fg-bold);
 }
@@ -323,17 +300,7 @@
 .hamburger-ul li a .index-li {
   font-family: var(--font-display);
   font-size: var(--text-md);
-  font-weight: var(--font-weight-black);
-  letter-spacing: var(--tracking-display);
-  text-transform: none;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-fg-bold);
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .slide-menu-overlay,
-  .slide-menu,
-  .hamburger-icon span {
-    transition: none;
-  }
 }

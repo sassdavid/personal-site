@@ -28,12 +28,6 @@
   padding: 2rem 1.5rem;
 }
 
-/* The hero grid needs room for a full-measure readout strip
-   alongside its portrait. */
-.page-main--hero {
-  max-width: var(--measure-wide);
-}
-
 @media screen and (min-width: 736px) {
   .page-main {
     padding: 3rem 2rem;
@@ -43,7 +37,8 @@
 /* Page header styles */
 .page-title {
   font-size: var(--text-3xl);
-  font-weight: var(--font-weight-black);
+  /* The name's weight on the homepage, as every other page title. */
+  font-weight: var(--font-weight-medium);
   margin-bottom: 0.5rem;
 }
 
