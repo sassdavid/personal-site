@@ -35,7 +35,7 @@ export default function Hero() {
 
           <div className="hero-cta">
             <Link href="/about" className="button">
-              About me <span aria-hidden="true">↗</span>
+              About me
             </Link>
             <Link href="/resume" className="hero-resume-link">
               View resume
