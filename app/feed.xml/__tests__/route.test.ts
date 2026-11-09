@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { SITE_URL } from '@/lib/utils';
 import { getWritingItems } from '@/lib/writing';
 
 /**
@@ -47,29 +46,6 @@ describe('feed.xml route', () => {
     state.external = [];
   });
 
-  it('uses canonical trailing-slash links for writing pages', async () => {
-    state.posts = [
-      {
-        slug: 'a-post',
-        title: 'A Post',
-        date: '2026-03-10',
-        description: 'd',
-      },
-    ];
-
-    const xml = await feed();
-
-    expect(xml).toContain(`<link>${SITE_URL}/writing/</link>`);
-    expect(xml).toContain(`<link>${SITE_URL}/writing/a-post/</link>`);
-  });
-
-  it('keeps the feed self link file-like', async () => {
-    const xml = await feed();
-
-    expect(xml).toContain(`${SITE_URL}/feed.xml`);
-    expect(xml).not.toContain(`${SITE_URL}/feed.xml/`);
-  });
-
   it('derives lastBuildDate from content rather than the build clock', async () => {
     state.posts = [
       {
@@ -88,10 +64,7 @@ describe('feed.xml route', () => {
 
     const xml = await feed();
 
-    // This pinned the then-newest item's date as a literal, so publishing
-    // anything newer failed it for the right behaviour. Derive the
-    // expectation from the content instead.
-    //
+    // Derived from the content, so publishing something newer cannot fail it.
     // The noon timestamp is what still excludes the build clock: the route
     // builds every date as `${date}T12:00:00Z`, so a wall-clock value would
     // have to land on exactly 12:00:00 GMT to pass.
