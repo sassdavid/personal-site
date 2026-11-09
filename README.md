@@ -1,6 +1,6 @@
 # David Sass-Kovacs — Personal Site
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/sassdavid/personal-site/node.js.yml?branch=main)](https://github.com/sassdavid/personal-site/actions)
+[![CI status](https://github.com/sassdavid/personal-site/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/sassdavid/personal-site/actions/workflows/node.js.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/sassdavid/personal-site?style=social)](https://github.com/sassdavid/personal-site/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sassdavid/personal-site?style=social)](https://github.com/sassdavid/personal-site/network/members)
