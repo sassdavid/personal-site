@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import Education from '@/components/Resume/Education';
 import Experience from '@/components/Resume/Experience';
 import PrintButton from '@/components/Resume/PrintButton';
-import References from '@/components/Resume/References';
 import ResumeNav from '@/components/Resume/ResumeNav';
 import Skills from '@/components/Resume/Skills';
 import Tools from '@/components/Resume/Tools';
@@ -126,10 +125,6 @@ export default function ResumePage() {
 
           <section id="tools" className="resume-section">
             <Tools data={tools} />
-          </section>
-
-          <section id="references" className="resume-section">
-            <References />
           </section>
         </div>
       </section>

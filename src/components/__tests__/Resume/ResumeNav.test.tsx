@@ -21,9 +21,7 @@ describe('ResumeNav', () => {
       link.getAttribute('href'),
     );
 
-    expect(hrefs.join(' ')).toBe(
-      '#experience #education #skills #tools #references',
-    );
+    expect(hrefs.join(' ')).toBe('#experience #education #skills #tools');
   });
 
   it('marks only the first section as current in the static markup', () => {
