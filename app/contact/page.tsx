@@ -19,7 +19,7 @@ export default function ContactPage() {
         <h1 className="page-title">Get in touch</h1>
         <EmailLink />
         <p className="contact-hint page-prose">I usually reply within a day.</p>
-        <ContactIcons includeEmail={false} />
+        <ContactIcons includeEmail={false} labelled />
       </section>
     </PageWrapper>
   );
