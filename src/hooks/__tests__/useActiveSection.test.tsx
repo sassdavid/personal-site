@@ -409,10 +409,17 @@ describe('useActiveSection', () => {
     it('holds the row still under a mouse press, which focuses the link too', () => {
       // Moving the row between press and release would slide the link out from
       // under the pointer, and the click would land on its neighbour.
+      // jsdom matches `:focus-visible` whenever `:focus` does, so the
+      // browser's verdict on a pointer-driven focus is supplied here.
       const row = renderRow({ references: [296, 383] });
+      const pressed = link('references');
+      const matches = pressed.matches.bind(pressed);
+      vi.spyOn(pressed, 'matches').mockImplementation(
+        (selector) => selector !== ':focus-visible' && matches(selector),
+      );
 
-      fireEvent.mouseDown(link('references'));
-      act(() => link('references').focus());
+      fireEvent.mouseDown(pressed);
+      act(() => pressed.focus());
 
       expect(row.scrollLeft).toBe(0);
     });

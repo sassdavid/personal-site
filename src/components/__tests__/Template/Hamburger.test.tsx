@@ -2,33 +2,52 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import routes from '@/data/routes';
 import { THEME_CHOICE_ATTRIBUTE } from '@/lib/theme';
 import { smartQuotes } from '@/lib/typography';
 import Hamburger from '../../Template/Hamburger';
 
+/**
+ * jsdom evaluates media queries against a fixed 1024px viewport, where the
+ * desktop hide in navigation.css would hide the button whatever the gate did.
+ * The gate matters where the button shows, so the stylesheet is read as a
+ * phone sees it: the phone-only queries always match and the desktop ones
+ * never do.
+ */
+function asPhone(css: string): string {
+  return css
+    .replaceAll('(max-width: 735px)', '(min-width: 0px)')
+    .replaceAll('(min-width: 736px)', '(max-width: 0px)');
+}
+
 describe('Hamburger', () => {
+  const styles: HTMLStyleElement[] = [];
+
+  // Cleanup outside the test body, so one failed assertion cannot leave the
+  // attribute or the stylesheets behind for the tests after it.
+  afterEach(() => {
+    document.documentElement.removeAttribute(THEME_CHOICE_ATTRIBUTE);
+    for (const style of styles.splice(0)) style.remove();
+  });
+
   // The gate in navigation.css has to beat header.css's `display: flex` whichever
-  // `@import` comes first. Asserts the button's own `display`: jsdom drops the
-  // `@media (max-width: 735px)`, so `toBeVisible()` sees an ancestor's `none`.
+  // `@import` comes first.
   it.each([
     ['header.css', 'navigation.css'],
     ['navigation.css', 'header.css'],
   ])(
     'stays hidden until the bootstrap proves scripts ran (%s, then %s)',
     (...files) => {
-      const root = document.documentElement;
-      const styles = files.map((file) => {
+      for (const file of files) {
         const style = document.createElement('style');
-        style.textContent = readFileSync(
-          join(process.cwd(), 'app/styles/layout', file),
-          'utf8',
+        style.textContent = asPhone(
+          readFileSync(join(process.cwd(), 'app/styles/layout', file), 'utf8'),
         );
         document.head.append(style);
-        return style;
-      });
+        styles.push(style);
+      }
 
       render(<Hamburger />);
       const button = document.querySelector('.hamburger-button') as Element;
@@ -36,11 +55,8 @@ describe('Hamburger', () => {
 
       expect(display()).toBe('none');
 
-      root.setAttribute(THEME_CHOICE_ATTRIBUTE, 'system');
+      document.documentElement.setAttribute(THEME_CHOICE_ATTRIBUTE, 'system');
       expect(display()).toBe('flex');
-
-      root.removeAttribute(THEME_CHOICE_ATTRIBUTE);
-      for (const style of styles) style.remove();
     },
   );
 
