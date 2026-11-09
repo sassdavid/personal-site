@@ -1,8 +1,8 @@
 /**
- * Public appearances: panels, talks, and demos with an organiser's listing.
+ * Public appearances: panels, talks, and demos with an organiser's own record.
  *
  * The record is credible only if a reader can check it, so every entry links
- * the organiser's own page for the session, and that page should name me.
+ * the organiser's own page or post for the session, and it should name me.
  * Where an organiser's published lineup is stale, the entry says so in a
  * comment rather than linking something unofficial.
  *
@@ -14,22 +14,22 @@
  * The format as the organiser billed it. An Arsenal Lab is a hands-on tool
  * demonstration, not a talk; extend this union rather than stretch a label.
  */
-export type AppearanceFormat = 'Panel' | 'Arsenal Lab';
+export type AppearanceFormat = 'Panel' | 'Arsenal Lab' | 'Tech session';
 
 export interface Appearance {
   /**
    * The session's own title, or the event's name when the session was a demo
-   * of a tool rather than a titled talk.
+   * of a tool or its host published no title.
    */
   title: string;
   format: AppearanceFormat;
-  /** First day of the appearance, `YYYY-MM-DD`. */
+  /** First day of the appearance, or of its event when no day is published. */
   date: string;
   /** City, as a reader would place the event. */
   place: string;
   /** What the title and format leave out: the host, the event, who else. */
   desc: string;
-  /** The organiser's listing for the session, naming me. */
+  /** The organiser's own record of the session, naming me. */
   link: string;
 }
 
