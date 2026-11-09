@@ -26,17 +26,17 @@ const skills: Skill[] = [
   {
     title: 'TypeScript',
     competency: 4,
-    category: ['Languages', 'Web Development'],
+    category: ['Languages'],
   },
   {
     title: 'JavaScript',
     competency: 3,
-    category: ['Languages', 'Web Development'],
+    category: ['Languages'],
   },
   {
     title: 'Java',
     competency: 5,
-    category: ['Languages', 'Backend & Frameworks'],
+    category: ['Languages'],
   },
   {
     title: 'Kotlin',
@@ -61,7 +61,7 @@ const skills: Skill[] = [
   {
     title: 'Node.js',
     competency: 3,
-    category: ['Web Development', 'Backend & Frameworks'],
+    category: ['Backend & Frameworks'],
   },
   {
     title: 'Angular',
@@ -96,7 +96,7 @@ const skills: Skill[] = [
   {
     title: 'Redshift',
     competency: 3,
-    category: ['Databases', 'Cloud & Infrastructure'],
+    category: ['Databases'],
   },
   {
     title: 'MongoDB',
@@ -111,12 +111,12 @@ const skills: Skill[] = [
   {
     title: 'Terraform',
     competency: 5,
-    category: ['Cloud & Infrastructure', 'DevOps'],
+    category: ['Cloud & Infrastructure'],
   },
   {
     title: 'Terragrunt',
     competency: 4,
-    category: ['Cloud & Infrastructure', 'DevOps'],
+    category: ['Cloud & Infrastructure'],
   },
   {
     title: 'CloudFormation',
@@ -131,12 +131,12 @@ const skills: Skill[] = [
   {
     title: 'Kubernetes',
     competency: 5,
-    category: ['Cloud & Infrastructure', 'DevOps'],
+    category: ['DevOps'],
   },
   {
     title: 'Helm',
     competency: 5,
-    category: ['Cloud & Infrastructure', 'DevOps'],
+    category: ['DevOps'],
   },
 ].map((skill) => ({ ...skill, category: skill.category.sort() }));
 
