@@ -21,12 +21,6 @@ updates:
         patterns:
           - 'next'
           - '@next/*'
-      # Each package carries its own copy of fontawesome-common-types, whose
-      # IconName union grows every release. Bumped singly, the copies diverge
-      # and IconDefinition stops being assignable — type-check fails.
-      fontawesome:
-        patterns:
-          - '@fortawesome/*'
       # The @vitest/* packages declare an *exact* peer on vitest
       # (@vitest/coverage-v8@5.0.0 peers vitest@"5.0.0", not ^5). Bumped
       # singly, npm ci dies with ERESOLVE before any gate runs — which is how
