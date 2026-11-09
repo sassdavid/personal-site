@@ -108,7 +108,6 @@
   .resume-print-contact a {
     color: inherit;
     text-decoration: none;
-    background-image: none;
   }
 
   .resume-print-contact > * {
@@ -352,10 +351,7 @@
      revealing the href there would print every address twice. Tool links
      remain clickable in a PDF, but printing dozens of raw product URLs makes
      the paper artifact denser without giving a reader practical destinations
-     to retype.
-
-     The global `a` reset below does not erase these pseudo-elements: it
-     declares no `content`, and `background-image` does not inherit. */
+     to retype. */
   .about-content a[href^='http']::after,
   .prose a[href^='http']::after,
   .job-company[href^='http']::after,
@@ -373,7 +369,6 @@
 
   a {
     color: #000;
-    background-image: none !important;
   }
 
   img {
