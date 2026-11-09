@@ -396,12 +396,24 @@ describe('useActiveSection', () => {
       },
     );
 
+    /**
+     * Focuses `target` as a key press (`visible`) or a mouse press would. A
+     * browser decides `:focus-visible` from how focus arrived; jsdom matches it
+     * on every focus, so the browser's answer is supplied here.
+     */
+    function focus(target: HTMLElement, { visible }: { visible: boolean }) {
+      const matches = target.matches.bind(target);
+      vi.spyOn(target, 'matches').mockImplementation((selectors: string) =>
+        selectors === ':focus-visible' ? visible : matches(selectors),
+      );
+      act(() => target.focus());
+    }
+
     it('brings a link focused from the keyboard out from under the fade', () => {
       // Chromium only scrolls a focused link into view when none of it shows.
       const row = renderRow({ references: [296, 383] });
 
-      fireEvent.keyDown(document.body, { key: 'Tab' });
-      act(() => link('references').focus());
+      focus(link('references'), { visible: true });
 
       expect(row.scrollLeft).toBe(41);
     });
@@ -409,17 +421,9 @@ describe('useActiveSection', () => {
     it('holds the row still under a mouse press, which focuses the link too', () => {
       // Moving the row between press and release would slide the link out from
       // under the pointer, and the click would land on its neighbour.
-      // jsdom matches `:focus-visible` whenever `:focus` does, so the
-      // browser's verdict on a pointer-driven focus is supplied here.
       const row = renderRow({ references: [296, 383] });
-      const pressed = link('references');
-      const matches = pressed.matches.bind(pressed);
-      vi.spyOn(pressed, 'matches').mockImplementation(
-        (selector) => selector !== ':focus-visible' && matches(selector),
-      );
 
-      fireEvent.mouseDown(pressed);
-      act(() => pressed.focus());
+      focus(link('references'), { visible: false });
 
       expect(row.scrollLeft).toBe(0);
     });
