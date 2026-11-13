@@ -13,21 +13,10 @@ change, open an issue so the approach can be discussed.
 
 ## Set up the project
 
-With [mise](https://mise.jdx.dev/) installed:
-
-```bash
-mise install
-npm ci
-```
-
-The version in `mise.toml` is used for development and deployment. Other
-version managers can use any release accepted by `engines.node` in
-`package.json`.
-
-Create a topic branch rather than committing to `main`. Use a
+Follow [Get started](../README.md#get-started) in the README. Work on a topic
+branch rather than `main`, and give commits and the pull request title a
 [Conventional Commit](https://www.conventionalcommits.org/) prefix such as
-`feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`. Use the same format for the
-pull request title so the merged history stays consistent. `main` is protected:
+`feat:`, `fix:`, `refactor:`, `docs:`, or `chore:`. `main` is protected:
 changes land by merging a pull request, and the deploy runs from that merge.
 
 ## Validate the change
@@ -46,13 +35,10 @@ npm run verify-export
 npm run measure-export
 ```
 
-`mise run check` bundles the first four. `npm run verify-export` and
-`npm run measure-export` both read the files produced by `npm run build`, so
-keep that order. `measure-export` weighs the export against the size budget in
-`scripts/budget.json` and fails when a budget is exceeded. Total export size is
-reported without a gate because it grows with publishing; subsystem,
-largest-file, route-bootstrap, and distinct-icon limits still catch
-regressions. Add or update tests when behavior changes.
+`mise run check` bundles the first four. `verify-export` and `measure-export`
+read the files `npm run build` writes, so keep that order. `measure-export`
+fails when the export outgrows a budget in `scripts/budget.json`. Add or update
+tests when behavior changes.
 
 ## Open the pull request
 
