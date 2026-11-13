@@ -37,6 +37,8 @@ const state = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/posts', () => ({
+  // The post pager reads the published list for each post's neighbours.
+  getAllPosts: () => Object.values(state.posts).filter((post) => !post.draft),
   getPostBySlug: (slug: string) => state.posts[slug] ?? null,
   getPostSlugs: () =>
     Object.values(state.posts)

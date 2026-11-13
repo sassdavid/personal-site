@@ -1,4 +1,4 @@
 User-agent: *
-Disallow: /api
+Allow: /
 
 Sitemap: https://sasskovacs.dev/sitemap.xml
