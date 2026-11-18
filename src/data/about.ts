@@ -12,7 +12,7 @@ I did not start on this side of the wall. My first five years at the company wen
 and that is still the most useful thing I bring to infrastructure work: I have had to operate the software I now automate, so I have a fair idea
 of which shortcuts get paid for later.
 
-If you are working on something in the same space, or you just want to argue about how to lay out a Terragrunt repository, my inbox is open.
+If you are working on something in the same space, or you just want to argue about how to lay out a Terragrunt repository, [my inbox is open](/contact/).
 
 # Currently
 
@@ -50,7 +50,7 @@ vineyards are worth the drive on their own.
 
 # Travel / geography
 
-- I have been to ${profile.countriesVisited} countries so far, Hungary included. Only three of them are outside Europe, which I would like to fix.
+- I have been to [${profile.countriesVisited} countries](/stats/) so far, Hungary included. Only three of them are outside Europe, which I would like to fix.
 - In 2016, I visited Austria.
 - In 2018, I travelled to Poland and to Sardinia.
 - In 2019, I saw Mallorca in the spring and Rome in the autumn.
