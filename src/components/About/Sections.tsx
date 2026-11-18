@@ -5,7 +5,7 @@ import { Children, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 import SectionNav from '@/components/Template/SectionNav';
 import { createUniqueHeadingIds } from '@/lib/anchors';
 import { extractLogMarker } from '@/lib/logEntry';
-import { smartQuotesRule } from '@/lib/markdown';
+import { sanitizeUrl, smartQuotesRule } from '@/lib/markdown';
 import { smartQuotes } from '@/lib/typography';
 
 interface AboutContentProps {
@@ -100,11 +100,13 @@ function ContentLink({
 const MARKDOWN_OPTIONS: MarkdownToJSX.Options = {
   overrides: { a: { component: ContentLink } },
   renderRule: smartQuotesRule,
+  sanitizer: sanitizeUrl,
 };
 
 const LOG_MARKDOWN_OPTIONS: MarkdownToJSX.Options = {
   overrides: { a: { component: ContentLink }, li: { component: LogEntry } },
   renderRule: smartQuotesRule,
+  sanitizer: sanitizeUrl,
 };
 
 interface AboutSection {
