@@ -12,6 +12,8 @@
  * `interests`, `projects`, `references`) are omitted rather than stubbed.
  */
 
+import { type MarkdownToJSX, parser, RuleType } from 'markdown-to-jsx/markdown';
+
 import { profiles } from '@/data/contact';
 import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
@@ -115,12 +117,84 @@ interface JsonResume {
  */
 export function toPlainText(value: string): string {
   return (
-    value
-      .replace(/<\/?a(?:\s[^>]*)?>/gi, '')
+    textOf(parser(value))
       // Template literals in the data files wrap across lines and indent.
       .replace(/\s+/g, ' ')
       .trim()
   );
+}
+
+/**
+ * Inline HTML a summary may use. Any other tag is prose: résumé text is
+ * technical, and `vector<int>` parses as an element called `int`.
+ */
+const INLINE_ELEMENTS = new Set([
+  'a',
+  'abbr',
+  'b',
+  'br',
+  'cite',
+  'code',
+  'del',
+  'em',
+  'i',
+  'ins',
+  'kbd',
+  'mark',
+  'q',
+  's',
+  'samp',
+  'small',
+  'span',
+  'strong',
+  'sub',
+  'sup',
+  'u',
+  'var',
+]);
+
+/** The text a reader sees in parsed Markdown, with unknown tags as written. */
+function textOf(nodes: MarkdownToJSX.ASTNode[]): string {
+  return nodes
+    .map((node) => {
+      switch (node.type) {
+        case RuleType.text:
+        case RuleType.codeInline:
+          return node.text;
+        case RuleType.htmlComment:
+        case RuleType.refCollection:
+          return '';
+        case RuleType.htmlSelfClosing:
+          if (INLINE_ELEMENTS.has(node.tag))
+            return node.tag === 'br' ? ' ' : '';
+          // `u` is the source as written; the parser does not type it.
+          return (node as { u?: string }).u ?? `<${node.tag}>`;
+        case RuleType.htmlBlock: {
+          const inner = textOf(node.children ?? []);
+          return INLINE_ELEMENTS.has(node.tag)
+            ? inner
+            : `<${node.tag}>${inner}</${node.tag}>`;
+        }
+        case RuleType.breakLine:
+          return ' ';
+        // A block ends a run of prose; an inline node such as a link or
+        // emphasis sits inside one, so only blocks get space around them.
+        case RuleType.paragraph:
+        case RuleType.heading:
+        case RuleType.blockQuote:
+          return ` ${textOf(node.children)} `;
+        case RuleType.codeBlock:
+          return ` ${node.text} `;
+        case RuleType.orderedList:
+        case RuleType.unorderedList:
+          return ` ${node.items.map(textOf).join(' ')} `;
+        default:
+          return 'children' in node && Array.isArray(node.children)
+            ? textOf(node.children)
+            : '';
+      }
+    })
+    .join('');
 }
 
 /**
