@@ -4,6 +4,7 @@ import Education from '@/components/Resume/Education';
 import Experience from '@/components/Resume/Experience';
 import PrintButton from '@/components/Resume/PrintButton';
 import ResumeNav from '@/components/Resume/ResumeNav';
+import RunningHead from '@/components/Resume/RunningHead';
 import Skills from '@/components/Resume/Skills';
 import Tools from '@/components/Resume/Tools';
 import PageWrapper from '@/components/Template/PageWrapper';
@@ -65,6 +66,7 @@ export default function ResumePage() {
   return (
     <PageWrapper>
       <section className="resume-page">
+        <RunningHead name={smartQuotes(profile.name)} />
         <header className="resume-header">
           <div className="resume-header-row">
             {/* Paper hides the header and footer that carry the name, so
