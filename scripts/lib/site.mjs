@@ -9,29 +9,22 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve, sep } from 'node:path';
 
+import { parseSiteUrl } from '../../src/lib/site-url.mjs';
+
 /**
- * `label` prefixes the failure message so the caller is identifiable in CI
- * logs. Exits rather than throwing: every caller is a build gate.
+ * The site URL from `package.json` `homepage`, through the parser the site
+ * itself uses. `label` prefixes the failure message so the caller is
+ * identifiable in CI logs. Exits rather than throwing: every caller is a build
+ * gate.
  */
 export function readSiteConfig(root, label) {
   const packagePath = resolve(root, 'package.json');
   try {
-    const { homepage } = JSON.parse(readFileSync(packagePath, 'utf8'));
-    const url = new URL(homepage);
-    if (
-      url.protocol !== 'https:' ||
-      url.search ||
-      url.hash ||
-      !url.pathname.endsWith('/')
-    ) {
-      throw new Error(
-        'homepage must be an HTTPS URL with a trailing slash and no query/hash',
-      );
-    }
-
-    const basePath =
-      url.pathname === '/' ? '' : url.pathname.replace(/\/+$/, '');
-    return { origin: url.origin, basePath };
+    const { homepage, repository } = JSON.parse(
+      readFileSync(packagePath, 'utf8'),
+    );
+    const { origin, basePath } = parseSiteUrl(homepage);
+    return { origin, basePath, pagesAlias: pagesAddress(repository) };
   } catch (error) {
     console.error(
       `${label}: cannot read the canonical site URL from package.json: ${error.message}`,
@@ -40,23 +33,32 @@ export function readSiteConfig(root, label) {
   }
 }
 
+/**
+ * Where GitHub Pages serves the repository `package.json` names, as a host and
+ * a path prefix: `owner.github.io` and `/repo`, or no prefix for the owner's
+ * own `owner.github.io` repository. With a custom domain it redirects there,
+ * so a link through it still reaches this site's files.
+ */
+function pagesAddress(repository) {
+  const url = typeof repository === 'string' ? repository : repository?.url;
+  const [, owner, repo] =
+    /github\.com[/:]([^/]+)\/([^/]+?)(?:\.git)?\/?$/i.exec(url ?? '') ?? [];
+  if (!owner) return undefined;
+
+  const host = `${owner}.github.io`.toLowerCase();
+  return { host, pathPrefix: repo.toLowerCase() === host ? '' : `/${repo}` };
+}
+
 /** URLs always use forward slashes; `relative` uses the platform separator. */
 export const toUrlPath = (path) => path.split(sep).join('/');
 
 /** Every file under `dir`, or nothing if it does not exist. */
 export function walkFiles(dir) {
-  const found = [];
-  if (!existsSync(dir)) return found;
+  if (!existsSync(dir)) return [];
 
-  for (const entry of readdirSync(dir)) {
-    const path = join(dir, entry);
-    if (statSync(path).isDirectory()) {
-      found.push(...walkFiles(path));
-    } else {
-      found.push(path);
-    }
-  }
-  return found;
+  return readdirSync(dir, { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => join(entry.parentPath, entry.name));
 }
 
 /**

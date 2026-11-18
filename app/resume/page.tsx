@@ -4,13 +4,14 @@ import Education from '@/components/Resume/Education';
 import Experience from '@/components/Resume/Experience';
 import PrintButton from '@/components/Resume/PrintButton';
 import ResumeNav from '@/components/Resume/ResumeNav';
+import RunningHead from '@/components/Resume/RunningHead';
 import Skills from '@/components/Resume/Skills';
 import Tools from '@/components/Resume/Tools';
 import PageWrapper from '@/components/Template/PageWrapper';
 import contact, { type ContactId } from '@/data/contact';
 import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
-import { categories, skills } from '@/data/resume/skills';
+import { skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
 import { createPageMetadata } from '@/lib/metadata';
@@ -65,11 +66,12 @@ export default function ResumePage() {
   return (
     <PageWrapper>
       <section className="resume-page">
+        <RunningHead name={smartQuotes(profile.name)} />
         <header className="resume-header">
           <div className="resume-header-row">
             {/* Paper hides the header and footer that carry the name, so
                 there the title is the name. */}
-            <h1 className="resume-title">
+            <h1 className="page-title">
               <span className="resume-screen-title">Resume</span>{' '}
               <span className="resume-print-name">
                 {smartQuotes(profile.name)}
@@ -119,7 +121,7 @@ export default function ResumePage() {
           </section>
 
           <section id="skills" className="resume-section">
-            <Skills skills={skills} categories={categories} />
+            <Skills skills={skills} />
           </section>
 
           <section id="tools" className="resume-section">

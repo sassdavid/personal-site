@@ -28,9 +28,9 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  # Shared job for installing dependencies with caching
-  install:
-    name: Install Dependencies
+  # Lint, format, and type check
+  code-quality:
+    name: Code Quality
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -49,50 +49,7 @@ jobs:
           # needs no token here.
           github_token: ''
 
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'mise.toml') }}
-
       - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
-
-  # Lint, format, and type check
-  code-quality:
-    name: Code Quality
-    needs: install
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-
-      - name: Setup Node.js
-        uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
-        with:
-          experimental: true
-          github_token: ''
-
-      # The install job's cache is a fast path, not a guarantee. Without the
-      # fallback below, an evicted or not-yet-saved entry leaves node_modules
-      # empty and every step here fails as "command not found" rather than
-      # installing — and `cache-hit` is only true on an exact key match, so a
-      # stale prefix hit can never be mistaken for a current one. Restore-only:
-      # the install job owns the save, so parallel jobs cannot race on the key.
-      - name: Restore node_modules
-        id: cache-node-modules
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'mise.toml') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Type Check
@@ -116,7 +73,6 @@ jobs:
   # Run tests
   test:
     name: Test
-    needs: install
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -131,16 +87,7 @@ jobs:
           experimental: true
           github_token: ''
 
-      # Restore-only with an install fallback, as in code-quality above.
-      - name: Restore node_modules
-        id: cache-node-modules
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'mise.toml') }}
-
       - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Run tests
@@ -157,7 +104,6 @@ jobs:
   # Build on multiple OS and Node versions
   build:
     name: Build (${{ matrix.os }}, Node ${{ matrix.node-version }})
-    needs: install
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     # Configure Pages only reads the existing site metadata. Application and
@@ -214,18 +160,40 @@ jobs:
           fi
           echo "Deploy candidate Node $wanted matches mise.toml."
 
-      # This matrix entry becomes the deployment candidate on main. Pages
-      # configuration has to run before Next builds so repository-site forks
-      # receive their basePath in generated links and assets.
-      - name: Configure GitHub Pages build
+      # This matrix entry becomes the deployment candidate on main. `homepage`
+      # in package.json is the site's one public URL: Next's base path and
+      # every published address derive from it. Reading the Pages settings
+      # first fails the deployment, with the fix, when the two disagree, as
+      # in a fork that still names the upstream site.
+      - name: Read GitHub Pages settings
+        id: pages
         if: >-
           matrix.os == 'ubuntu-latest' &&
           matrix.node-version == env.DEPLOY_NODE &&
           github.ref == 'refs/heads/main'
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
         with:
-          static_site_generator: next
           enablement: false
+
+      - name: Check homepage is the GitHub Pages URL
+        if: steps.pages.outcome == 'success'
+        run: node scripts/check-pages-url.mjs
+        env:
+          PAGES_URL: ${{ steps.pages.outputs.base_url }}
+
+      # The other Linux leg builds the site as a fork publishes it at
+      # https://USER.github.io/REPO/, so the export gates below fail on any
+      # address that misses the base path. `homepage` is all it changes.
+      - name: Use a project-site URL
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version != env.DEPLOY_NODE
+        run: npm pkg set homepage=https://example.github.io/personal-site/
+
+      # The Test job runs at the upstream root URL, so a test that assumes one
+      # passes there and blocks a fork's first deployment. Run the suite again
+      # as the fork's own Test job will.
+      - name: Test at the project-site URL
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version != env.DEPLOY_NODE
+        run: npm test
 
       # Stats use the public API anonymously, falling back to last-known floors
       # on rate limits. Do not expose a job token to application/dependency code.
@@ -246,6 +214,15 @@ jobs:
       # deliberate increase is `--update-budget` plus a note in the pull request.
       - name: Measure export against size budget
         run: npm run measure-export
+
+      # Loads every exported page in headless Chrome at a 320px phone width,
+      # at the default text size and at 200%, and at 1280px, and fails when a
+      # page is wider than its viewport. jsdom has no layout, so no component
+      # test can see this. One leg is enough: the fonts are self-hosted, so the
+      # other platforms lay the pages out the same way.
+      - name: Check pages fit narrow screens and enlarged text
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version == env.DEPLOY_NODE
+        run: npm run check-reflow
 
       - name: Upload build artifacts
         if: >-
@@ -302,11 +279,17 @@ jobs:
           name: build-output
           path: out
 
+      # Artifacts outlive the attempt that uploaded them, and deploy-pages
+      # refuses a run holding two of the same name, so each attempt packages
+      # under its own. Re-running a failed deploy then deploys its own upload.
       - name: Package GitHub Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
+          name: github-pages-${{ github.run_attempt }}
           path: out
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}

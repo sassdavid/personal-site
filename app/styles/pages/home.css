@@ -32,7 +32,6 @@
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.03em;
   line-height: 1.02;
-  overflow-wrap: anywhere;
 }
 
 .hero-grid {
@@ -159,7 +158,6 @@
   min-width: 0;
   padding: 1.25rem 0;
   color: inherit;
-  text-decoration: none;
 }
 
 .home-writing-item:first-child {

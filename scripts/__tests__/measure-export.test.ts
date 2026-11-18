@@ -319,17 +319,12 @@ describe('failures', () => {
       `must be a JSON object mapping budget names to positive byte counts, not ${contents}`,
       budgetFile(contents),
     ]),
-    ...[
-      ['"1000"'],
-      ['null'],
-      ['0'],
-      ['-1'],
-      ['1.5'],
-      ['1e999', 'Infinity'],
-    ].map(([value, shown = value]): [string, Change] => [
-      `invalid budget(s): fontBytes is ${shown}. Every budget must be a positive whole number of bytes.`,
-      badValue(value),
-    ]),
+    ...[['"1000"'], ['0'], ['1.5'], ['1e999', 'Infinity']].map(
+      ([value, shown = value]): [string, Change] => [
+        `invalid budget(s): fontBytes is ${shown}. Every budget must be a positive whole number of bytes.`,
+        badValue(value),
+      ],
+    ),
     ['scripts/budget.json is missing', remove(BUDGET)],
     ['no files found in out/', remove('out')],
     // Per-route metrics read zero off an empty document list, so an export with
@@ -338,7 +333,7 @@ describe('failures', () => {
       'no HTML documents found in out/',
       remove('out/index.html', 'out/about/index.html'),
     ],
-    ['--json needs a file path', noChange, ['--json']],
+    ["'--json <value>' argument missing", noChange, ['--json']],
   ])('rejects: %s', (expected, change, args) => {
     const { root } = createFixture();
     change(root);

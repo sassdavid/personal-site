@@ -20,6 +20,7 @@ const RESUME = 'out/resume.json';
 const MANIFEST = 'out/manifest.json';
 const SITEMAP = 'out/sitemap.xml';
 const FEED = 'out/feed.xml';
+const LLMS = 'out/llms.txt';
 const DRAFT = 'content/writing/secret-draft.md';
 const BASE_PATH = '/personal-site';
 const CANONICAL = 'rel="canonical" href="https://example.com/about';
@@ -54,6 +55,12 @@ const inHomeBody = (markup: string) =>
   replaceIn(HOME, '</body>', `${markup}</body>`);
 const inDraftBody = (body: string) => replaceIn(DRAFT, /$/, `\n${body}\n`);
 const inSummary = (text: string) => replaceIn(RESUME, 'Did the work.', text);
+/** The repository `package.json` names, and so its GitHub Pages address. */
+const withRepository = replaceIn(
+  'package.json',
+  '{',
+  '{"repository":{"url":"git+https://github.com/Fixture/site.git"},',
+);
 /** An exported file that only the draft's body asks for. */
 const draftAsset = (body: string, path = 'images/private.png') =>
   both(addFile(`out/${path}`), inDraftBody(body));
@@ -133,6 +140,7 @@ function createFixture({
   <url><loc>${site}about/</loc></url>
   <url><loc>${site}resume/</loc></url>
 </urlset>`,
+    [LLMS]: `# Fixture Person\n\n- [About](${site}about/)\n- [Elsewhere](https://elsewhere.example/post)\n`,
     [FEED]: `<rss xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <link>${site}</link>
@@ -228,6 +236,10 @@ describe('links, metadata, and icons', () => {
       replaceIn(HOME, 'images/photo.png', 'images/missing.png'),
     ],
     [
+      'llms.txt\n    URL points at missing export: /missing/',
+      replaceIn(LLMS, 'about/)', 'missing/)'),
+    ],
+    [
       'indexable page has 2 canonical links; expected 1',
       replaceIn(ABOUT, '</head>', `<link ${CANONICAL}/"></head>`),
     ],
@@ -267,7 +279,7 @@ describe('links, metadata, and icons', () => {
       'a sitemap that omits an indexable route',
     ],
     [
-      'URL is not in canonical trailing-slash form',
+      'URL must have no query/hash and use the canonical trailing-slash form',
       replaceIn(
         SITEMAP,
         'https://example.com/about/',
@@ -321,6 +333,7 @@ describe('at a repository-site base path', () => {
         '<embed src="media/missing.pdf">',
         '<iframe src="media/missing.html"></iframe>',
         '<picture><source srcset="images/photo.png 1x, media/missing.png 2x"></picture>',
+        '<form><input type="image" src="media/missing.png" alt="Go"></form>',
       ].map(
         (markup): Rejection => [
           'points at missing export: media/missing.',
@@ -344,9 +357,128 @@ describe('at a repository-site base path', () => {
           ),
         ),
       ],
+      [
+        "the owner's other project sites on the same origin",
+        inHomeBody(
+          '<a href="https://example.com/other-project/">Other</a><a href="//example.com/another/">Another</a>',
+        ),
+      ],
     ],
     { basePath: BASE_PATH },
   );
+});
+
+// Drafts are written root-relative, like published posts. Under a base path
+// their targets resolve where the renderer puts them, not at the origin root.
+describe('drafts under a base path', () => {
+  rejects(
+    [
+      [
+        'draft references a publicly exported image: /personal-site/images/private.png',
+        draftAsset('![private](/images/private.png)'),
+        'a draft-only image written root-relative',
+      ],
+    ],
+    { basePath: BASE_PATH },
+  );
+
+  accepts(
+    [
+      [
+        'links to public pages, shared assets, and absent private files',
+        inDraftBody(
+          [
+            '[About](/about/)',
+            '![shared](/images/photo.png)',
+            '![kept outside public](/images/not-published.png)',
+          ].join('\n'),
+        ),
+      ],
+    ],
+    { basePath: BASE_PATH },
+  );
+});
+
+describe('rendered pages', () => {
+  rejects([
+    [
+      'canonical is not an absolute URL',
+      replaceIn(ABOUT, `${CANONICAL}/"`, 'rel="canonical" href=""'),
+      'an empty canonical',
+    ],
+    [
+      'og:url is not an absolute URL',
+      replaceIn(
+        ABOUT,
+        'property="og:url" content="https://example.com/about/"',
+        'property="og:url" content=""',
+      ),
+      'an empty og:url',
+    ],
+    // The old reader found `href=` inside the tooltip and checked about/.
+    [
+      'internal link points at missing export: missing/',
+      inHomeBody('<a title="see href=about/" href="missing/">Broken</a>'),
+      'a broken link whose tooltip names a real page',
+    ],
+    [
+      'internal link points at missing fragment: /about/#nope',
+      inHomeBody('<a href="about/#nope:~:text=About">Gone</a>'),
+      'a text fragment after a missing id',
+    ],
+    [
+      'stylesheet url() points at missing export: /_next/static/media/gone.woff2',
+      addFile(
+        'out/_next/static/css/site.css',
+        '@font-face{src:url(/_next/static/media/gone.woff2)}',
+      ),
+      'a font only a stylesheet names',
+    ],
+    [
+      'has a meta refresh',
+      inHomeBody('<meta http-equiv="Refresh" content="0; url=about/">'),
+    ],
+  ]);
+
+  accepts([
+    [
+      'a text fragment after a real id, and stylesheet files that exist',
+      both(
+        inHomeBody('<a href="about/#section:~:text=About">Here</a>'),
+        addFile('out/_next/static/media/font.woff2'),
+        addFile(
+          'out/_next/static/css/site.css',
+          '@font-face{src:url("/_next/static/media/font.woff2")}a{background:url(data:image/png;base64,AAAA)}b{background:url(https://cdn.example/x.png)}',
+        ),
+      ),
+    ],
+  ]);
+});
+
+describe('feed.xml', () => {
+  rejects([
+    ['feed.xml\n    has no <rss> channel', addFile(FEED, ''), 'an empty feed'],
+    [
+      'is not well-formed XML: it contains a character XML cannot carry',
+      replaceIn(FEED, '<channel>', '<channel>\u000b'),
+    ],
+    [
+      'is not well-formed XML: it contains a bare &',
+      replaceIn(FEED, '<channel>', '<channel><title>A & B</title>'),
+    ],
+    [
+      'is not well-formed XML: it closes <channel> out of order',
+      replaceIn(FEED, '<channel>', '<channel><item>'),
+    ],
+    [
+      'has more than one item with guid',
+      replaceIn(
+        FEED,
+        '</channel>',
+        '<item><link>https://example.com/about/</link><guid isPermaLink="true">https://example.com/about/</guid></item></channel>',
+      ),
+    ],
+  ]);
 });
 
 // A submit control can override a valid form destination, so both attributes are
@@ -398,6 +530,12 @@ describe('machine-readable resume', () => {
       'basics.name must be a non-empty string',
       replaceIn(RESUME, '"Fixture Person"', '[]'),
     ],
+    ...['//work.example/', 'https://work.example/field notes'].map(
+      (url): Rejection => [
+        `work[0].url is not an absolute URI: ${url}`,
+        replaceIn(RESUME, 'https://work.example/', url),
+      ],
+    ),
     [
       'work[0] must be a JSON object',
       replaceIn(RESUME, /"work":\[.*?\]/, '"work":[1]'),
@@ -450,7 +588,7 @@ describe('machine-readable resume', () => {
 describe('drafts', () => {
   rejects([
     [
-      'sitemap.xml\n    exposes draft route: /writing/secret-draft/',
+      'sitemap.xml\n    URL exposes a draft route: /writing/secret-draft/',
       replaceIn(
         SITEMAP,
         '</urlset>',
@@ -459,7 +597,7 @@ describe('drafts', () => {
       'a draft route in the sitemap',
     ],
     [
-      'feed.xml\n    exposes draft route: /writing/secret-draft/',
+      'feed.xml\n    URL exposes a draft route: /writing/secret-draft/',
       replaceIn(
         FEED,
         '</channel>',
@@ -482,12 +620,12 @@ describe('drafts', () => {
         '<!doctype html><html><head><meta name="robots" content="noindex"></head><body>Draft-derived page</body></html>',
       ),
     ],
+    // How each destination resolves against the site. The Markdown and raw
+    // HTML forms are the shared parser's, which markdown-assets.test.ts covers.
     ...[
-      '![private][asset]\n\n[asset]: /images/private.png',
       '![private](../../images/private.png)',
       '![private](https://example.com/images/private.png)',
       '![private](//example.com/images/private.png)',
-      '<img alt="private > screenshot" src="/images/private.png">',
     ].map(
       (body): Rejection => [
         'content/writing/secret-draft.md\n    draft references a publicly exported image: /images/private.png',
@@ -495,6 +633,16 @@ describe('drafts', () => {
         `a draft-only asset declared through ${body}`,
       ],
     ),
+    [
+      'draft references a publicly exported image: /images/private.png',
+      both(
+        withRepository,
+        draftAsset(
+          '![private](https://fixture.github.io/site/images/private.png)',
+        ),
+      ),
+      "a draft-only asset reached through the repository's GitHub Pages address",
+    ],
     [
       'draft references a publicly exported link: /downloads/private-notes.pdf',
       draftAsset(
@@ -523,10 +671,8 @@ describe('drafts', () => {
     ],
     [
       'srcset',
-      inDraftBody(
-        '<source srcset="data:image/png;base64,AAAA, /images/hidden.png 2x">',
-      ),
-      'ambiguous draft srcset syntax',
+      inDraftBody('<source srcset="/images/hidden.png nope">'),
+      'malformed draft srcset syntax',
     ],
     // Malformed frontmatter must fail here and at the route reader alike, or a
     // draft flag the reader rejects could pass this privacy boundary.
@@ -556,6 +702,26 @@ describe('drafts', () => {
       'a generated share card for a published post',
       addFile('out/og/writing/about.png'),
     ],
+    [
+      'a draft linking the icons every page and the manifest use',
+      inDraftBody('![icon](/favicon.ico) ![app](/images/icons/app.png)'),
+    ],
+    // With a repository configured, the GitHub Pages address is read for
+    // every reference: one that is not a web URL has none, and a file a page
+    // reaches through that address has a public owner.
+    [
+      'non-web draft references and a file a page shares through the Pages address',
+      both(
+        withRepository,
+        addFile('out/media/shared.png'),
+        inHomeBody(
+          '<img src="https://fixture.github.io/site/media/shared.png" alt="">',
+        ),
+        inDraftBody(
+          '[email](mailto:hello@example.com) ![pixel](data:image/png;base64,AAAA) ![shared](/media/shared.png)',
+        ),
+      ),
+    ],
   ]);
 
   // Post slugs are ordinary words, so a draft sharing a name with one of the
@@ -563,7 +729,16 @@ describe('drafts', () => {
   describe.each(['about', 'og', 'sitemap', 'feed', 'photo', 'index'])(
     'called "%s"',
     (draftSlug) => {
-      accepts([['the site’s own routes and assets', () => {}]], { draftSlug });
+      accepts(
+        [
+          [
+            'the site’s own routes and assets',
+            // The writing listing's payload, which a draft called `index` shares a name with.
+            addFile('out/writing/index.txt'),
+          ],
+        ],
+        { draftSlug },
+      );
     },
   );
 });

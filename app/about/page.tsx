@@ -6,16 +6,30 @@ import PageWrapper from '@/components/Template/PageWrapper';
 import { aboutMarkdown } from '@/data/about';
 import profile from '@/data/profile.json';
 import { createPageMetadata } from '@/lib/metadata';
+import { publishedMarkdown } from '@/lib/published-markdown.mjs';
 import { profilePageNode, sectionPageNodes } from '@/lib/schema';
 import { AUTHOR_NAME } from '@/lib/utils';
 
 const ABOUT_DESCRIPTION = `Learn about ${AUTHOR_NAME} - ${profile.role} at ${profile.employer}, working on ${profile.focus}.`;
 
-export const metadata: Metadata = createPageMetadata({
+const pageMetadata = createPageMetadata({
   title: 'About',
   description: ABOUT_DESCRIPTION,
   path: '/about/',
 });
+const [firstName, ...lastNames] = AUTHOR_NAME.split(' ');
+
+// The page posts name as their author, so it is a profile, as Open Graph's
+// `article:author` expects.
+export const metadata: Metadata = {
+  ...pageMetadata,
+  openGraph: {
+    ...pageMetadata.openGraph,
+    type: 'profile',
+    firstName,
+    lastName: lastNames.join(' '),
+  },
+};
 
 export default function AboutPage() {
   return (
@@ -32,7 +46,7 @@ export default function AboutPage() {
         <header className="about-header">
           <h1 className="page-title">About</h1>
         </header>
-        <AboutContent markdown={aboutMarkdown} />
+        <AboutContent markdown={publishedMarkdown(aboutMarkdown)} />
       </section>
     </PageWrapper>
   );

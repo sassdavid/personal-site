@@ -1,12 +1,19 @@
 'use client';
 
-import Markdown, { type MarkdownToJSX } from 'markdown-to-jsx';
+import {
+  astToJSX,
+  type MarkdownToJSX,
+  parser,
+  RuleType,
+} from 'markdown-to-jsx/react';
 import { Children, type ComponentPropsWithoutRef, type ReactNode } from 'react';
-import useActiveSection from '@/hooks/useActiveSection';
+import SectionNav from '@/components/Template/SectionNav';
 import { createUniqueHeadingIds } from '@/lib/anchors';
 import { extractLogMarker } from '@/lib/logEntry';
-import { smartQuotesRule } from '@/lib/markdown';
+import { createElementWithBasePath, smartQuotesRule } from '@/lib/markdown';
+import { PAGE_IDS } from '@/lib/page-ids';
 import { smartQuotes } from '@/lib/typography';
+import { withBasePath } from '@/lib/utils';
 
 interface AboutContentProps {
   markdown: string;
@@ -78,8 +85,10 @@ function ContentLink({
   ...props
 }: ComponentPropsWithoutRef<'a'>) {
   if (!/^https?:\/\//.test(href)) {
+    // An override component skips `createElementWithBasePath`, which prefixes
+    // only plain tags, so a root-relative link takes the base path here.
     return (
-      <a href={href} {...props}>
+      <a href={withBasePath(href)} {...props}>
         {children}
       </a>
     );
@@ -100,25 +109,22 @@ function ContentLink({
 const MARKDOWN_OPTIONS: MarkdownToJSX.Options = {
   overrides: { a: { component: ContentLink } },
   renderRule: smartQuotesRule,
+  createElement: createElementWithBasePath,
 };
 
 const LOG_MARKDOWN_OPTIONS: MarkdownToJSX.Options = {
   overrides: { a: { component: ContentLink }, li: { component: LogEntry } },
   renderRule: smartQuotesRule,
+  createElement: createElementWithBasePath,
 };
 
 interface AboutSection {
-  body: string;
+  nodes: MarkdownToJSX.ASTNode[];
   id: string;
   /** As a reader sees it: the heading and the section nav both print this. */
   title: string;
   /** The layout its list takes, when the title names one. */
   variant: string | undefined;
-}
-
-interface ParsedAboutSection {
-  body: string;
-  title: string;
 }
 
 /**
@@ -142,38 +148,71 @@ const sectionVariants: Record<string, string> = {
   'Websites from people I admire': 'about-section--links',
 };
 
-/** The page opens with `# Intro`, whose text runs unheaded above the sections. */
-function splitAboutMarkdown(markdown: string) {
-  const [intro, ...sections] = markdown
-    .trim()
-    .replace(/^# Intro\s*/, '')
-    .split(/\n(?=# )/);
-
-  return { intro: intro.trim(), sections: parseSections(sections) };
+interface AboutChunk {
+  nodes: MarkdownToJSX.ASTNode[];
+  title: string;
 }
 
-function parseSections(chunks: string[]): AboutSection[] {
-  const sections: ParsedAboutSection[] = chunks
-    .map((section) => section.trim())
-    .filter((section) => section !== '')
-    .map((section) => {
-      const [heading, ...rest] = section.split('\n');
+/** A heading's text as authored, without its formatting. */
+function plainText(nodes: MarkdownToJSX.ASTNode[]): string {
+  return nodes
+    .map((node) => {
+      if ('text' in node && typeof node.text === 'string') return node.text;
+      if ('children' in node && Array.isArray(node.children)) {
+        return plainText(node.children);
+      }
+      return '';
+    })
+    .join('');
+}
 
-      return {
-        title: heading.replace(/^#\s+/, '').trim(),
-        body: rest.join('\n').trim(),
-      };
-    });
+/**
+ * The page as one parsed document, divided at its top-level headings. Parsing
+ * before dividing keeps a `#` line in a code fence or an HTML comment from
+ * opening a section, and lets a link use a reference defined in another one.
+ * The page opens with `# Intro`, whose content runs unheaded above the rest.
+ */
+function splitAboutMarkdown(markdown: string) {
+  const intro: MarkdownToJSX.ASTNode[] = [];
+  const chunks: AboutChunk[] = [];
+  let footnotes: MarkdownToJSX.ASTNode | undefined;
 
+  for (const node of parser(markdown)) {
+    // Link definitions are already resolved into the links that use them.
+    // Footnotes are not: the collection renders their notes, so it opens the
+    // last part, and the notes close the page once.
+    if (node.type === RuleType.refCollection) {
+      if (Object.keys(node.refs).some((label) => label.startsWith('^'))) {
+        footnotes = node;
+      }
+      continue;
+    }
+    if (node.type === RuleType.heading && node.level === 1) {
+      const title = plainText(node.children).trim();
+      if (chunks.length > 0 || title !== 'Intro') {
+        chunks.push({ title, nodes: [] });
+      }
+    } else {
+      (chunks.at(-1)?.nodes ?? intro).push(node);
+    }
+  }
+
+  if (footnotes) (chunks.at(-1)?.nodes ?? intro).unshift(footnotes);
+
+  return { intro, sections: parseSections(chunks) };
+}
+
+function parseSections(chunks: AboutChunk[]): AboutSection[] {
   const sectionIds = createUniqueHeadingIds(
-    sections.map((section) => section.title),
+    chunks.map(({ title }) => title),
+    PAGE_IDS,
   );
 
   // The id and the variant are read from the title as authored. Only what a
   // reader sees is converted, and once, so the nav and the heading agree.
-  return sections.map(({ body, title }, index) => ({
-    body,
-    id: sectionIds[index] ?? 'section',
+  return chunks.map(({ nodes, title }, index) => ({
+    nodes,
+    id: sectionIds[index],
     title: smartQuotes(title),
     variant: sectionVariants[title],
   }));
@@ -181,46 +220,18 @@ function parseSections(chunks: string[]): AboutSection[] {
 
 export default function AboutContent({ markdown }: AboutContentProps) {
   const { intro, sections } = splitAboutMarkdown(markdown);
-  const { activeId, navRef, onLinkClick } = useActiveSection(
-    sections.map((section) => section.id),
-  );
 
   return (
     <article className="about-content">
-      {intro ? (
-        <div className="about-intro">
-          <Markdown options={MARKDOWN_OPTIONS}>{intro}</Markdown>
-        </div>
+      {intro.length > 0 ? (
+        <div className="about-intro">{astToJSX(intro, MARKDOWN_OPTIONS)}</div>
       ) : null}
       {sections.length > 0 ? (
-        <nav
-          ref={navRef}
+        <SectionNav
+          label="About sections"
           className="about-section-nav"
-          aria-label="About sections"
-        >
-          {/* The bar stays opaque while this row scrolls and fades inside it. */}
-          <div className="about-section-nav-row">
-            {sections.map((section) => {
-              const current = activeId === section.id;
-
-              return (
-                <a
-                  key={section.id}
-                  href={`#${section.id}`}
-                  className={
-                    current
-                      ? 'about-section-nav-link active'
-                      : 'about-section-nav-link'
-                  }
-                  aria-current={current ? 'location' : undefined}
-                  onClick={onLinkClick}
-                >
-                  {section.title}
-                </a>
-              );
-            })}
-          </div>
-        </nav>
+          sections={sections}
+        />
       ) : null}
       {sections.map((section) => (
         <section
@@ -243,15 +254,12 @@ export default function AboutContent({ markdown }: AboutContentProps) {
               </a>
             </h2>
           </div>
-          <Markdown
-            options={
-              section.variant === LOG_VARIANT
-                ? LOG_MARKDOWN_OPTIONS
-                : MARKDOWN_OPTIONS
-            }
-          >
-            {section.body}
-          </Markdown>
+          {astToJSX(
+            section.nodes,
+            section.variant === LOG_VARIANT
+              ? LOG_MARKDOWN_OPTIONS
+              : MARKDOWN_OPTIONS,
+          )}
         </section>
       ))}
     </article>

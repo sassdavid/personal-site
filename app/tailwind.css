@@ -1,4 +1,27 @@
-@import 'tailwindcss';
+/* Tailwind's theme and preflight reset, and the compiler for the `@theme`
+   token blocks, without its utilities: every class here is the site's own.
+   `@import 'tailwindcss'` would bring back utilities generated from any word
+   in any file, prose included. */
+@layer theme, base, components;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+
+/* Where the dark theme applies: `<html data-theme='dark'>`, which the inline
+   bootstrap sets from a stored choice or the device, or, with no bootstrap to
+   run, the device's own preference. Both branches add exactly the specificity
+   `[data-theme='dark']` did, so print.css still overrides them. Write dark
+   rules once, inside `@variant dark { ... }`. */
+@custom-variant dark {
+  &:where([data-theme='dark']) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-theme])) {
+      @slot;
+    }
+  }
+}
 
 /* ========================================
    DESIGN SYSTEM ENTRY POINT
@@ -23,6 +46,7 @@
 @import './styles/components/tags.css';
 @import './styles/components/icons.css';
 @import './styles/components/section-header.css';
+@import './styles/components/section-nav.css';
 
 /* Layout */
 @import './styles/layout/header.css';

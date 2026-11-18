@@ -7,6 +7,7 @@ import PostPager from '@/components/Writing/PostPager';
 import ReadingProgress from '@/components/Writing/ReadingProgress';
 import {
   type ImageSize,
+  leadImageSource,
   readImageSize,
   readPostImageSizes,
 } from '@/lib/imageSize';
@@ -42,7 +43,7 @@ function measureImage(publicPath: string, alt: string): PostImage {
   return {
     ...readImageSize(publicPath),
     alt,
-    url: new URL(publicPath, SITE_URL).toString(),
+    url: `${SITE_URL}${publicPath}`,
   };
 }
 
@@ -149,7 +150,10 @@ export async function generateMetadata({
         : {
             url,
             publishedTime: post.date,
-            authors: [AUTHOR_NAME],
+            ...(post.updated ? { modifiedTime: post.updated } : {}),
+            // A profile, not a name: `article:author` takes the URL of the
+            // author's `profile` page.
+            authors: [`${SITE_URL}/about/`],
           }),
       ...shareImage,
     },
@@ -209,6 +213,7 @@ export default async function PostPage({ params }: PageProps) {
           <PostContent
             content={post.content}
             imageSizes={imageSizes}
+            leadImage={leadImageSource(post.content)}
             allowMissingLocalImages={allowMissingLocalImages}
           />
         </div>

@@ -5,6 +5,11 @@ export interface StatRow {
   value: ReactElement | string;
   /** Where the value points. */
   link?: string;
+  /**
+   * What the link opens, for a reader who meets it out of its row, as in a
+   * screen reader's list of links: a bare "55" names nothing.
+   */
+  linkLabel?: string;
 }
 
 /**
@@ -21,18 +26,19 @@ export interface StatRow {
  */
 const LONGEST_UNBROKEN_VALUE = 17;
 
-export default function TableRow({ label, link, value }: StatRow) {
+export default function TableRow({ label, link, linkLabel, value }: StatRow) {
   const breakable =
     typeof value === 'string' && value.length > LONGEST_UNBROKEN_VALUE;
 
   // The label names its row, so it is a row header rather than a data cell —
   // that is what lets a screen reader announce the value with its label.
   return (
-    <tr>
-      <th scope="row" className="stat-table-label">
+    <tr role="row">
+      <th scope="row" role="rowheader" className="stat-table-label">
         {label}
       </th>
       <td
+        role="cell"
         className={
           breakable
             ? 'stat-table-value stat-table-value--long'
@@ -42,6 +48,7 @@ export default function TableRow({ label, link, value }: StatRow) {
         {link ? (
           <a className="stat-table-link" href={link}>
             {value}
+            <span className="sr-only">{`, ${label}${linkLabel ? `: ${linkLabel}` : ''}`}</span>
           </a>
         ) : (
           value

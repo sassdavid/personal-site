@@ -5,8 +5,8 @@ import Job, { type JobTier } from './Experience/Job';
 
 interface ExperienceProps {
   data: Position[];
-  /** Instant every ongoing tenure is measured to. Defaults to one clock read. */
-  now?: DateInput;
+  /** Instant every ongoing tenure is measured to. */
+  now: DateInput;
 }
 
 /** Year before which a role is treated as student-era. */
@@ -16,15 +16,17 @@ const STUDENT_ERA_BEFORE = 2013;
  * Year from an ISO date, read from the string rather than parsed.
  *
  * `new Date('2013-01-01')` is UTC midnight, which `getFullYear()` renders as
- * 2012 anywhere west of Greenwich — so the student-era boundary moved with
- * the reader's timezone.
+ * 2012 anywhere west of Greenwich, so parsing would move the student-era
+ * boundary with the reader's timezone.
  */
 function isoYear(date: string): number {
   return Number.parseInt(date.slice(0, 4), 10);
 }
 
 function isEarlyCareer(job: Position): boolean {
-  if (/intern/i.test(job.position)) {
+  // A whole word: "International Director" and "Internal Systems" are not
+  // internships.
+  if (/\bintern(?:ship)?\b/i.test(job.position)) {
     return true;
   }
 
@@ -32,32 +34,25 @@ function isEarlyCareer(job: Position): boolean {
 }
 
 /**
- * Which step of the spine's type scale a role takes. The lead is the newest
- * substantive, non-side-role start date rather than array position, so
- * reordering the source data cannot change the visual hierarchy.
+ * Which step of the spine's type scale a role takes. The lead is the one role
+ * with the newest substantive, non-side-role start date rather than array
+ * position, so reordering the source data cannot change the visual
+ * hierarchy, and a side role that began the same day does not share it.
  */
 export function tierFor(job: Position, positions: Position[]): JobTier {
   if (isEarlyCareer(job)) return 'early';
 
-  const newestStartDate = positions
+  const lead = positions
     .filter(
       (position) =>
         !isEarlyCareer(position) && position.commitment !== 'part-time',
     )
-    .map((position) => position.startDate)
-    .sort((a, b) => b.localeCompare(a))[0];
+    .sort((a, b) => b.startDate.localeCompare(a.startDate))[0];
 
-  if (job.startDate === newestStartDate) {
-    return 'lead';
-  }
-
-  return 'primary';
+  return job === lead ? 'lead' : 'primary';
 }
 
-export default function Experience({
-  data,
-  now = Date.now(),
-}: ExperienceProps) {
+export default function Experience({ data, now }: ExperienceProps) {
   const positions = sortPositions(data);
 
   return (

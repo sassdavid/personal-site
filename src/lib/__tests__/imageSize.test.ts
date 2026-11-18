@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  leadImageSource,
   parseImageSize,
   readImageSize,
   readPostImageSizes,
@@ -91,7 +92,7 @@ describe('readImageSize', () => {
     ['/../package.json', /outside public/],
     ['/%2e%2e/package.json', /outside public/],
     ['/missing-article-image.png', /does not exist/],
-    ['/robots.txt', /unsupported or malformed header/],
+    ['/og.meta.json', /unsupported or malformed header/],
   ])('fails the build for %s', (src, message) => {
     expect(() => readImageSize(src)).toThrow(message);
   });
@@ -137,11 +138,46 @@ describe('readPostImageSizes', () => {
     const preview = { allowMissingLocalImages: true };
 
     expect(readPostImageSizes('![gone](/gone.png)', preview)).toEqual({});
-    expect(() => readPostImageSizes('![bad](/robots.txt)', preview)).toThrow(
+    expect(() => readPostImageSizes('![bad](/og.meta.json)', preview)).toThrow(
       /unsupported or malformed header/,
     );
     expect(() =>
-      readPostImageSizes('![up](/images/../robots.txt)', preview),
+      readPostImageSizes('![up](/images/../og.meta.json)', preview),
     ).toThrow(/outside public/);
+  });
+});
+
+describe('leadImageSource', () => {
+  const paragraph = 'A short paragraph.';
+
+  it('names an image among the opening blocks, and nothing further down', () => {
+    expect(
+      leadImageSource(
+        `## Context\n\n${paragraph}\n\n![lead](/images/lead.png)`,
+      ),
+    ).toBe('/images/lead.png');
+    expect(
+      leadImageSource(
+        `${paragraph}\n\n${paragraph}\n\n${paragraph}\n\n![late](/images/late.png)`,
+      ),
+    ).toBeUndefined();
+    expect(leadImageSource(`${paragraph}\n\n${paragraph}`)).toBeUndefined();
+  });
+
+  // A footnote example in a fence is text, wherever the fence falls.
+  it('reads a fence past the window as one block', () => {
+    expect(
+      leadImageSource(
+        `${paragraph}\n\n${paragraph}\n\n${paragraph}\n\n\`\`\`md\n[^1]: <iframe srcdoc="x"></iframe>\n\`\`\`\n`,
+      ),
+    ).toBeUndefined();
+  });
+
+  it('resolves a reference-style lead image defined further down', () => {
+    expect(
+      leadImageSource(
+        `${paragraph}\n\n![lead][card]\n\n${paragraph}\n\n[card]: /images/card.png`,
+      ),
+    ).toBe('/images/card.png');
   });
 });

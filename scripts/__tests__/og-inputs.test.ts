@@ -8,17 +8,10 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import {
-  getAllPosts,
-  getPostSlugs,
-  validatePostFrontmatter,
-} from '@/lib/posts';
+import { validatePostFrontmatterData } from '@/lib/post-frontmatter.mjs';
+import { getAllPosts, getPostSlugs } from '@/lib/posts';
 import { formatDate } from '@/lib/utils';
 import { assertFontDigest } from '../lib/fonts.mjs';
-import {
-  IMAGE_RENDERER_PACKAGES,
-  readImageRenderer,
-} from '../lib/image-renderer.mjs';
 import {
   CARD_FONTS,
   CARD_SIZE,
@@ -109,19 +102,6 @@ describe('share card inputs', () => {
   it('formats a date without drifting a day west of Greenwich', () => {
     expect(formatCardDate('2026-01-08')).toBe('January 8, 2026');
   });
-
-  it('measures a readout for every card', () => {
-    for (const card of cards) {
-      expect(card.readout.map((cell) => cell.label)).toEqual([
-        'Words',
-        'Unique external links',
-        'Reading time',
-      ]);
-      for (const cell of card.readout) {
-        expect(cell.value).toMatch(/\d/);
-      }
-    }
-  });
 });
 
 describe('share card fonts', () => {
@@ -133,31 +113,6 @@ describe('share card fonts', () => {
     expect(() =>
       assertFontDigest({ ...font, sha256: '0'.repeat(64) }, data),
     ).toThrow(/Refusing to generate images from changed font bytes/);
-  });
-});
-
-describe('share card renderer', () => {
-  it('reads each renderer package from the lockfile', async () => {
-    const root = temporaryRoot();
-    const entry = (name: string) => ({
-      version: '1.0.0',
-      integrity: `sha512-${name}`,
-    });
-    writeFileSync(
-      join(root, 'package-lock.json'),
-      JSON.stringify({
-        packages: Object.fromEntries(
-          IMAGE_RENDERER_PACKAGES.map((name) => [
-            `node_modules/${name}`,
-            entry(name),
-          ]),
-        ),
-      }),
-    );
-
-    await expect(readImageRenderer(root)).resolves.toEqual(
-      IMAGE_RENDERER_PACKAGES.map((name) => ({ name, ...entry(name) })),
-    );
   });
 });
 
@@ -175,7 +130,7 @@ describe('share card frontmatter validation', () => {
     'rejects the same malformed frontmatter as the route reader %#',
     async (frontmatter, message) => {
       expect(() =>
-        validatePostFrontmatter(
+        validatePostFrontmatterData(
           frontmatter,
           join('content', 'writing', 'example.md'),
         ),
@@ -196,7 +151,8 @@ describe('share card frontmatter validation', () => {
     const [card] = (await readPostCards(
       postFixture(frontmatter),
     )) as PostCard[];
-    const { title, date, description } = validatePostFrontmatter(frontmatter);
+    const { title, date, description } =
+      validatePostFrontmatterData(frontmatter);
 
     expect(card).toMatchObject({ title, date, description });
   });
@@ -212,6 +168,15 @@ describe('post measurements', () => {
     ['- one\n- two\n\n> quoted', 3],
     ['1. one\n  2) two\n> 3. quoted\n\n2026 remains prose', 6],
     ['![alt text](/images/a.png)', 0],
+    // A standalone image's title is its visible caption; an inline image's
+    // is only a tooltip.
+    ["![alt](/images/a.png 'A caption of five words')", 5],
+    ["[![alt](/images/a.png 'Linked caption')](https://example.com)", 2],
+    ["Some ![x](/images/a.png 'tooltip only') text", 2],
+    // Footnote bodies stay raw until they render, and a reader reads them.
+    ['Claim.[^1]\n\n[^1]: Two more.', 3],
+    // A note is read inline, so a fence-shaped line in one is text.
+    ['Claim.[^1]\n\n[^1]: ~~~\n    two more words\n    ~~~', 4],
     ['latency < 50ms and throughput > 1k', 5],
     ['<strong>Two words</strong>', 2],
     ['Intro\n\n```js\nconst ignored = "one two three";\n```\n', 1],

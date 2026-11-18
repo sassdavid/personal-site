@@ -4,24 +4,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
 import type { ImageSize } from '@/lib/imageSize';
+import { withBasePath } from '@/lib/utils';
 
 import PostContent from '../PostContent';
 
 const OG_SIZE: Record<string, ImageSize> = {
   '/og.png': { width: 1200, height: 630 },
 };
-
-/**
- * Fork: this repository publishes no posts, so the headings upstream reads
- * from its published post are inlined: the four whose ids changed when the
- * slug scheme did.
- */
-const LEGACY_HEADINGS = [
-  '## On using `--dangerously-skip-permissions`',
-  '## Browser automation: `--chrome` for interaction, Playwright MCP for screenshots',
-  '## Plan Mode + writing plans to files',
-  '## CLAUDE.md + AGENTS.md',
-].join('\n\n');
 
 function markup(content: string, imageSizes = OG_SIZE) {
   return renderToStaticMarkup(
@@ -49,6 +38,25 @@ describe('PostContent block structure', () => {
 });
 
 describe('PostContent image sizing', () => {
+  it('preloads the responsive candidates instead of the fallback image', () => {
+    const html = renderToStaticMarkup(
+      <PostContent
+        content={
+          '<img src="/og.png" srcset="/og.png 1200w" sizes="50vw" alt="Card">'
+        }
+        imageSizes={OG_SIZE}
+        leadImage="/og.png"
+      />,
+    );
+    const document = new DOMParser().parseFromString(html, 'text/html');
+    const preload = document.querySelector('link[rel="preload"][as="image"]');
+    expect(preload?.getAttribute('imagesrcset')).toBe(
+      `${withBasePath('/og.png')} 1200w`,
+    );
+    expect(preload?.getAttribute('imagesizes')).toBe('50vw');
+    expect(preload?.hasAttribute('href')).toBe(false);
+  });
+
   it.each([
     ['a measured local image', '![Alt](/og.png)', {}, '630'],
     [
@@ -118,6 +126,31 @@ describe('PostContent figures', () => {
     }
   });
 
+  it('links a local figure to its file, unless it already links elsewhere', () => {
+    const figure = render(
+      <PostContent
+        content={'Intro.\n\n![Alt](/og.png)\n'}
+        imageSizes={OG_SIZE}
+      />,
+    );
+    // Chrome names it "Alt (full size)"; jsdom's name computation drops the space.
+    expect(
+      figure.getByRole('link', { name: /^Alt\s*\(full size\)$/ }),
+    ).toHaveAttribute('href', withBasePath('/og.png'));
+    figure.unmount();
+
+    // The authored destination is kept, with no second link inside it.
+    const linked = render(
+      <PostContent
+        content={'Intro.\n\n[![Alt](/og.png)](https://example.com)\n'}
+        imageSizes={OG_SIZE}
+      />,
+    );
+    expect(
+      linked.getAllByRole('link').map((link) => link.getAttribute('href')),
+    ).toEqual(['https://example.com']);
+  });
+
   // A `src` is not an image: promoting one sends it to the build-time sizer,
   // which only measures Markdown image syntax, and `next build` fails.
   it('leaves a standalone raw-HTML embed alone', () => {
@@ -125,8 +158,54 @@ describe('PostContent figures', () => {
       <PostContent content={'Intro.\n\n<video src="/demo.mp4"></video>\n'} />,
     );
 
-    expect(html).toContain('<video src="/demo.mp4"');
+    expect(html).toContain(`<video src="${withBasePath('/demo.mp4')}"`);
     expect(html).not.toContain('<figure');
+  });
+});
+
+// Raw HTML in a post renders as its author wrote it.
+describe('PostContent raw HTML', () => {
+  // Its body is opaque to the Markdown checks, so it renders as text: markup
+  // inside it can neither fetch nor run.
+  it('keeps a raw code block as text, with its language', () => {
+    const html = markup(
+      '<pre><code class="language-js" style="background:url(/x.png)">const a = <b>"b"</b> &lt; c;<img src="/private.png"></code></pre>\n',
+    );
+
+    expect(html).toContain(
+      '<code class="language-js lang-js">const a = &quot;b&quot; &lt; c;</code>',
+    );
+    expect(html).toContain('js code block');
+    expect(html).not.toMatch(/style=|<img|<b>/);
+  });
+
+  // next/image would write a srcset of its own over the author's.
+  it('keeps a raw image as written: candidates, sizes, and id', () => {
+    const sizes = { '/og.png': { width: 1200, height: 630 } };
+    const html = markup(
+      'Intro.\n\n<img id="chart" src="/og.png" srcset="/og.png 1x, /og.png 2x" sizes="50vw" alt="A chart">\n\nText <img srcset="/og.png 1x" alt="Only candidates"> after.\n',
+      sizes,
+    );
+    const og = withBasePath('/og.png');
+
+    expect(html).toContain(
+      `<img id="chart" src="${og}" srcSet="${og} 1x, ${og} 2x" sizes="50vw"`,
+    );
+    expect(html).toContain(`<img srcSet="${og} 1x" alt="Only candidates"`);
+  });
+
+  it('keeps the attributes on a raw paragraph', () => {
+    expect(
+      markup('<p hidden id="note" lang="fr" dir="rtl">Bonjour</p>\n'),
+    ).toMatch(/<p hidden="" id="note" lang="fr" dir="rtl">Bonjour<\/p>/);
+  });
+
+  // Copied with curly quotes, `{"ok":true}` no longer parses as JSON.
+  it('sets quotes in prose but not in raw code', () => {
+    const html = markup('A "quote" and <code>{"ok":true}</code>.\n');
+
+    expect(html).toContain('A \u201cquote\u201d');
+    expect(html).toContain('<code>{&quot;ok&quot;:true}</code>');
   });
 });
 
@@ -225,8 +304,18 @@ describe('PostContent heading anchors', () => {
     expect(headingIds(container.innerHTML)).toEqual(['repeat', 'repeat-2']);
   });
 
+  // Headings published in an early post, whose ids the renderer then wrote
+  // itself. A heading the two schemes agree on needs no alias.
   it('keeps the legacy ids of published headings resolving as hidden aliases', () => {
-    const html = markup(LEGACY_HEADINGS);
+    const html = markup(
+      [
+        '## Context',
+        '## On using `--dangerously-skip-permissions`',
+        '## Browser automation: `--chrome` for interaction, Playwright MCP for screenshots',
+        '## Plan Mode + writing plans to files',
+        '## CLAUDE.md + AGENTS.md',
+      ].join('\n\n'),
+    );
 
     expect(aliasIds(html).sort()).toEqual([
       'browser-automation---chrome-for-interaction-playwright-mcp-for-screenshots',
@@ -251,6 +340,30 @@ describe('PostContent heading anchors', () => {
     const html = markup(content);
 
     expect(aliasIds(html)).toEqual(aliases);
+    expectUniqueIds(html);
+  });
+
+  // The layout's own ids: a heading taking `main-content` would steal the
+  // skip link's target.
+  it('leaves the page its own ids', () => {
+    expect(headingIds(markup('## Main Content\n\nText.\n'))).toEqual([
+      'main-content-2',
+    ]);
+  });
+
+  // Labels the slugifier empties, or slugifies alike, still get one note
+  // each, and each marker links to its own.
+  it('gives every footnote its own id, and its marker the matching link', () => {
+    const html = markup(
+      'A[^出典] B[^Note] C[^note!] D[^CASE].\n\n[^出典]: Source.\n[^Note]: One.\n[^note!]: Two.\n[^case]: Matched.\n',
+    );
+    const links = idsIn(html, /<a href="#([^"]*)"><sup>/g);
+
+    expect(links).toHaveLength(4);
+    expect(new Set(links).size).toBe(4);
+    expect(links.every((id) => id !== '' && html.includes(`id="${id}"`))).toBe(
+      true,
+    );
     expectUniqueIds(html);
   });
 

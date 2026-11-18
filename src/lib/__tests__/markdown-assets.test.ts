@@ -56,6 +56,55 @@ describe('readMarkdownReferences', () => {
     ]);
   });
 
+  it('reads the links and images in footnote text', () => {
+    const markdown = [
+      'A claim.[^1]',
+      '',
+      '[^1]: See [the paper](/downloads/paper.pdf), ![chart](/images/chart.png),',
+      '    and [the notes][notes].',
+      '',
+      '[notes]: /downloads/notes.pdf',
+    ].join('\n');
+
+    expect(readMarkdownReferences(markdown)).toEqual([
+      { kind: 'link', target: '/downloads/paper.pdf' },
+      image('/images/chart.png'),
+      { kind: 'link', target: '/downloads/notes.pdf' },
+    ]);
+  });
+
+  // The renderer reads footnote text inline, so this fence is text and the
+  // link inside it is live, while code spans stay code.
+  it('reads a footnote with inline rules, as the renderer does', () => {
+    const markdown = [
+      'Text.[^1]',
+      '',
+      '[^1]: ~~~',
+      '    [download](/downloads/private.pdf) `[code](/not-a-link.pdf)`',
+      '    ~~~',
+    ].join('\n');
+
+    expect(readMarkdownReferences(markdown)).toEqual([
+      { kind: 'link', target: '/downloads/private.pdf' },
+    ]);
+  });
+
+  it('decodes a footnote reference destination once, as the renderer does', () => {
+    const markdown = [
+      'A claim.[^1]',
+      '',
+      '[^1]: ![chart][chart] and [the data][data].',
+      '',
+      '[chart]: /images/a&amp;amp;b.png',
+      '[data]: </downloads/a&gt;b.csv>',
+    ].join('\n');
+
+    expect(readMarkdownReferences(markdown)).toEqual([
+      image('/images/a&amp;b.png'),
+      { kind: 'link', target: '/downloads/a>b.csv' },
+    ]);
+  });
+
   it('ignores resource-looking text inside code', () => {
     expect(
       readMarkdownReferences(
@@ -79,6 +128,8 @@ describe('readMarkdownReferences', () => {
     '<svg><image id="i"><set attributeName="href" to="/images/private.png"></set></image></svg>',
     '<base href="/private/">',
     '<meta http-equiv="refresh" content="0;url=/private/">',
+    // React renders the prop spelling as `http-equiv`.
+    '<meta httpEquiv="refresh" content="0;url=/private/">',
   ])('fails closed for an uninspectable raw HTML fetch: %s', (markdown) => {
     expect(() => readMarkdownReferences(markdown)).toThrow(
       /not allowed|cannot be verified/i,
@@ -105,21 +156,21 @@ describe('readMarkdownReferences', () => {
 describe('parseSrcset', () => {
   it.each([
     ['/a.png 1x, /b.png 960w, /c.png', ['/a.png', '/b.png', '/c.png']],
-    // A described data URL stays separate from a later local candidate.
+    // A URL runs to whitespace, so its commas are its own, and a trailing
+    // comma ends a candidate without a descriptor.
+    ['/a,b.png 1x, /c.png 2x', ['/a,b.png', '/c.png']],
     [
-      'data:image/png;base64,AAAA 1x, /local.png 2x',
+      'data:image/png;base64,AAAA, /local.png 2x',
       ['data:image/png;base64,AAAA', '/local.png'],
     ],
   ])('parses %s', (srcset, expected) => {
     expect(parseSrcset(srcset)).toEqual(expected);
   });
 
-  it.each([
-    '/one.png 1x 2x',
-    '/one.png nope',
-    '/one.png calc(1x',
-    'data:image/png;base64,AAAA, /hidden.png 2x',
-  ])('fails closed for malformed or ambiguous srcset: %s', (srcset) => {
-    expect(() => parseSrcset(srcset)).toThrow(/srcset/i);
-  });
+  it.each(['/one.png 1x 2x', '/one.png nope', '/one.png calc(1x'])(
+    'fails closed for malformed srcset: %s',
+    (srcset) => {
+      expect(() => parseSrcset(srcset)).toThrow(/srcset/i);
+    },
+  );
 });

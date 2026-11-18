@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SchemaGraph } from '@/components/Schema';
 import PageWrapper from '@/components/Template/PageWrapper';
+import SectionNav from '@/components/Template/SectionNav';
 import { createPageMetadata } from '@/lib/metadata';
 import {
   blogNode,
@@ -10,7 +11,7 @@ import {
   WRITING_DESCRIPTION,
 } from '@/lib/schema';
 import { smartQuotes } from '@/lib/typography';
-import { formatDate } from '@/lib/utils';
+import { formatDate, withBasePath } from '@/lib/utils';
 import { getWritingItems, type WritingItem as Item } from '@/lib/writing';
 
 const writingMetadata = createPageMetadata({
@@ -21,8 +22,8 @@ const writingMetadata = createPageMetadata({
 
 export const metadata: Metadata = {
   ...writingMetadata,
-  // Spread rather than replace: `alternates` also carries the canonical, and
-  // overwriting the whole object dropped it from this page.
+  // Spread rather than replace: `alternates` also carries the canonical,
+  // which a new object would drop from this page.
   alternates: {
     ...writingMetadata.alternates,
     types: {
@@ -99,19 +100,22 @@ export default function WritingPage() {
     {
       id: 'writing-here',
       label: 'Essays on this site',
+      short: 'Essays',
       items: allItems.filter((item) => !item.isExternal),
     },
     {
       id: 'writing-elsewhere',
       label: 'Selected writing elsewhere',
+      short: 'Elsewhere',
       items: allItems.filter((item) => item.isExternal && item.date),
     },
     {
       id: 'writing-guides',
       label: 'Guides',
+      short: 'Guides',
       items: allItems.filter((item) => item.isExternal && !item.date),
     },
-  ];
+  ].filter(({ items }) => items.length > 0);
 
   return (
     <PageWrapper>
@@ -122,31 +126,39 @@ export default function WritingPage() {
         <header className="page-header">
           <h1 className="page-title">Writing</h1>
           <a
-            href="/feed.xml"
+            href={withBasePath('/feed.xml')}
             className="button button-secondary button-compact writing-rss-link"
           >
             RSS
           </a>
         </header>
 
-        {sections
-          .filter(({ items }) => items.length > 0)
-          .map(({ id, label, items }) => (
-            <section className="projects-group" aria-labelledby={id} key={id}>
-              <div className="section-header">
-                <h2 id={id} className="section-heading">
-                  {label}
-                </h2>
-              </div>
-              <ol className="projects-register">
-                {items.map((item) => (
-                  <li key={item.url}>
-                    <WritingItem item={item} />
-                  </li>
-                ))}
-              </ol>
-            </section>
-          ))}
+        {/* The guides start a long scroll down on a phone, so each list is
+            one plain link away, with or without scripts. */}
+        {sections.length > 1 ? (
+          <SectionNav
+            label="Writing sections"
+            className="writing-nav"
+            sections={sections.map(({ id, short }) => ({ id, title: short }))}
+          />
+        ) : null}
+
+        {sections.map(({ id, label, items }) => (
+          <section className="projects-group" aria-labelledby={id} key={id}>
+            <div className="section-header">
+              <h2 id={id} className="section-heading">
+                {label}
+              </h2>
+            </div>
+            <ol className="projects-register">
+              {items.map((item) => (
+                <li key={item.url}>
+                  <WritingItem item={item} />
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))}
       </article>
     </PageWrapper>
   );

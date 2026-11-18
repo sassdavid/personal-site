@@ -1,6 +1,7 @@
 import { DateSpan } from '@/components/Projects/DateRange';
 import type { Position } from '@/data/resume/work';
 import { type DateInput, formatDuration, monthsBetween } from '@/lib/career';
+import { publishedMarkdown } from '@/lib/published-markdown.mjs';
 import { smartQuotes } from '@/lib/typography';
 
 import JobSummary from './JobSummary';
@@ -19,7 +20,16 @@ interface JobProps {
 }
 
 export default function Job({ data, tier = 'primary', now }: JobProps) {
-  const { name, position, url, startDate, endDate, summary, highlights } = data;
+  const {
+    name,
+    position,
+    url,
+    startDate,
+    endDate,
+    commitment,
+    summary,
+    highlights,
+  } = data;
   const isCurrent = !endDate;
   const months = monthsBetween(startDate, endDate ?? now);
   // An ongoing tenure is a build-time floor, but "<1 mo" is already an upper bound.
@@ -53,10 +63,15 @@ export default function Job({ data, tier = 'primary', now }: JobProps) {
             </a>
             {/* Only layout separates the two, so a screen reader needs the comma. */}
             <span className="sr-only">, </span>
-            <span className="job-position">{smartQuotes(position)}</span>
+            {/* A side role overlaps the main one on the timeline, so it
+                says that it is one. */}
+            <span className="job-position">
+              {smartQuotes(position)}
+              {commitment === 'part-time' ? ', part-time' : null}
+            </span>
           </h3>
         </header>
-        {summary ? <JobSummary summary={summary} /> : null}
+        {summary ? <JobSummary summary={publishedMarkdown(summary)} /> : null}
         {highlights ? (
           <ul className="points">
             {highlights.map((highlight) => (

@@ -1,11 +1,40 @@
+import { readFileSync } from 'node:fs';
+
 import bundleAnalyzer from '@next/bundle-analyzer';
+
+import { parseSiteUrl } from './src/lib/site-url.mjs';
+
+const { homepage } = JSON.parse(
+  readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
+);
+
+/**
+ * A GitHub Codespace forwards the dev server to
+ * `NAME-PORT.app.github.dev`, which the dev server would otherwise refuse,
+ * live-reload socket included. A pattern cannot cover part of a label, so the
+ * entry is this codespace's own host for the port `next dev` uses.
+ */
+function codespaceOrigin() {
+  const { CODESPACE_NAME, GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN, PORT } =
+    process.env;
+  return CODESPACE_NAME && GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN
+    ? [
+        `${CODESPACE_NAME}-${PORT ?? 3000}.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`,
+      ]
+    : [];
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
 
-  // Hostname patterns, not origins: lets a phone on the LAN load the dev server.
-  allowedDevOrigins: ['192.168.*.*'],
+  // `/repo` when `homepage` is a project site such as
+  // `https://user.github.io/repo/`, and empty at a root URL.
+  basePath: parseSiteUrl(homepage).basePath,
+
+  // Hostname patterns, not origins: lets a phone on the LAN load the dev
+  // server, and a Codespace's forwarded port keep live reload.
+  allowedDevOrigins: ['192.168.*.*', ...codespaceOrigin()],
 
   images: {
     unoptimized: true,
@@ -24,9 +53,6 @@ const nextConfig = {
   },
 };
 
-// Keep the default export as a direct config identifier. GitHub's
-// configure-pages action edits this object before repository-site builds to
-// inject their basePath; it cannot see through a wrapping function call.
 if (process.env.ANALYZE === 'true') {
   Object.assign(nextConfig, bundleAnalyzer({ enabled: true })(nextConfig));
 }

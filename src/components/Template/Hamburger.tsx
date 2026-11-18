@@ -3,14 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-
+import { createPortal, flushSync } from 'react-dom';
+import { MENU_ID } from '@/lib/page-ids';
 import routes from '../../data/routes';
 import { isActiveRoute } from '../../lib/routes';
 import { smartQuotes } from '../../lib/typography';
 import SlideMenu from './SlideMenu';
-
-const MENU_ID = 'mobile-nav-menu';
 
 export default function Hamburger() {
   const pathname = usePathname();
@@ -25,16 +23,26 @@ export default function Hamburger() {
   const toggleMenu = useCallback(() => setOpen((prev) => !prev), []);
   const closeMenu = useCallback(() => setOpen(false), []);
 
+  // Back and Forward change the page under the menu, which would stay modal
+  // and keep the new page inert.
+  useEffect(() => {
+    if (!open) return;
+    window.addEventListener('popstate', closeMenu);
+    return () => window.removeEventListener('popstate', closeMenu);
+  }, [open, closeMenu]);
+
   useEffect(() => {
     const button = buttonRef.current;
     if (!open || !button) return;
 
     // Observe the trigger so CSS owns the breakpoint. Hiding it alone leaves
-    // the portalled menu open and the body locked on a wider viewport.
+    // the portalled dialog open, and modal, on a wider viewport.
     const observer = new ResizeObserver(() => {
       if (button.getClientRects().length > 0) return;
 
-      closeMenu();
+      // Flushed, so the dialog is closed before focus moves: nothing outside
+      // a modal dialog can take focus.
+      flushSync(closeMenu);
 
       // The hidden trigger cannot receive restored focus. Hand it to the
       // current desktop route, or the home link when no route is selected.
@@ -51,8 +59,8 @@ export default function Hamburger() {
 
   const slideMenu = (
     <SlideMenu id={MENU_ID} isOpen={open} onClose={closeMenu}>
-      {/* The trap keeps focus inside the dialog, so it needs a way out that
-          is not the Escape key alone. */}
+      {/* A modal dialog keeps focus inside it, so it needs a way out that is
+          not the Escape key alone. */}
       <button
         type="button"
         className="slide-menu-close"
@@ -90,32 +98,24 @@ export default function Hamburger() {
   return (
     <>
       <div className="hamburger-container">
-        <div className="main" id="hamburger-nav">
-          <ul>
-            <li className="menu">
-              <button
-                ref={buttonRef}
-                type="button"
-                onClick={toggleMenu}
-                className="hamburger-button"
-                aria-label={
-                  open ? 'Close navigation menu' : 'Open navigation menu'
-                }
-                aria-expanded={open}
-                aria-controls={MENU_ID}
-              >
-                {/* CSS-based hamburger/close icon for cross-platform consistency */}
-                <span
-                  className={`hamburger-icon${open ? ' hamburger-icon--open' : ''}`}
-                >
-                  <span />
-                  <span />
-                  <span />
-                </span>
-              </button>
-            </li>
-          </ul>
-        </div>
+        <button
+          ref={buttonRef}
+          type="button"
+          onClick={toggleMenu}
+          className="hamburger-button"
+          aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={open}
+          aria-controls={MENU_ID}
+        >
+          {/* CSS-based hamburger/close icon for cross-platform consistency */}
+          <span
+            className={`hamburger-icon${open ? ' hamburger-icon--open' : ''}`}
+          >
+            <span />
+            <span />
+            <span />
+          </span>
+        </button>
       </div>
       {mounted && createPortal(slideMenu, document.body)}
     </>

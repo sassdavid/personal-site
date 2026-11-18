@@ -8,7 +8,7 @@
  * here, once.
  */
 import { createHash } from 'node:crypto';
-import { readdir, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { parser, RuleType } from 'markdown-to-jsx/markdown';
@@ -16,6 +16,7 @@ import { parser, RuleType } from 'markdown-to-jsx/markdown';
 import { readColorToken } from '../src/lib/color-token.mjs';
 import { parseFrontmatter } from '../src/lib/frontmatter.mjs';
 import { readMarkdownReferences } from '../src/lib/markdown-assets.mjs';
+import { listPostFiles } from '../src/lib/post-files.mjs';
 import { validatePostFrontmatterData } from '../src/lib/post-frontmatter.mjs';
 import { DISPLAY_FONT } from './lib/fonts.mjs';
 import { readImageRenderer } from './lib/image-renderer.mjs';
@@ -60,6 +61,7 @@ export const CARD_FONTS = [
 const GENERATOR_SOURCES = [
   'scripts/generate-og.mjs',
   'scripts/lib/fonts.mjs',
+  'scripts/lib/font-coverage.mjs',
   'scripts/lib/image-renderer.mjs',
   'scripts/og-inputs.mjs',
   'src/lib/color-token.mjs',
@@ -89,7 +91,7 @@ const CONTENT_DIRECTORY = join('content', 'writing');
 /** Words per minute used for the reading-time readout. */
 const READING_WORDS_PER_MINUTE = 225;
 
-export function postCardPath(slug) {
+function postCardPath(slug) {
   return `${POST_CARD_DIRECTORY}/${slug}.png`;
 }
 
@@ -135,14 +137,6 @@ export function readCardColors(root = process.cwd()) {
  * same shape `isSafeSlug` in `src/lib/posts.ts` accepts. A post whose slug that
  * function rejects has no route to share anyway.
  */
-function assertSafeSlug(slug, file) {
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    throw new Error(
-      `${file} has a slug the site cannot route: ${slug}. Use lowercase words separated by single hyphens.`,
-    );
-  }
-}
-
 /**
  * The site's own origin, through the `homepage` reader the export scripts use.
  *
@@ -163,6 +157,17 @@ function isAutolink(node) {
     child?.type === RuleType.text &&
     child.text === node.target
   );
+}
+
+/** The caption of a paragraph that holds only an image, or a linked one. */
+function captionOf(node) {
+  if (node.type !== RuleType.paragraph || node.children?.length !== 1) return;
+  const [child] = node.children;
+  const image =
+    child.type === RuleType.link && child.children?.length === 1
+      ? child.children[0]
+      : child;
+  return image.type === RuleType.image ? image.title : undefined;
 }
 
 /**
@@ -191,6 +196,20 @@ export function countProseWords(markdown) {
       return;
     }
     if (value.type === RuleType.link && isAutolink(value)) return;
+    // A standalone image's title is its visible caption, and footnote bodies
+    // are kept as raw text until they render; a reader reads both.
+    const caption = captionOf(value);
+    if (caption) prose.push(caption);
+    if (value.type === RuleType.refCollection) {
+      for (const [label, { target }] of Object.entries(value.refs)) {
+        // Read inline, as the renderer reads a note: on one line after a mark
+        // that is no word, where no block rule such as a fence can begin.
+        if (label.startsWith('^')) {
+          visit(parser(`· ${target.replace(/\s*\n\s*/g, ' ')}`));
+        }
+      }
+      return;
+    }
 
     for (const child of Object.values(value)) visit(child);
   }
@@ -286,20 +305,11 @@ function measurePost(markdown) {
  * the repository rather than rendered per request.
  */
 export async function readPostCards(root = process.cwd()) {
-  const directory = join(root, CONTENT_DIRECTORY);
-  const files = (await readdir(directory)).filter((file) =>
-    file.endsWith('.md'),
-  );
   const cards = [];
 
-  for (const file of files.sort()) {
-    const { data, content } = parseFrontmatter(
-      await readFile(join(directory, file), 'utf8'),
-    );
-
-    const slug = file.replace(/\.md$/, '');
-    const source = join(CONTENT_DIRECTORY, file);
-    assertSafeSlug(slug, source);
+  for (const { slug, path } of listPostFiles(join(root, CONTENT_DIRECTORY))) {
+    const { data, content } = parseFrontmatter(await readFile(path, 'utf8'));
+    const source = join(CONTENT_DIRECTORY, `${slug}.md`);
     const frontmatter = validatePostFrontmatterData(data, source);
 
     if (frontmatter.draft === true) continue;

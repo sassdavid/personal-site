@@ -12,18 +12,16 @@
  * `interests`, `projects`, `references`) are omitted rather than stubbed.
  */
 
-import contact from '@/data/contact';
+import { type MarkdownToJSX, parser, RuleType } from 'markdown-to-jsx/markdown';
+
+import { profiles } from '@/data/contact';
 import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
-import {
-  type Category,
-  categories,
-  type Skill,
-  skills,
-} from '@/data/resume/skills';
+import { type Skill, skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
 import { sortPositions } from '@/lib/career';
+import { publishedMarkdown } from '@/lib/published-markdown.mjs';
 import {
   AUTHOR_NAME,
   SITE_DESCRIPTION,
@@ -74,6 +72,8 @@ interface ResumeWork {
   url: string;
   startDate: string;
   endDate?: string;
+  /** An extension, as nested objects allow: a role beside the main career. */
+  commitment?: 'part-time';
   summary?: string;
   highlights?: string[];
 }
@@ -119,12 +119,84 @@ interface JsonResume {
  */
 export function toPlainText(value: string): string {
   return (
-    value
-      .replace(/<\/?a(?:\s[^>]*)?>/gi, '')
+    textOf(parser(value))
       // Template literals in the data files wrap across lines and indent.
       .replace(/\s+/g, ' ')
       .trim()
   );
+}
+
+/**
+ * Inline HTML a summary may use. Any other tag is prose: résumé text is
+ * technical, and `vector<int>` parses as an element called `int`.
+ */
+const INLINE_ELEMENTS = new Set([
+  'a',
+  'abbr',
+  'b',
+  'br',
+  'cite',
+  'code',
+  'del',
+  'em',
+  'i',
+  'ins',
+  'kbd',
+  'mark',
+  'q',
+  's',
+  'samp',
+  'small',
+  'span',
+  'strong',
+  'sub',
+  'sup',
+  'u',
+  'var',
+]);
+
+/** The text a reader sees in parsed Markdown, with unknown tags as written. */
+function textOf(nodes: MarkdownToJSX.ASTNode[]): string {
+  return nodes
+    .map((node) => {
+      switch (node.type) {
+        case RuleType.text:
+        case RuleType.codeInline:
+          return node.text;
+        case RuleType.htmlComment:
+        case RuleType.refCollection:
+          return '';
+        case RuleType.htmlSelfClosing:
+          if (INLINE_ELEMENTS.has(node.tag))
+            return node.tag === 'br' ? ' ' : '';
+          // `u` is the source as written; the parser does not type it.
+          return (node as { u?: string }).u ?? `<${node.tag}>`;
+        case RuleType.htmlBlock: {
+          const inner = textOf(node.children ?? []);
+          return INLINE_ELEMENTS.has(node.tag)
+            ? inner
+            : `<${node.tag}>${inner}</${node.tag}>`;
+        }
+        case RuleType.breakLine:
+          return ' ';
+        // A block ends a run of prose; an inline node such as a link or
+        // emphasis sits inside one, so only blocks get space around them.
+        case RuleType.paragraph:
+        case RuleType.heading:
+        case RuleType.blockQuote:
+          return ` ${textOf(node.children)} `;
+        case RuleType.codeBlock:
+          return ` ${node.text} `;
+        case RuleType.orderedList:
+        case RuleType.unorderedList:
+          return ` ${node.items.map(textOf).join(' ')} `;
+        default:
+          return 'children' in node && Array.isArray(node.children)
+            ? textOf(node.children)
+            : '';
+      }
+    })
+    .join('');
 }
 
 /**
@@ -157,13 +229,11 @@ function buildBasics(): ResumeBasics {
     url: `${SITE_URL}/`,
     summary: SITE_DESCRIPTION,
     location: buildLocation(),
-    profiles: contact
-      .filter((item) => !item.link.startsWith('mailto:'))
-      .map((item) => ({
-        network: item.label,
-        username: usernameFrom(item.link),
-        url: item.link,
-      })),
+    profiles: profiles.map((item) => ({
+      network: item.label,
+      username: usernameFrom(item.link),
+      url: item.link,
+    })),
   };
 }
 
@@ -174,7 +244,10 @@ function buildWork(): ResumeWork[] {
     url: position.url,
     startDate: position.startDate,
     ...(position.endDate ? { endDate: position.endDate } : {}),
-    ...(position.summary ? { summary: toPlainText(position.summary) } : {}),
+    ...(position.commitment ? { commitment: position.commitment } : {}),
+    ...(position.summary
+      ? { summary: toPlainText(publishedMarkdown(position.summary)) }
+      : {}),
     ...(position.highlights
       ? { highlights: position.highlights.map(toPlainText) }
       : {}),
@@ -208,16 +281,19 @@ function buildEducation(): ResumeEducation[] {
 export const TOOLS_SKILL_NAME = 'Tools';
 
 /**
- * One group per category, its skills ordered by competency: the order the
- * résumé page and this document share. The 1–5 competency scale has no
- * counterpart in the schema's free-text `level`, so it shapes the ordering
+ * One group per category the skills name, sorted, so the group order falls out
+ * of the skill list itself; each group's skills ordered by competency. The
+ * résumé page and this document share that order. The 1–5 competency scale has
+ * no counterpart in the schema's free-text `level`, so it shapes the ordering
  * rather than being translated into a word the data never claimed.
  */
-export function groupSkills(all: Skill[], categoryList: Category[]) {
-  return categoryList.map((category) => ({
-    name: category.name,
+export function groupSkills(all: Skill[]) {
+  const names = [...new Set(all.flatMap((skill) => skill.category))].sort();
+
+  return names.map((name) => ({
+    name,
     skills: all
-      .filter((skill) => skill.category.includes(category.name))
+      .filter((skill) => skill.category.includes(name))
       .sort(
         (a, b) =>
           b.competency - a.competency || a.title.localeCompare(b.title, 'en'),
@@ -231,7 +307,7 @@ export function groupSkills(all: Skill[], categoryList: Category[]) {
  * file gives it.
  */
 function buildSkills(): ResumeSkill[] {
-  const byCategory = groupSkills(skills, categories).map((group) => ({
+  const byCategory = groupSkills(skills).map((group) => ({
     name: group.name,
     keywords: group.skills.map((skill) => skill.title),
   }));

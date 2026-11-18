@@ -7,10 +7,28 @@
    (cards.css); only the header row is the page's own. */
 .page-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 2.5rem;
+}
+
+/* The section index's own spacing; the rest is components/section-nav.css. */
+.writing-nav {
+  margin: 0 0 var(--spacing-6);
+}
+
+/* A jump parks the rule above each heading clear of the sticky index, as on
+   About. */
+.writing-page .section-heading {
+  scroll-margin-top: calc(var(--header-height) + 5.5rem + var(--spacing-5));
+}
+
+@media (max-width: 735px) {
+  .writing-page .section-heading {
+    scroll-margin-top: calc(var(--header-height) + 4.5rem + var(--spacing-5));
+  }
 }
 
 /* ========================================
@@ -35,7 +53,6 @@
   right: 0;
   left: 0;
   height: var(--rule);
-  overflow: hidden;
   pointer-events: none;
   background: var(--color-border);
 }
@@ -70,12 +87,6 @@
   }
 }
 
-@media (max-width: 735px) {
-  .reading-progress {
-    top: var(--header-height-mobile);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .reading-progress {
     display: none;
@@ -97,13 +108,10 @@
 }
 
 .post-title {
-  font-family: var(--font-display);
   font-size: var(--text-2xl);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-display);
   line-height: 1.1;
   margin: 0 0 0.75rem;
-  color: var(--color-fg-bold);
 }
 
 .post-description {
@@ -128,29 +136,22 @@
 }
 
 .prose h2 {
-  font-family: var(--font-display);
   font-size: var(--text-xl);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
   margin: 3rem 0 0.75rem;
-  color: var(--color-fg-bold);
 }
 
 .prose h3 {
-  font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--tracking-tight);
   margin: 2rem 0 0.75rem;
-  color: var(--color-fg-bold);
 }
 
 .prose h4 {
-  font-family: var(--font-display);
   font-size: var(--text-md);
   font-weight: var(--font-weight-semibold);
   margin: 1.5rem 0 0.5rem;
-  color: var(--color-fg-bold);
 }
 
 .prose h2,
@@ -158,15 +159,6 @@
 .prose h4,
 .prose-anchor-alias {
   scroll-margin-top: calc(var(--header-height) + var(--spacing-6));
-}
-
-@media (max-width: 735px) {
-  .prose h2,
-  .prose h3,
-  .prose h4,
-  .prose-anchor-alias {
-    scroll-margin-top: calc(var(--header-height-mobile) + var(--spacing-6));
-  }
 }
 
 .prose-anchor-alias {
@@ -177,18 +169,6 @@
 
 .prose p {
   margin: 1rem 0;
-}
-
-.prose a {
-  color: var(--color-accent);
-  text-decoration: underline;
-  text-decoration-color: var(--color-accent-underline);
-  text-underline-offset: 2px;
-}
-
-.prose a:hover {
-  color: var(--color-accent-hover);
-  text-decoration-color: var(--color-accent);
 }
 
 .prose strong {
@@ -217,11 +197,6 @@
 .prose em,
 .prose i {
   font-family: var(--font-newsreader-italic), var(--font-body);
-}
-
-/* Long configuration names must wrap in prose without changing code fences. */
-.prose :not(pre) > code {
-  overflow-wrap: anywhere;
 }
 
 /* The wrapper carries the block's margin so the language plate can be
@@ -264,6 +239,14 @@
   pointer-events: none;
 }
 
+/* A prompt or a Markdown example wraps rather than scrolls: a reader pans
+   sideways for each line otherwise. Wrapping changes only the display, so a
+   copy keeps the original characters and newlines. */
+.prose-fence--wrap pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .prose pre code {
   background: none;
   padding: 0;
@@ -279,8 +262,6 @@
 }
 
 .prose img {
-  max-width: 100%;
-  height: auto;
   border-radius: var(--radius-sm);
   margin: 1.5rem 0;
 }
@@ -311,6 +292,10 @@
 
 .prose .prose-figure > a {
   display: block;
+}
+
+.prose-figure-full {
+  cursor: zoom-in;
 }
 
 /* A caption is a sentence, so it is set in the reading face, a size down. */

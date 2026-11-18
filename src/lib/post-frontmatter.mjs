@@ -4,9 +4,34 @@
  * Keeping this dependency-free lets both boundaries reject the same malformed
  * YAML before either a route or a generated public asset can be published.
  */
+const KEYS = [
+  'title',
+  'date',
+  'updated',
+  'description',
+  'draft',
+  'image',
+  'imageAlt',
+];
+
 export function validatePostFrontmatterData(value, source = 'post') {
   if (!isRecord(value)) {
     throw frontmatterError(source, 'must be a YAML object');
+  }
+
+  // An unread key is a setting the author believes is in force: `Draft: true`
+  // would publish the post it was meant to hold back.
+  for (const key of Object.keys(value)) {
+    if (KEYS.includes(key)) continue;
+    const meant = KEYS.find(
+      (known) => known.toLowerCase() === key.toLowerCase(),
+    );
+    throw frontmatterError(
+      source,
+      meant
+        ? `"${key}" must be spelled "${meant}"`
+        : `"${key}" is not a frontmatter key; use ${KEYS.map((known) => `"${known}"`).join(', ')}`,
+    );
   }
 
   const title = requiredText(value.title, 'title', source);
@@ -17,6 +42,19 @@ export function validatePostFrontmatterData(value, source = 'post') {
     throw frontmatterError(
       source,
       '"date" must be a real calendar date in YYYY-MM-DD format',
+    );
+  }
+
+  // The last revision a reader would notice, not every commit: search
+  // engines and feed readers take it as the date the text changed.
+  const updated =
+    value.updated === undefined
+      ? undefined
+      : requiredText(value.updated, 'updated', source);
+  if (updated !== undefined && (!isCalendarDate(updated) || updated < date)) {
+    throw frontmatterError(
+      source,
+      '"updated" must be a real YYYY-MM-DD date no earlier than "date"',
     );
   }
 
@@ -55,6 +93,7 @@ export function validatePostFrontmatterData(value, source = 'post') {
   return {
     title,
     date,
+    ...(updated === undefined ? {} : { updated }),
     description,
     ...(value.draft === undefined ? {} : { draft: value.draft }),
     ...(image === undefined ? {} : { image }),
@@ -73,7 +112,8 @@ function requiredText(value, field, source) {
   return value.trim();
 }
 
-function isCalendarDate(value) {
+/** A `YYYY-MM-DD` date that exists: no February 30. */
+export function isCalendarDate(value) {
   const parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!parts) {
     return false;

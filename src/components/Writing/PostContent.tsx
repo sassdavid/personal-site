@@ -1,8 +1,10 @@
 'use client';
 
-import Markdown from 'markdown-to-jsx';
+import { decodeEntity } from 'markdown-to-jsx/entities';
+import Markdown, { RuleType } from 'markdown-to-jsx/react';
 import Image from 'next/image';
 import type {
+  ComponentProps,
   ElementType,
   HTMLAttributes,
   KeyboardEvent as ReactKeyboardEvent,
@@ -17,10 +19,17 @@ import {
   useEffect,
   useRef,
 } from 'react';
+import { preload } from 'react-dom';
 
 import { planMarkdownHeadingAnchors } from '@/lib/anchors';
 import type { ImageSize } from '@/lib/imageSize';
-import { isRootLocalImage, smartQuotesRule } from '@/lib/markdown';
+import {
+  createElementWithBasePath,
+  isRootLocalImage,
+  smartQuotesRule,
+} from '@/lib/markdown';
+import { prefixSrcset, splitSrcset } from '@/lib/site-url.mjs';
+import { BASE_PATH, withBasePath } from '@/lib/utils';
 
 interface PostContentProps {
   content: string;
@@ -29,12 +38,17 @@ interface PostContentProps {
    * each image reserves its real ratio and the page does not shift as it loads.
    */
   imageSizes?: Record<string, ImageSize>;
+  /** The image near the top of the post, preloaded on wide screens. */
+  leadImage?: string;
   /**
    * Draft previews may point at intentionally unpublished local images. The
    * production path remains strict and refuses invented dimensions.
    */
   allowMissingLocalImages?: boolean;
 }
+
+/** The width at which the header shows its desktop links (`header.css`). */
+const WIDE_SCREEN_QUERY = '(min-width: 736px)';
 
 /** Remote/data images cannot be inspected from the repository at build time. */
 const FALLBACK_SIZE: ImageSize = { width: 1200, height: 675 };
@@ -113,7 +127,7 @@ function headingOverrides(aliases: ReadonlyMap<string, string>) {
  * prop: a post may embed raw HTML that also carries `src` — `<video>`,
  * `<audio>`, `<iframe>` — and those are neither figures nor measurable. Only
  * Markdown image syntax is measured at build time, so routing a `<video src>`
- * through the sizer failed the production export outright.
+ * through the sizer would fail the production export.
  */
 function figureImage(
   node: ReactNode,
@@ -205,9 +219,57 @@ function scrollCodeFence(event: ReactKeyboardEvent<HTMLPreElement>) {
  * There is no landmark role: the preformatted content already supplies the
  * useful semantics, and repeated code-block regions would just add noise.
  */
-function CodeFence({ children }: { children?: ReactNode }) {
+/**
+ * A raw `<pre>`'s body as the text it shows: tags dropped, entities decoded.
+ * The parser keeps that body as opaque text, so as HTML it could carry markup
+ * the Markdown checks never read: a `style` URL, an image, a script link.
+ */
+function rawPreText(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&(#x[\da-f]+|#\d+|[a-z][\da-z]*);/gi, (entity, name: string) => {
+      if (name[0] !== '#') return decodeEntity(name) ?? entity;
+      const code =
+        name[1] === 'x' || name[1] === 'X'
+          ? Number.parseInt(name.slice(2), 16)
+          : Number.parseInt(name.slice(1), 10);
+      return code > 0 && code <= 0x10ffff && (code < 0xd800 || code > 0xdfff)
+        ? String.fromCodePoint(code)
+        : '\uFFFD';
+    });
+}
+
+/** Fence languages that hold prose rather than code. */
+const PROSE_LANGUAGES = new Set([
+  'markdown',
+  'md',
+  'plaintext',
+  'prompt',
+  'text',
+  'txt',
+]);
+
+function CodeFence({
+  children,
+  dangerouslySetInnerHTML: raw,
+}: {
+  children?: ReactNode;
+  /** A raw `<pre>` arrives as its own inner HTML, not as children. */
+  dangerouslySetInnerHTML?: { __html: string };
+}) {
   const preRef = useRef<HTMLPreElement>(null);
-  const language = fenceLanguage(children);
+  const language =
+    fenceLanguage(children) ??
+    raw?.__html.match(/^<code\b[^>]*\bclass="[^"]*\blanguage-([\w-]+)/)?.[1];
+  const body = raw ? (
+    <code
+      className={language ? `language-${language} lang-${language}` : undefined}
+    >
+      {rawPreText(raw.__html)}
+    </code>
+  ) : (
+    children
+  );
 
   useEffect(() => {
     const pre = preRef.current;
@@ -247,10 +309,14 @@ function CodeFence({ children }: { children?: ReactNode }) {
       window.removeEventListener('resize', syncTabStop);
       observer?.disconnect();
     };
-  }, [children]);
+  }, [children, raw]);
+
+  // A prompt or a Markdown example is read top to bottom, so on a narrow
+  // screen it wraps; code keeps its layout and scrolls sideways.
+  const prose = !language || PROSE_LANGUAGES.has(language.toLowerCase());
 
   return (
-    <div className="prose-fence">
+    <div className={prose ? 'prose-fence prose-fence--wrap' : 'prose-fence'}>
       {language ? (
         <>
           <span className="prose-fence-lang" aria-hidden="true">
@@ -260,7 +326,7 @@ function CodeFence({ children }: { children?: ReactNode }) {
         </>
       ) : null}
       <pre ref={preRef} onKeyDown={scrollCodeFence}>
-        {children}
+        {body}
       </pre>
     </div>
   );
@@ -270,6 +336,7 @@ export default function PostContent({
   allowMissingLocalImages = false,
   content,
   imageSizes = {},
+  leadImage,
 }: PostContentProps) {
   function sizeFor(src: string): ImageSize {
     const measuredSize = imageSizes[src];
@@ -287,30 +354,82 @@ export default function PostContent({
   // figure path recognises an image without guessing from its props.
   function ProseImage({
     alt,
+    id,
+    sizes,
     src,
+    srcSet,
     title,
   }: {
     alt?: string;
+    id?: string;
+    sizes?: string;
     src?: string;
+    srcSet?: string;
     title?: string;
   }) {
     const captioned = useContext(CaptionedFigure);
+    // A raw image may name its files only as `srcset` candidates; the first
+    // one gives its shape.
+    const measured = src ?? (srcSet ? splitSrcset(srcSet)[0]?.url : undefined);
 
-    if (!src) {
+    if (!measured) {
       return null;
     }
 
-    const { width, height } = sizeFor(src);
+    const { width, height } = sizeFor(measured);
+    const candidates = srcSet ? prefixSrcset(BASE_PATH, srcSet) : undefined;
+
+    // On a wide screen the lead image is in the first viewport and usually the
+    // largest paint, so the head fetches it at high priority. On a phone it is
+    // below the fold, where fetching it early takes bandwidth from the opening
+    // text, so there it stays lazy like every other image.
+    if (measured === leadImage) {
+      preload(withBasePath(measured), {
+        as: 'image',
+        fetchPriority: 'high',
+        media: WIDE_SCREEN_QUERY,
+        imageSrcSet: candidates,
+        imageSizes: sizes,
+      });
+    }
+
+    // `next/image` writes a `srcset` of its own, so an image that brings its
+    // candidates and `sizes` is drawn as written.
+    if (srcSet) {
+      return (
+        // biome-ignore lint/performance/noImgElement: next/image would replace the author's srcset with its own
+        <img
+          id={id}
+          src={src ? withBasePath(src) : undefined}
+          srcSet={candidates}
+          sizes={sizes}
+          alt={alt || ''}
+          width={width}
+          height={height}
+          loading="lazy"
+          decoding="async"
+          title={captioned ? undefined : title}
+        />
+      );
+    }
 
     return (
       <Image
-        src={src}
+        id={id}
+        src={withBasePath(measured)}
         alt={alt || ''}
         width={width}
         height={height}
         loading="lazy"
         title={captioned ? undefined : title}
       />
+    );
+  }
+
+  /** A local figure that is not already a link links to its own file. */
+  function opensFullSize(node: ReactNode, src: string): boolean {
+    return (
+      isValidElement(node) && node.type === ProseImage && isRootLocalImage(src)
     );
   }
 
@@ -332,17 +451,35 @@ export default function PostContent({
         // published ids that differ from it.
         slugify: headingPlan.slugify,
         // Typographic quotes in text a reader sees; code is a different node.
-        renderRule: smartQuotesRule,
+        // The library links a footnote marker by its own slug of the label,
+        // which is empty for a label in another script and shared by two
+        // that differ only in punctuation; the plan's id is the note's.
+        renderRule: (next, node, renderChildren, state) => {
+          if (node.type === RuleType.footnoteReference) {
+            const id = headingPlan.footnoteId(node.text);
+            if (id) {
+              return (
+                <a key={state.key} href={`#${id}`}>
+                  <sup>{node.text}</sup>
+                </a>
+              );
+            }
+          }
+          return smartQuotesRule(next, node, renderChildren, state);
+        },
+        createElement: createElementWithBasePath,
         overrides: {
           ...headingOverrides(headingPlan.aliases),
           p: {
-            component: ({ children }: { children?: ReactNode }) => {
+            component: ({ children, ...attributes }: ComponentProps<'p'>) => {
               const items = Children.toArray(children);
               const image =
                 items.length === 1 ? figureImage(items[0], ProseImage) : null;
 
+              // A raw paragraph keeps what its author wrote on it: `hidden`,
+              // an `id` a link targets, `lang`, `dir`.
               if (!image) {
-                return <p>{children}</p>;
+                return <p {...attributes}>{children}</p>;
               }
 
               return (
@@ -359,7 +496,20 @@ export default function PostContent({
                   }
                 >
                   <CaptionedFigure value={image.caption !== undefined}>
-                    {items[0]}
+                    {opensFullSize(items[0], image.src) ? (
+                      // A figure is drawn no wider than the column, so on a
+                      // phone a screenshot's text is often too small to read.
+                      // Its file opens at full size, to zoom into.
+                      <a
+                        href={withBasePath(image.src)}
+                        className="prose-figure-full"
+                      >
+                        {items[0]}
+                        <span className="sr-only"> (full size)</span>
+                      </a>
+                    ) : (
+                      items[0]
+                    )}
                   </CaptionedFigure>
                   {image.caption ? (
                     <figcaption className="prose-figcaption">

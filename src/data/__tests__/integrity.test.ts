@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import degrees from '../resume/degrees';
-import { categories, skills } from '../resume/skills';
+import { skills } from '../resume/skills';
 import tools from '../resume/tools';
 import { getAppearances } from '../speaking';
 import writing from '../writing';
@@ -15,7 +15,6 @@ describe('data the site publishes', () => {
   it('has no duplicate entries', () => {
     expect(unique(tools.map((tool) => tool.name))).toBe(true);
     expect(unique(degrees.map((degree) => degree.school))).toBe(true);
-    expect(unique(categories.map((category) => category.name))).toBe(true);
     expect(unique(writing.map((item) => item.url))).toBe(true);
     expect(unique(getAppearances().map((entry) => entry.link))).toBe(true);
   });
@@ -33,22 +32,18 @@ describe('data the site publishes', () => {
     }
   });
 
-  it('files every skill under a category that exists', () => {
-    const names = new Set(categories.map((category) => category.name));
-
+  // A skill with no category belongs to no group, so the résumé would drop it.
+  it('files every skill under at least one category', () => {
     for (const skill of skills) {
       expect(skill.category.length).toBeGreaterThan(0);
-      expect(skill.category.every((name) => names.has(name))).toBe(true);
     }
   });
 
-  it('orders dated writing and appearances newest first', () => {
+  // Hand-ordered in the source; appearances are sorted when read.
+  it('orders dated writing newest first', () => {
     const dated = writing.map((item) => item.date).filter(Boolean);
 
     expect(isDescending(dated)).toBe(true);
-    expect(isDescending(getAppearances().map((entry) => entry.date))).toBe(
-      true,
-    );
   });
 
   it('dates every appearance with a real calendar day', () => {

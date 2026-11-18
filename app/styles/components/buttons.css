@@ -10,7 +10,6 @@
     background: var(--color-accent-fill);
     border: var(--rule) solid var(--color-accent-fill);
     border-radius: var(--radius-sm);
-    box-shadow: none;
     color: var(--color-on-accent);
     cursor: pointer;
     display: inline-flex;
@@ -21,7 +20,7 @@
     font-size: var(--text-ui);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--tracking-normal);
-    height: 2.875rem;
+    min-height: 2.875rem;
     padding: 0 1.75rem;
     text-align: center;
     text-decoration: none !important;
@@ -34,7 +33,6 @@
   .button:hover {
     background: var(--color-accent-fill-hover);
     border-color: var(--color-accent-fill-hover);
-    color: var(--color-on-accent);
   }
 
   .button:active {
@@ -43,7 +41,6 @@
   }
 
   .button:focus-visible {
-    outline: var(--rule-strong) solid var(--color-focus-ring);
     outline-offset: 2px;
   }
 
@@ -63,7 +60,6 @@
   .button-secondary:hover {
     background: transparent;
     border-color: var(--color-fg-bold);
-    color: var(--color-fg-bold);
   }
 
   .button-secondary:active {
@@ -72,7 +68,7 @@
 
   /* A page-level action that sits beside a page title: RSS, JSON, print. */
   .button-compact {
-    height: 2rem;
+    min-height: 2rem;
     padding: 0 0.75rem;
   }
 }

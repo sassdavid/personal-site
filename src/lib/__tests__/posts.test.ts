@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { getPostBySlug, validatePostFrontmatter } from '../posts';
+import { validatePostFrontmatterData } from '../post-frontmatter.mjs';
+import { getPostBySlug } from '../posts';
 
 const validFrontmatter = {
   title: 'A useful title',
@@ -8,10 +9,10 @@ const validFrontmatter = {
   description: 'A useful description.',
 };
 
-describe('validatePostFrontmatter', () => {
+describe('validatePostFrontmatterData', () => {
   it('accepts and trims required fields', () => {
     expect(
-      validatePostFrontmatter({
+      validatePostFrontmatterData({
         title: '  A useful title  ',
         date: '2026-07-25',
         description: '  A useful description.  ',
@@ -29,15 +30,20 @@ describe('validatePostFrontmatter', () => {
     [{ ...validFrontmatter, image: 'card.png' }, '"image"'],
     [{ ...validFrontmatter, image: '/card.png' }, '"imageAlt"'],
     [{ ...validFrontmatter, imageAlt: 'A card' }, '"image"'],
+    [{ ...validFrontmatter, updated: '2026-07-24' }, '"updated"'],
+    [{ ...validFrontmatter, updated: '2026-02-30' }, '"updated"'],
+    // An unread key would publish without the setting its author meant.
+    [{ ...validFrontmatter, Draft: true }, '"Draft" must be spelled "draft"'],
+    [{ ...validFrontmatter, tags: ['ai'] }, '"tags" is not a frontmatter key'],
   ])('rejects malformed frontmatter %#', (frontmatter, field) => {
     expect(() =>
-      validatePostFrontmatter(frontmatter, 'content/writing/example.md'),
+      validatePostFrontmatterData(frontmatter, 'content/writing/example.md'),
     ).toThrow(`Invalid frontmatter in content/writing/example.md: ${field}`);
   });
 
   it('accepts an explicitly described article image', () => {
     expect(
-      validatePostFrontmatter({
+      validatePostFrontmatterData({
         ...validFrontmatter,
         image: '/images/writing/card.png',
         imageAlt: 'A descriptive alternative',

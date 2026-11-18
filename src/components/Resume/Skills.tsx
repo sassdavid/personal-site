@@ -1,11 +1,10 @@
-import type { Category, Skill } from '@/data/resume/skills';
+import type { Skill } from '@/data/resume/skills';
 import { groupSkills } from '@/lib/resumeJson';
 
 import SkillTag, { knowledgeTier } from './Skills/SkillTag';
 
 interface SkillsProps {
   skills: Skill[];
-  categories: Category[];
 }
 
 /**
@@ -15,12 +14,10 @@ interface SkillsProps {
  * There is no filter state: nothing here can be hidden, so nothing can be
  * missing from the page when it is printed.
  */
-export default function Skills({ skills, categories }: SkillsProps) {
-  const groups = groupSkills(skills, categories).filter(
-    (group) => group.skills.length > 0,
-  );
+export default function Skills({ skills }: SkillsProps) {
+  const groups = groupSkills(skills);
 
-  // The fainter tone is only worth explaining where something is set in it.
+  // The dashed tier is only worth explaining where something is set in it.
   const hasFamiliar = skills.some(
     (skill) => knowledgeTier(skill.competency) === 'familiar',
   );
@@ -33,11 +30,12 @@ export default function Skills({ skills, categories }: SkillsProps) {
       <p className="resume-note skill-tier-legend">
         Strongest first.
         {hasFamiliar ? (
-          // Says what a tone means, which is no use to anyone who cannot see
-          // it; each tag already carries its tier as text for a screen reader.
+          // Says what a border means, which is no use to anyone who cannot
+          // see it; each tag already carries its tier as text for a screen
+          // reader.
           <span className="skill-tier-legend-tone" aria-hidden="true">
             {' '}
-            Fainter tags mark familiarity, not working knowledge.
+            Dashed tags mark familiarity, not working knowledge.
           </span>
         ) : null}
       </p>

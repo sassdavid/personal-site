@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 import { CARD_SIZE, readCardColors } from '../og-inputs.mjs';
 import { readoutTop, TOP_RULE } from '../og-layout.mjs';
-import { assertCardGeometry, inkBands, parseColor } from '../og-measure.mjs';
+import { assertCardGeometry, inkBands } from '../og-measure.mjs';
 
 const READOUT_TOP = readoutTop(CARD_SIZE);
 const LAST_ROW = CARD_SIZE.height - 1;
@@ -19,18 +19,18 @@ beforeAll(async () => {
 /** A card-shaped PNG with the given rows painted in ink and the rest paper. */
 function cardFixture(inkRows: [number, number][]): Promise<Buffer> {
   const { width, height } = CARD_SIZE;
-  const color = Buffer.from(parseColor(paper));
-  const ink = Buffer.alloc(3);
-  const raw = Buffer.alloc(width * height * 3);
+  const rows = (rowHeight: number, background: string) => ({
+    create: { width, height: rowHeight, channels: 3 as const, background },
+  });
 
-  for (let y = 0; y < height; y += 1) {
-    const inked = inkRows.some(([start, end]) => y >= start && y <= end);
-    for (let x = 0; x < width; x += 1) {
-      (inked ? ink : color).copy(raw, (y * width + x) * 3);
-    }
-  }
-
-  return sharp(raw, { raw: { width, height, channels: 3 } })
+  return sharp(rows(height, paper))
+    .composite(
+      inkRows.map(([start, end]) => ({
+        input: rows(end - start + 1, '#000'),
+        top: start,
+        left: 0,
+      })),
+    )
     .png()
     .toBuffer();
 }
@@ -44,6 +44,26 @@ const fits = async (inkRows: [number, number][]) =>
   });
 
 describe('rendered card geometry', () => {
+  // The site card's copy is the profile, not a post's frontmatter, so its
+  // failure has to say what to shorten there.
+  it('names the remedy for the card it is checking', async () => {
+    await expect(
+      assertCardGeometry(
+        await cardFixture([
+          [0, TOP_RULE - 1],
+          [90, LAST_ROW],
+        ]),
+        {
+          size: CARD_SIZE,
+          paper,
+          topRule: TOP_RULE,
+          readoutTop: READOUT_TOP,
+          remedy: 'shorten the name in src/data/profile.json',
+        },
+      ),
+    ).rejects.toThrow(/: shorten the name in src\/data\/profile\.json\./);
+  });
+
   it('accepts a card whose copy stops above the readout', async () => {
     await expect(
       fits([
@@ -91,16 +111,5 @@ describe('rendered card geometry', () => {
     await expect(
       inkBands(Buffer.from('not a png at all'), paper),
     ).rejects.toThrow(/not a PNG/);
-  });
-});
-
-describe('card colours', () => {
-  it.each([
-    ['#f2f1ec', [242, 241, 236]],
-    ['#abc', [170, 187, 204]],
-    ['rgb(35, 39, 46)', [35, 39, 46]],
-    ['rgba(35, 39, 46, 0.14)', [35, 39, 46]],
-  ])('reads %s off the token stylesheet', (value, expected) => {
-    expect(parseColor(value)).toEqual(expected);
   });
 });

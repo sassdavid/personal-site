@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import contact from '@/data/contact';
 import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
-import { categories, skills } from '@/data/resume/skills';
+import { skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
 import { sortPositions } from '@/lib/career';
@@ -24,6 +24,16 @@ describe('toPlainText', () => {
   it.each([
     ["see <a href='https://example.com'>the docs</a>", 'see the docs'],
     ['one\n    two\n\n  three ', 'one two three'],
+    // Markdown the page renders as a link, and a raw one whose title holds
+    // a `>` that a tag pattern reads as the tag's end.
+    ['see [the docs](https://example.com)', 'see the docs'],
+    ['see <a href="https://example.com" title="a > b">B</a>', 'see B'],
+    ['a note<!-- not for readers --> ends', 'a note ends'],
+    ['typed as vector<int> here', 'typed as vector<int> here'],
+    // Markup goes; the prose around it stays as written.
+    ['See [docs](https://example.com).', 'See docs.'],
+    ['Built **fast**-path APIs', 'Built fast-path APIs'],
+    ['first  \nsecond', 'first second'],
   ])('flattens %s', (input, expected) => {
     expect(toPlainText(input)).toBe(expected);
   });
@@ -70,6 +80,16 @@ describe('json resume document', () => {
       sortPositions(work).map((position) => position.name),
     );
     expect(resume.work[0]).not.toHaveProperty('endDate');
+    // The page says which role runs alongside the main one, and so does this.
+    expect(
+      resume.work
+        .filter((position) => position.commitment === 'part-time')
+        .map((position) => position.name),
+    ).toEqual(
+      work
+        .filter((position) => position.commitment === 'part-time')
+        .map((position) => position.name),
+    );
   });
 
   // Summaries are Markdown with inline anchors, so this reads the real prose.
@@ -116,35 +136,12 @@ describe('json resume document', () => {
     }
   });
 
-  it('groups skills by category with keywords ordered by competency', () => {
-    const byCategory = resume.skills.filter(
-      (skill) => skill.name !== TOOLS_SKILL_NAME,
-    );
-
-    expect(byCategory.map((skill) => skill.name)).toEqual(
-      categories.map((category) => category.name),
-    );
-
-    for (const group of byCategory) {
-      const expected = skills
-        .filter((skill) => skill.category.includes(group.name))
-        .map((skill) => skill.title);
-      const competencies = group.keywords.map(
-        (keyword) =>
-          skills.find((skill) => skill.title === keyword)?.competency ?? 0,
-      );
-
-      expect([...group.keywords].sort()).toEqual([...expected].sort());
-      expect(competencies).toEqual([...competencies].sort((a, b) => b - a));
-    }
-  });
-
   it('appends the tools section as one more skill entry, in data order', () => {
     expect(resume.skills.at(-1)).toEqual({
       name: TOOLS_SKILL_NAME,
       keywords: tools.map((tool) => tool.name),
     });
-    expect(categories.map((category) => category.name)).not.toContain(
+    expect(skills.flatMap((skill) => skill.category)).not.toContain(
       TOOLS_SKILL_NAME,
     );
   });

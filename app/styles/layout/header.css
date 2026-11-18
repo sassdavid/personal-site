@@ -15,7 +15,6 @@
   font-family: var(--font-display);
   font-size: var(--text-ui);
   font-weight: var(--font-weight-medium);
-  text-decoration: none;
   border-radius: var(--radius-sm);
   transform: translateY(-200%);
   transition: transform var(--duration-fast) var(--ease-out);
@@ -23,7 +22,6 @@
 
 .skip-link:focus-visible {
   transform: translateY(0);
-  color: var(--color-on-accent);
   outline: var(--rule-strong) solid var(--color-focus-ring-fill);
   outline-offset: 2px;
 }
@@ -53,98 +51,98 @@
   width: 100%;
   z-index: var(--z-header);
   transition: background-color var(--duration-fast) var(--ease-out);
-  box-sizing: border-box;
 }
 
 @media (max-width: 735px) {
   .site-header {
-    height: var(--header-height-mobile);
-    line-height: var(--header-height-mobile);
+    line-height: var(--header-height);
     padding: 0 1.5rem;
   }
 }
 
 /* ========================================
-   SLIDE MENU (native implementation)
+   SLIDE MENU
    ======================================== */
 
-/* Slide menu overlay */
-.slide-menu-overlay {
-  background: var(--color-overlay-darker);
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  position: fixed;
-  transition: opacity var(--duration-normal) var(--ease-menu);
-  z-index: var(--z-overlay);
-}
-
-.slide-menu-overlay--open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Slide menu panel */
+/* A native modal dialog. The UA's centred, bordered, padded box is reset to a
+   full-height panel against the right edge, and the sheet fills it, so a
+   click on the dialog itself is a click on its backdrop. */
 .slide-menu {
-  background-color: var(--color-bg-alt);
-  border-left: var(--rule) solid var(--color-fg-bold);
-  bottom: 0;
-  max-width: 82vw;
-  overflow-y: auto;
-  padding: 1.5rem 1.5rem 0;
-  position: fixed;
-  top: 0;
-  transition: transform var(--duration-normal) var(--ease-menu);
+  inset: 0 0 0 auto;
   width: 300px;
-  z-index: var(--z-menu);
-  right: 0;
+  max-width: 82vw;
+  /* The UA sizes a dialog to its content; the panel runs the full height. */
+  height: auto;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-left: var(--rule) solid var(--color-fg-bold);
+  background-color: var(--color-bg-alt);
+  color: inherit;
+  overflow-y: auto;
+  /* Scrolling stops at the menu's edges instead of moving the page, and the
+     backdrop below does the same. Safari does not yet honour this on a box
+     that cannot scroll, so there the page behind the backdrop still can; a
+     `position: fixed` body lock would jump the scroll position instead. */
+  overscroll-behavior: contain;
   transform: translateX(100%);
+  /* `display` and `overlay` keep the dialog in the top layer until it has
+     slid out. Browsers without `overlay` close it at once. */
+  transition:
+    transform var(--duration-normal) var(--ease-menu),
+    display var(--duration-normal) allow-discrete,
+    overlay var(--duration-normal) allow-discrete;
 }
 
-.slide-menu--open {
+.slide-menu[open] {
   transform: translateX(0);
 }
 
-/* Hamburger container */
+.slide-menu::backdrop {
+  background: var(--color-overlay-darker);
+  opacity: 0;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  transition:
+    opacity var(--duration-normal) var(--ease-menu),
+    display var(--duration-normal) allow-discrete,
+    overlay var(--duration-normal) allow-discrete;
+}
+
+.slide-menu[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .slide-menu[open] {
+    transform: translateX(100%);
+  }
+
+  .slide-menu[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.slide-menu-sheet {
+  min-height: 100%;
+  padding: 1.5rem 1.5rem 0;
+}
+
+/* Half a step between the theme toggle and the menu button. */
 .hamburger-container {
-  display: block;
+  padding-left: 0.5em;
 }
 
-/* Hamburger nav structure */
-.hamburger-container .main {
-  height: 100%;
-}
-
-.hamburger-container .main ul {
-  height: 100%;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.hamburger-container .main ul li {
-  display: block;
-  height: 100%;
-}
-
-.hamburger-container .main ul li.menu {
-  display: flex;
-  align-items: center;
-}
-
-/* Hamburger button — an explicit 44x44 target.
-   `height: 100%` resolved against auto-height ancestors, so the control was
-   only as tall as its 14px glyph. */
+/* Hamburger button: an explicit 44x44 target, because its wrappers take
+   their height from it rather than from the header. */
 .hamburger-button {
   align-items: center;
-  background: transparent;
-  border: 0;
   cursor: pointer;
   display: flex;
   min-width: 44px;
   min-height: 44px;
   justify-content: center;
-  padding: 0;
 }
 
 .hamburger-button:hover {
@@ -214,9 +212,6 @@
   width: 44px;
   height: 44px;
   margin: 0 -0.75rem 0.5rem auto;
-  padding: 0;
-  background: transparent;
-  border: 0;
   border-radius: var(--radius-sm);
   color: var(--color-fg-light);
   font-size: 1.5rem;
@@ -230,7 +225,6 @@
 }
 
 .slide-menu-close:focus-visible {
-  outline: var(--rule-strong) solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
@@ -238,14 +232,12 @@
 .hamburger-ul {
   display: flex;
   flex-direction: column;
-  gap: 0;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .hamburger-ul li {
-  display: block;
   border-bottom: var(--rule) solid var(--color-border);
 }
 
@@ -255,21 +247,24 @@
 
 .hamburger-ul li a {
   display: block;
-  text-decoration: none;
   padding: 0.9rem 0;
   border-radius: 0;
 }
 
-/* `outline: none` here removed the only keyboard affordance inside a
-   focus-trapped dialog. The global :focus-visible ring applies instead. */
+/* The global :focus-visible ring, drawn inside the row. In a focus-trapped
+   dialog it is the only sign of the keyboard's place. */
 .hamburger-ul li a:focus-visible {
-  outline: var(--rule-strong) solid var(--color-focus-ring);
   outline-offset: -2px;
 }
 
-/* Where you are, in the mobile menu. */
+/* Where you are, in the mobile menu: an underline as well as the accent,
+   since the two inks sit too close in value to tell apart by colour alone. */
 .hamburger-ul li a.active span {
   color: var(--color-accent);
+  text-decoration-line: underline;
+  text-decoration-thickness: var(--rule-strong);
+  text-decoration-color: currentcolor;
+  text-underline-offset: 0.35em;
 }
 
 .hamburger-ul li a span {

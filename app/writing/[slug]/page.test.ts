@@ -32,6 +32,7 @@ const state = vi.hoisted(() => ({
       imageAlt?: string;
       content: string;
       draft?: boolean;
+      updated?: string;
     }
   >,
 }));
@@ -228,6 +229,38 @@ describe('writing post structured data', () => {
       width: SHARE_IMAGE_DIMENSIONS.width,
       height: SHARE_IMAGE_DIMENSIONS.height,
     });
+  });
+
+  // A revised post says when it changed, and one never revised keeps its
+  // publication date as both.
+  it.each([
+    ['revised', '2026-01-10', '2026-03-02'],
+    ['unrevised', '2026-01-09', '2026-01-09'],
+  ])('dates the %s post', async (slug, published, modified) => {
+    state.posts = {
+      [slug]: post(slug, {
+        date: published,
+        ...(published === modified ? {} : { updated: modified }),
+      }),
+    };
+
+    const posting = await blogPostingFor(slug);
+    const { openGraph } = await generateMetadata({
+      params: Promise.resolve({ slug }),
+    });
+
+    expect([posting.datePublished, posting.dateModified]).toEqual([
+      published,
+      modified,
+    ]);
+    expect(openGraph).toMatchObject({
+      publishedTime: published,
+      // `article:author` takes a profile's URL, not a name.
+      authors: [`${SITE_URL}/about/`],
+    });
+    expect(
+      (openGraph as { modifiedTime?: string } | undefined)?.modifiedTime,
+    ).toBe(published === modified ? undefined : modified);
   });
 
   it('renders a draft in development when its private images are absent', async () => {

@@ -1,9 +1,9 @@
 'use client';
 
-import Markdown from 'markdown-to-jsx';
+import Markdown from 'markdown-to-jsx/react';
 import type { ReactNode } from 'react';
 
-import { smartQuotesRule } from '@/lib/markdown';
+import { createElementWithBasePath, smartQuotesRule } from '@/lib/markdown';
 
 function MarkdownPassthrough({ children }: { children?: ReactNode }) {
   return <>{children}</>;
@@ -34,6 +34,7 @@ export default function JobSummary({ summary }: JobSummaryProps) {
           },
         },
         renderRule: smartQuotesRule,
+        createElement: createElementWithBasePath,
       }}
     >
       {summary}
