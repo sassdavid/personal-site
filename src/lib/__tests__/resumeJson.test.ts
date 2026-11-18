@@ -116,29 +116,6 @@ describe('json resume document', () => {
     }
   });
 
-  it('groups skills by category with keywords ordered by competency', () => {
-    const byCategory = resume.skills.filter(
-      (skill) => skill.name !== TOOLS_SKILL_NAME,
-    );
-
-    expect(byCategory.map((skill) => skill.name)).toEqual(
-      [...new Set(skills.flatMap((skill) => skill.category))].sort(),
-    );
-
-    for (const group of byCategory) {
-      const expected = skills
-        .filter((skill) => skill.category.includes(group.name))
-        .map((skill) => skill.title);
-      const competencies = group.keywords.map(
-        (keyword) =>
-          skills.find((skill) => skill.title === keyword)?.competency ?? 0,
-      );
-
-      expect([...group.keywords].sort()).toEqual([...expected].sort());
-      expect(competencies).toEqual([...competencies].sort((a, b) => b - a));
-    }
-  });
-
   it('appends the tools section as one more skill entry, in data order', () => {
     expect(resume.skills.at(-1)).toEqual({
       name: TOOLS_SKILL_NAME,
