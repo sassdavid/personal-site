@@ -33,11 +33,14 @@ npm run og:check
 npm run build
 npm run verify-export
 npm run measure-export
+npm run check-reflow
 ```
 
-`mise run check` bundles the first four. `verify-export` and `measure-export`
-read the files `npm run build` writes, so keep that order. `measure-export`
-fails when the export outgrows a budget in `scripts/budget.json`. Add or update
+`mise run check` bundles the first four. `verify-export`, `measure-export`,
+and `check-reflow` read the files `npm run build` writes, so keep that order.
+`measure-export` fails when the export outgrows a budget in
+`scripts/budget.json`, and `check-reflow`, which needs Chrome, fails when a page
+is wider than a 320px phone at the default or doubled text size. Add or update
 tests when behavior changes.
 
 ## Open the pull request
