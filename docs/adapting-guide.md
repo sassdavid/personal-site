@@ -209,7 +209,10 @@ The required fields are `title`, `date`, and `description`. `draft: true` shows
 a post during development without including it in the production export. An
 optional `image` must be paired with `imageAlt`. Images, in the frontmatter or
 the body, use root-relative paths to files under `public/`, such as
-`/images/writing/my-post/figure.png`.
+`/images/writing/my-post/figure.png`. Any other key, or one of these in another
+case, such as `Draft`, stops the build, as does a folder, a link, or a
+differently named file in `content/writing/`; otherwise the post would publish
+without the setting, or not at all, with nothing to say so.
 
 Unlike upstream, this fork builds with no posts at all: `generateStaticParams()`
 falls back to a placeholder slug, and the homepage writing section is gated on
