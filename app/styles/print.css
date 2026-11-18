@@ -346,7 +346,6 @@
   }
 
   img {
-    max-width: 100% !important;
     filter: grayscale(1) !important;
   }
 }
