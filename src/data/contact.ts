@@ -8,7 +8,7 @@ export type ContactId =
   | 'facebook'
   | 'email';
 
-export interface ContactItem {
+interface ContactItem {
   id: ContactId;
   link: string;
   label: string;
@@ -73,5 +73,8 @@ const data: ContactItem[] = [
     },
   },
 ];
+
+/** Every link but the email address: the public profiles. */
+export const profiles = data.filter((item) => item.id !== 'email');
 
 export default data;

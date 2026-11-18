@@ -12,15 +12,10 @@
  * `interests`, `projects`, `references`) are omitted rather than stubbed.
  */
 
-import contact from '@/data/contact';
+import { profiles } from '@/data/contact';
 import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
-import {
-  type Category,
-  categories,
-  type Skill,
-  skills,
-} from '@/data/resume/skills';
+import { type Skill, skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
 import { sortPositions } from '@/lib/career';
@@ -157,13 +152,11 @@ function buildBasics(): ResumeBasics {
     url: `${SITE_URL}/`,
     summary: SITE_DESCRIPTION,
     location: buildLocation(),
-    profiles: contact
-      .filter((item) => !item.link.startsWith('mailto:'))
-      .map((item) => ({
-        network: item.label,
-        username: usernameFrom(item.link),
-        url: item.link,
-      })),
+    profiles: profiles.map((item) => ({
+      network: item.label,
+      username: usernameFrom(item.link),
+      url: item.link,
+    })),
   };
 }
 
@@ -208,16 +201,19 @@ function buildEducation(): ResumeEducation[] {
 export const TOOLS_SKILL_NAME = 'Tools';
 
 /**
- * One group per category, its skills ordered by competency: the order the
- * résumé page and this document share. The 1–5 competency scale has no
- * counterpart in the schema's free-text `level`, so it shapes the ordering
+ * One group per category the skills name, sorted, so the group order falls out
+ * of the skill list itself; each group's skills ordered by competency. The
+ * résumé page and this document share that order. The 1–5 competency scale has
+ * no counterpart in the schema's free-text `level`, so it shapes the ordering
  * rather than being translated into a word the data never claimed.
  */
-export function groupSkills(all: Skill[], categoryList: Category[]) {
-  return categoryList.map((category) => ({
-    name: category.name,
+export function groupSkills(all: Skill[]) {
+  const names = [...new Set(all.flatMap((skill) => skill.category))].sort();
+
+  return names.map((name) => ({
+    name,
     skills: all
-      .filter((skill) => skill.category.includes(category.name))
+      .filter((skill) => skill.category.includes(name))
       .sort(
         (a, b) =>
           b.competency - a.competency || a.title.localeCompare(b.title, 'en'),
@@ -231,7 +227,7 @@ export function groupSkills(all: Skill[], categoryList: Category[]) {
  * file gives it.
  */
 function buildSkills(): ResumeSkill[] {
-  const byCategory = groupSkills(skills, categories).map((group) => ({
+  const byCategory = groupSkills(skills).map((group) => ({
     name: group.name,
     keywords: group.skills.map((skill) => skill.title),
   }));

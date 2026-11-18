@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import contact from '@/data/contact';
 import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
-import { categories, skills } from '@/data/resume/skills';
+import { skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
 import { sortPositions } from '@/lib/career';
@@ -122,7 +122,7 @@ describe('json resume document', () => {
     );
 
     expect(byCategory.map((skill) => skill.name)).toEqual(
-      categories.map((category) => category.name),
+      [...new Set(skills.flatMap((skill) => skill.category))].sort(),
     );
 
     for (const group of byCategory) {
@@ -144,7 +144,7 @@ describe('json resume document', () => {
       name: TOOLS_SKILL_NAME,
       keywords: tools.map((tool) => tool.name),
     });
-    expect(categories.map((category) => category.name)).not.toContain(
+    expect(skills.flatMap((skill) => skill.category)).not.toContain(
       TOOLS_SKILL_NAME,
     );
   });

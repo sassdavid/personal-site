@@ -1,4 +1,4 @@
-export interface WritingItem {
+export interface WritingEntry {
   title: string;
   url: string;
   date: string;
@@ -8,6 +8,6 @@ export interface WritingItem {
 // External articles surfaced on the /writing page alongside local Markdown
 // posts (content/writing/*.md). Empty for now — add entries here, newest first,
 // to populate the writing index. See AGENTS.md "Writing page" for the contract.
-const data: WritingItem[] = [];
+const data: WritingEntry[] = [];
 
 export default data;

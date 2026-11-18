@@ -10,7 +10,7 @@ import PageWrapper from '@/components/Template/PageWrapper';
 import contact, { type ContactId } from '@/data/contact';
 import profile from '@/data/profile.json';
 import degrees from '@/data/resume/degrees';
-import { categories, skills } from '@/data/resume/skills';
+import { skills } from '@/data/resume/skills';
 import tools from '@/data/resume/tools';
 import work from '@/data/resume/work';
 import { createPageMetadata } from '@/lib/metadata';
@@ -119,7 +119,7 @@ export default function ResumePage() {
           </section>
 
           <section id="skills" className="resume-section">
-            <Skills skills={skills} categories={categories} />
+            <Skills skills={skills} />
           </section>
 
           <section id="tools" className="resume-section">

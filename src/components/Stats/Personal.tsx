@@ -1,9 +1,8 @@
+import profile from '@/data/profile.json';
 import {
   AGE_PRECISION_FULL,
   AGE_PRECISION_STATIC,
   ageAt,
-  COUNTRIES_VISITED,
-  CURRENT_CITY,
   utcDate,
 } from '@/lib/telemetry';
 
@@ -30,8 +29,8 @@ export default function PersonalStats() {
             />
           ),
         },
-        { label: 'Countries visited', value: String(COUNTRIES_VISITED) },
-        { label: 'Current city', value: CURRENT_CITY },
+        { label: 'Countries visited', value: String(profile.countriesVisited) },
+        { label: 'Current city', value: profile.currentCity },
       ]}
     />
   );
