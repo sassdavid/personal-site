@@ -12,18 +12,6 @@ const OG_SIZE: Record<string, ImageSize> = {
   '/og.png': { width: 1200, height: 630 },
 };
 
-/**
- * Fork: this repository publishes no posts, so the headings upstream reads
- * from its published post are inlined: the four whose ids changed when the
- * slug scheme did.
- */
-const LEGACY_HEADINGS = [
-  '## On using `--dangerously-skip-permissions`',
-  '## Browser automation: `--chrome` for interaction, Playwright MCP for screenshots',
-  '## Plan Mode + writing plans to files',
-  '## CLAUDE.md + AGENTS.md',
-].join('\n\n');
-
 function markup(content: string, imageSizes = OG_SIZE) {
   return renderToStaticMarkup(
     <PostContent content={content} imageSizes={imageSizes} />,
@@ -251,8 +239,18 @@ describe('PostContent heading anchors', () => {
     expect(headingIds(container.innerHTML)).toEqual(['repeat', 'repeat-2']);
   });
 
+  // Headings published in an early post, whose ids the renderer then wrote
+  // itself. A heading the two schemes agree on needs no alias.
   it('keeps the legacy ids of published headings resolving as hidden aliases', () => {
-    const html = markup(LEGACY_HEADINGS);
+    const html = markup(
+      [
+        '## Context',
+        '## On using `--dangerously-skip-permissions`',
+        '## Browser automation: `--chrome` for interaction, Playwright MCP for screenshots',
+        '## Plan Mode + writing plans to files',
+        '## CLAUDE.md + AGENTS.md',
+      ].join('\n\n'),
+    );
 
     expect(aliasIds(html).sort()).toEqual([
       'browser-automation---chrome-for-interaction-playwright-mcp-for-screenshots',

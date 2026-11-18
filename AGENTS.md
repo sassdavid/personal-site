@@ -302,7 +302,8 @@ Suites run in parallel workers against the same checkout, so a test must never
 write into a directory the site reads, such as `content/writing/`. Another suite
 can list the file and then find it gone. Build fixtures in a temporary directory,
 or substitute them in the suite's own view of the filesystem, as
-`app/writing/[slug]/page.test.ts` does for its draft.
+`app/writing/[slug]/page.test.ts` does for its posts. A fork replaces the
+sample posts, so a test that names one fails there.
 
 Tests must not depend on content that may not exist (fork): `content/writing/`, `src/data/writing.ts`, `src/data/projects.ts`, and `src/data/speaking.ts` are empty here, so anything reading them injects data with `vi.mock` plus `vi.hoisted` state, and passes on an empty repository while still meaning something on a full one. Mock `@/lib/posts` (or `@/lib/writing`) rather than writing fixture Markdown. `vi.mock` is hoisted above `const`, so shared values come from `vi.hoisted`; use plain static imports after the mock, since a top-level `await import()` fails type-check as TS1378 under this tsconfig.
 
